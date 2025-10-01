@@ -4,7 +4,7 @@
     "basic_robot": {
       "id": "basic_robot",
       "robotClass": "frc.robot.ExampleRobot",
-      "simulate": true
+      "simulate": false
     },
     "black_robot": {
       "id": "black_robot",
