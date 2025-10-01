@@ -8,7 +8,7 @@
     },
     "black_robot": {
       "id": "black_robot",
-      "robotClass": "frc.robot.blackteam.blackRobot",
+      "robotClass": "frc.robot.blackteam.BlackRobot",
       "simulate": true,
       "competition": true
     }
