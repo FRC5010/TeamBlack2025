@@ -3,7 +3,7 @@
   "robots": {
     "basic_robot": {
       "id": "basic_robot",
-      "robotClass": "frc.robot.ExampleRobot",
+      "robotClass": "frc.robot.example.ExampleRobot",
       "simulate": true
     },
     "black_robot": {
