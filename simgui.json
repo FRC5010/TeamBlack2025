@@ -70,6 +70,7 @@
       "/LiveWindow/Ungrouped/Pigeon 2 [13]": "Gyro",
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
       "/Shuffleboard/BabySwerve/Auto Modes": "String Chooser",
+      "/Shuffleboard/BlackRobot/Auto Modes": "String Chooser",
       "/Shuffleboard/ExampleRobot/Auto Modes": "String Chooser",
       "/SmartDashboard/Alerts": "Alerts",
       "/SmartDashboard/Arm/mechanism": "Mechanism2d",
