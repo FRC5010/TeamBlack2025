@@ -9,14 +9,18 @@ import org.frc5010.common.sensors.Controller;
 
 public class BlackRobot extends GenericRobot {
   private GenericDrivetrain drivetrain;
+  private ShooterSubsystem shooterSubsystem;
 
   public BlackRobot(String directory) {
     super(directory);
     drivetrain = (GenericDrivetrain) subsystems.get(ConfigConstants.DRIVETRAIN);
+    shooterSubsystem = new ShooterSubsystem();
   }
 
   @Override
-  public void configureButtonBindings(Controller driver, Controller operator) {}
+  public void configureButtonBindings(Controller driver, Controller operator) {
+    driver.createAButton().onTrue(shooterSubsystem.setSpeed(0.5));
+  }
 
   @Override
   public void setupDefaultCommands(Controller driver, Controller operator) {
