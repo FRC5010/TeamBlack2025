@@ -1,5 +1,6 @@
 package frc.robot.blackteam;
 
+import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import org.frc5010.common.arch.GenericRobot;
@@ -15,9 +16,15 @@ public class BlackRobot extends GenericRobot {
     super(directory);
     drivetrain = (GenericDrivetrain) subsystems.get(ConfigConstants.DRIVETRAIN);
     shooterSubsystem = new ShooterSubsystem();
-  }
-
-  @Override
+    NamedCommands.registerCommand("shoot", launchToDistance(20));
+      }
+    
+      private Command launchToDistance(int i) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'launchToDistance'");
+      }
+    
+      @Override
   public void configureButtonBindings(Controller driver, Controller operator) {
     driver.createAButton().onTrue(shooterSubsystem.setSpeed(0.5));
   }

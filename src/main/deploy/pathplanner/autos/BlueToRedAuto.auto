@@ -9,6 +9,12 @@
           "data": {
             "pathName": "BlueToRed"
           }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot"
+          }
         }
       ]
     }
