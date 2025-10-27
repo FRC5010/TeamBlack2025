@@ -301,7 +301,6 @@ public class PathFinderCommand extends Command {
         goalEndState = new GoalEndState(goalEndState.velocityMPS(), targetPose.getRotation());
       }
     }
-
     if (currentPose.getTranslation().getDistance(targetPose.getTranslation()) < 0.1) {
       output.accept(new ChassisSpeeds(), DriveFeedforwards.zeros(robotConfig.numModules));
       finish = true;
