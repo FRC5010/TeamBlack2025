@@ -82,6 +82,7 @@
       "/SmartDashboard/Field": "Field2d",
       "/SmartDashboard/IMU": "Alerts",
       "/SmartDashboard/JSON": "Alerts",
+      "/SmartDashboard/Mechanisms/ShooterMech/ShooterMotor/LiveTuning": "Command",
       "/SmartDashboard/Motors": "Alerts",
       "/SmartDashboard/PathPlanner": "Alerts",
       "/SmartDashboard/PhotonAlerts": "Alerts",
@@ -89,6 +90,7 @@
       "/SmartDashboard/Pigeon 2 [13]": "Gyro",
       "/SmartDashboard/Robot Visual": "Mechanism2d",
       "/SmartDashboard/SendableChooser[0]": "String Chooser",
+      "/SmartDashboard/ShooterMech/mechanism": "Mechanism2d",
       "/SmartDashboard/Swerve Drive": "Alerts",
       "/SmartDashboard/Turret/mechanism": "Mechanism2d",
       "/SmartDashboard/VisionSystemSim-Vision/Sim Field": "Field2d",
@@ -98,6 +100,11 @@
     },
     "windows": {
       "/FMSInfo": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/Shuffleboard/BlackRobot/Auto Modes": {
         "window": {
           "visible": true
         }
