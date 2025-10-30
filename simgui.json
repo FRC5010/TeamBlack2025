@@ -82,6 +82,7 @@
       "/SmartDashboard/Field": "Field2d",
       "/SmartDashboard/IMU": "Alerts",
       "/SmartDashboard/JSON": "Alerts",
+      "/SmartDashboard/Mechanisms/ShooterMech/FeederMotor/LiveTuning": "Command",
       "/SmartDashboard/Mechanisms/ShooterMech/ShooterMotor/LiveTuning": "Command",
       "/SmartDashboard/Motors": "Alerts",
       "/SmartDashboard/PathPlanner": "Alerts",
@@ -105,11 +106,6 @@
         }
       },
       "/Shuffleboard/BlackRobot/Auto Modes": {
-        "window": {
-          "visible": true
-        }
-      },
-      "/SmartDashboard/Arm/mechanism": {
         "window": {
           "visible": true
         }
@@ -707,6 +703,12 @@
         "Pose": {
           "open": true
         },
+        "Vision": {
+          "Camera shooter": {
+            "open": true
+          },
+          "open": true
+        },
         "open": true
       },
       "SmartDashboard": {
@@ -714,10 +716,12 @@
           "DrivePoseEstimator": {
             "open": true
           },
-          "open": true,
           "values": {
             "open": true
           }
+        },
+        "VisibleTargetSystem": {
+          "open": true
         },
         "open": true
       },
@@ -734,13 +738,19 @@
         "Turret": {
           "open": true
         }
+      },
+      "photonvision": {
+        "intake": {
+          "open": true
+        },
+        "open": true,
+        "shooter": {
+          "open": true
+        }
       }
     }
   },
   "NetworkTables Info": {
     "visible": true
-  },
-  "NetworkTables View": {
-    "visible": false
   }
 }

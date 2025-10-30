@@ -17,14 +17,14 @@ public class BlackRobot extends GenericRobot {
     drivetrain = (GenericDrivetrain) subsystems.get(ConfigConstants.DRIVETRAIN);
     shooterSubsystem = new ShooterSubsystem();
     NamedCommands.registerCommand("shoot", launchToDistance(20));
-      }
-    
-      private Command launchToDistance(int i) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'launchToDistance'");
-      }
-    
-      @Override
+  }
+
+  private Command launchToDistance(int i) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'launchToDistance'");
+  }
+
+  @Override
   public void configureButtonBindings(Controller driver, Controller operator) {
     driver.createAButton().onTrue(shooterSubsystem.setSpeed(0.5));
   }
