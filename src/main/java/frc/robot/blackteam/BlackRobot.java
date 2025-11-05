@@ -1,6 +1,5 @@
 package frc.robot.blackteam;
 
-import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import org.frc5010.common.arch.GenericRobot;
@@ -16,7 +15,7 @@ public class BlackRobot extends GenericRobot {
     super(directory);
     drivetrain = (GenericDrivetrain) subsystems.get(ConfigConstants.DRIVETRAIN);
     shooterSubsystem = new ShooterSubsystem();
-    NamedCommands.registerCommand("shoot", launchToDistance(20));
+    // NamedCommands.registerCommand("shoot", launchToDistance(20));
   }
 
   private Command launchToDistance(int i) {
