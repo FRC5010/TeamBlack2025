@@ -1,6 +1,12 @@
 {
   "competitionPin": 0,
   "robots": {
+    "black_robot": {
+      "id": "black_robot",
+      "robotClass": "frc.robot.blackteam.BlackRobot",
+      "simulate": true,
+      "competition": true
+    },
     "basic_robot": {
       "id": "basic_robot",
       "robotClass": "frc.robot.example.ExampleRobot",
@@ -10,12 +16,6 @@
       "id": "baby_swerve",
       "robotClass": "frc.robot.baby_swerve.BabySwerve",
       "simulate": false
-    },
-    "black_robot": {
-      "id": "black_robot",
-      "robotClass": "frc.robot.blackteam.BlackRobot",
-      "simulate": true,
-      "competition": true
     }
   }
 }

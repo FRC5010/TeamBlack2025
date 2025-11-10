@@ -82,11 +82,13 @@
       "/SmartDashboard/Field": "Field2d",
       "/SmartDashboard/IMU": "Alerts",
       "/SmartDashboard/JSON": "Alerts",
+      "/SmartDashboard/Mechanisms/ShooterMech/FeederMotor/LiveTuning": "Command",
       "/SmartDashboard/Mechanisms/ShooterMech/ShooterMotor/LiveTuning": "Command",
       "/SmartDashboard/Motors": "Alerts",
       "/SmartDashboard/PathPlanner": "Alerts",
       "/SmartDashboard/PhotonAlerts": "Alerts",
       "/SmartDashboard/Pigeon 2 (v6) [13]": "Gyro",
+      "/SmartDashboard/Pigeon 2 (v6) [9]": "Gyro",
       "/SmartDashboard/Pigeon 2 [13]": "Gyro",
       "/SmartDashboard/Robot Visual": "Mechanism2d",
       "/SmartDashboard/SendableChooser[0]": "String Chooser",
@@ -722,6 +724,12 @@
         "Pose": {
           "open": true
         },
+        "Vision": {
+          "Camera shooter": {
+            "open": true
+          },
+          "open": true
+        },
         "open": true
       },
       "SmartDashboard": {
@@ -729,10 +737,12 @@
           "DrivePoseEstimator": {
             "open": true
           },
-          "open": true,
           "values": {
             "open": true
           }
+        },
+        "VisibleTargetSystem": {
+          "open": true
         },
         "open": true
       },
@@ -747,6 +757,15 @@
           "open": true
         },
         "Turret": {
+          "open": true
+        }
+      },
+      "photonvision": {
+        "intake": {
+          "open": true
+        },
+        "open": true,
+        "shooter": {
           "open": true
         }
       }
