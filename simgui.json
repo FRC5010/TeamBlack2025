@@ -83,6 +83,10 @@
       "/SmartDashboard/IMU": "Alerts",
       "/SmartDashboard/JSON": "Alerts",
       "/SmartDashboard/Mechanisms/ShooterMech/FeederMotor/LiveTuning": "Command",
+      "/SmartDashboard/Mechanisms/ShooterMech/ShooterMotor/Commands/Down": "Command",
+      "/SmartDashboard/Mechanisms/ShooterMech/ShooterMotor/Commands/LiveTuning": "Command",
+      "/SmartDashboard/Mechanisms/ShooterMech/ShooterMotor/Commands/Up": "Command",
+      "/SmartDashboard/Mechanisms/ShooterMech/ShooterMotor/Commands/ZeroEncoder": "Command",
       "/SmartDashboard/Mechanisms/ShooterMech/ShooterMotor/LiveTuning": "Command",
       "/SmartDashboard/Motors": "Alerts",
       "/SmartDashboard/PathPlanner": "Alerts",
@@ -112,11 +116,6 @@
         }
       },
       "/Shuffleboard/ExampleRobot/Auto Modes": {
-        "window": {
-          "visible": true
-        }
-      },
-      "/SmartDashboard/Arm/mechanism": {
         "window": {
           "visible": true
         }
@@ -647,11 +646,6 @@
           "visible": true
         }
       },
-      "/SmartDashboard/Elevator/mechanism": {
-        "window": {
-          "visible": true
-        }
-      },
       "/SmartDashboard/Field": {
         "OdometryPose": {
           "arrowColor": [
@@ -683,6 +677,11 @@
         }
       },
       "/SmartDashboard/Robot Visual": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/ShooterMech/mechanism": {
         "window": {
           "visible": true
         }

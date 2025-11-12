@@ -7,11 +7,9 @@ import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Pounds;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Seconds;
-import static yams.mechanisms.SmartMechanism.gearbox;
-import static yams.mechanisms.SmartMechanism.gearing;
 
 import com.thethriftybot.ThriftyNova;
-import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -21,8 +19,9 @@ import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import org.frc5010.common.arch.GenericSubsystem;
-import yams.mechanisms.config.ShooterConfig;
-import yams.mechanisms.velocity.Shooter;
+import yams.mechanisms.SmartMechanism;
+import yams.mechanisms.config.FlyWheelConfig;
+import yams.mechanisms.velocity.FlyWheel;
 import yams.motorcontrollers.SmartMotorController;
 import yams.motorcontrollers.SmartMotorControllerConfig;
 import yams.motorcontrollers.SmartMotorControllerConfig.ControlMode;
@@ -42,28 +41,36 @@ public class ShooterSubsystem extends GenericSubsystem {
   private final SmartMotorControllerConfig motorConfig =
       new SmartMotorControllerConfig(this)
           .withClosedLoopController(
-              4, 0, 0, DegreesPerSecond.of(180), DegreesPerSecondPerSecond.of(90))
-          .withGearing(gearing(gearbox(3, 4)))
+              50, 0, 0, DegreesPerSecond.of(90), DegreesPerSecondPerSecond.of(45))
+          .withGearing(SmartMechanism.gearing(SmartMechanism.gearbox(3, 4)))
           .withIdleMode(MotorMode.COAST)
           .withTelemetry("ShooterMotor", TelemetryVerbosity.HIGH)
           .withStatorCurrentLimit(Amps.of(40))
           .withMotorInverted(false)
+          .withSimClosedLoopController(
+              50, 0, 0, DegreesPerSecond.of(90), DegreesPerSecondPerSecond.of(45))
           .withClosedLoopRampRate(Seconds.of(0.25))
-          .withFeedforward(new ArmFeedforward(0, 0, 0, 0))
+          // .withOpenLoopRampRate(Seconds.of(0.25))
+          .withSimFeedforward(new SimpleMotorFeedforward(0, 0))
+          .withFeedforward(new SimpleMotorFeedforward(0, 0, 0))
           .withControlMode(ControlMode.CLOSED_LOOP);
 
   private final SmartMotorController motorController =
       new NovaWrapper(motor, DCMotor.getNEO(1), motorConfig);
-  /** Creates a new Shooter. */
-  private final ShooterConfig shooterConfig =
-      new ShooterConfig(motorController)
+
+  private final FlyWheelConfig shooterConfig =
+      new FlyWheelConfig(motorController)
           .withDiameter(Inches.of(4))
           .withMass(Pounds.of(1))
-          .withTelemetry("ShooterMech", TelemetryVerbosity.HIGH)
-          .withUpperSoftLimit(RPM.of(5000));
+          .withUpperSoftLimit(RPM.of(1000))
+          .withTelemetry("ShooterMech", TelemetryVerbosity.HIGH);
 
-  private final Shooter shooter = new Shooter(shooterConfig);
+  private FlyWheel shooter = new FlyWheel(shooterConfig);
+  /**
+   * @return Shooter velocity.
+   */
 
+  /** Creates a new Shooter. */
   public ShooterSubsystem() {
     distanceToVelocityMap.put(0.0, 0.0);
     distanceToVelocityMap.put(0.5, 500.0);
@@ -71,6 +78,14 @@ public class ShooterSubsystem extends GenericSubsystem {
 
   public Command setSpeed(double speed) {
     return shooter.set(speed);
+  }
+
+  /**
+   * @param dutyCycle DutyCycle to set.
+   * @return {@link edu.wpi.first.wpilibj2.command.RunCommand}
+   */
+  public Command set(double dutyCycle) {
+    return shooter.set(dutyCycle);
   }
 
   public Command launchToDistance(DoubleSupplier distanceSupplier) {
@@ -98,5 +113,9 @@ public class ShooterSubsystem extends GenericSubsystem {
   @Override
   public void simulationPeriodic() {
     shooter.simIterate();
+  }
+
+  public Command setVelocity(AngularVelocity speed) {
+    return shooter.setSpeed(speed);
   }
 }

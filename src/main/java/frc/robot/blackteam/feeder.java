@@ -16,8 +16,8 @@ import com.thethriftybot.ThriftyNova;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj2.command.Command;
 import org.frc5010.common.arch.GenericSubsystem;
-import yams.mechanisms.config.ShooterConfig;
-import yams.mechanisms.velocity.Shooter;
+import yams.mechanisms.config.FlyWheelConfig;
+import yams.mechanisms.velocity.FlyWheel;
 import yams.motorcontrollers.SmartMotorController;
 import yams.motorcontrollers.SmartMotorControllerConfig;
 import yams.motorcontrollers.SmartMotorControllerConfig.ControlMode;
@@ -41,14 +41,14 @@ public class feeder extends GenericSubsystem {
   private final SmartMotorController motorController =
       new NovaWrapper(motor, DCMotor.getNEO(1), motorConfig);
 
-  private final ShooterConfig feederConfig =
-      new ShooterConfig(motorController)
+  private final FlyWheelConfig feederConfig =
+      new FlyWheelConfig(motorController)
           .withDiameter(Inches.of(4))
           .withMass(Pounds.of(1))
           .withTelemetry("ShooterMech", TelemetryVerbosity.HIGH)
           .withUpperSoftLimit(RPM.of(5000));
 
-  private final Shooter feeder = new Shooter(feederConfig);
+  private final FlyWheel feeder = new FlyWheel(feederConfig);
 
   public Command setSpeed(double speed) {
     return feeder.set(speed);
