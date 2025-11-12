@@ -14,7 +14,7 @@ public class BlackRobot extends GenericRobot {
   public BlackRobot(String directory) {
     super(directory);
     drivetrain = (GenericDrivetrain) subsystems.get(ConfigConstants.DRIVETRAIN);
-    shooterSubsystem = new ShooterSubsystem();
+    // shooterSubsystem = new ShooterSubsystem();
     // NamedCommands.registerCommand("shoot", launchToDistance(20));
   }
 

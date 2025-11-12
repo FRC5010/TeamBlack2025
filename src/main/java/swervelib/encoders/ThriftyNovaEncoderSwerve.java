@@ -66,7 +66,7 @@ public class ThriftyNovaEncoderSwerve extends SwerveAbsoluteEncoder {
    */
   @Override
   public double getAbsolutePosition() {
-    double rawMotor = motor.getPositionAbs();
+    double rawMotor = motor.getPositionAbs() * (360.0 / 4096);
     return rawMotor * (inverted ? -1.0 : 1.0);
   }
 
