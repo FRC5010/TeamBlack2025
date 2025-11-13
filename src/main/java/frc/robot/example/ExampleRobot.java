@@ -37,7 +37,7 @@ public class ExampleRobot extends GenericRobot {
     driver.createAButton().onTrue(exampleSubsystem.addBallToRobot());
     driver.createBButton().onTrue(exampleSubsystem.launchBall());
     driver.createXButton().whileTrue(exampleSubsystem.setDutyCycle(0.5));
-    driver.createYButton().onTrue(exampleSubsystem.sysIdShooter());
+    driver.createYButton().onTrue(exampleSubsystem.sysIdFlyWheel());
 
     State idle = stateMachine.addState("idle", Commands.idle());
     stateMachine.setInitialState(idle);

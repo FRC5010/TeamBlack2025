@@ -38,7 +38,7 @@ import org.ironmaple.simulation.gamepieces.GamePieceProjectile;
 import org.ironmaple.simulation.seasonspecific.crescendo2024.NoteOnFly;
 import org.ironmaple.simulation.seasonspecific.reefscape2025.ReefscapeAlgaeOnFly;
 import org.littletonrobotics.junction.Logger;
-import yams.mechanisms.velocity.Shooter;
+import yams.mechanisms.velocity.FlyWheel;
 
 public class ExampleSubsystem extends GenericSubsystem {
   protected PercentControlMotor motor;
@@ -50,13 +50,13 @@ public class ExampleSubsystem extends GenericSubsystem {
   protected GamePieceProjectile gamePieceProjectile;
   protected int scoredNotes = 0;
   protected Rotation2d rotation = new Rotation2d(Degrees.of(180));
-  protected Shooter shooter;
+  protected FlyWheel shooter;
 
   public ExampleSubsystem() {
     super("example.json");
     this.motor = (PercentControlMotor) devices.get("percent_motor");
     this.controlledMotor = (VelocityControlMotor) devices.get("velocity_motor");
-    this.shooter = (Shooter) devices.get("Shooter");
+    this.shooter = (FlyWheel) devices.get("FlyWheel");
 
     this.angularMotor = angularControlledMotor();
     // verticalMotor = verticalControlledMotor();
@@ -131,7 +131,7 @@ public class ExampleSubsystem extends GenericSubsystem {
         this);
   }
 
-  public Command sysIdShooter() {
+  public Command sysIdFlyWheel() {
     return SystemIdentification.getSysIdFullCommand(
         SystemIdentification.rpmSysIdRoutine(shooter.getMotor(), logPrefix, this), 5, 3, 3);
   }
