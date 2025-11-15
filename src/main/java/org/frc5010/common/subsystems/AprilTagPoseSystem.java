@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.frc5010.common.sensors.camera.GenericCamera;
+import org.frc5010.common.telemetry.DisplayBoolean;
 import org.frc5010.common.telemetry.DisplayDouble;
 
 /**
@@ -38,6 +39,8 @@ public class AprilTagPoseSystem extends CameraSystem {
   protected DisplayDouble stdVectorFactor;
   /** Std vector radian constant */
   protected DisplayDouble stdVectorRadianFactor;
+  /** Has valid target display boolean */
+  protected DisplayBoolean HAS_VALID_TARGET;
 
   /**
    * Constructor
@@ -51,6 +54,7 @@ public class AprilTagPoseSystem extends CameraSystem {
     stdVectorFactor.setValue(0.1);
     stdVectorRadianFactor = DashBoard.makeConfigDouble("Std Vector Radian Factor");
     stdVectorRadianFactor.setValue(5);
+    HAS_VALID_TARGET = DashBoard.makeDisplayBoolean("Has Valid Target");
   }
 
   /**
@@ -66,6 +70,7 @@ public class AprilTagPoseSystem extends CameraSystem {
     stdVectorFactor.setValue(0.1);
     stdVectorRadianFactor = DashBoard.makeConfigDouble("Std Vector Radian Factor");
     stdVectorRadianFactor.setValue(5);
+    HAS_VALID_TARGET = DashBoard.makeDisplayBoolean("Has Valid Target");
     addCamera(camera);
   }
 
@@ -186,11 +191,11 @@ public class AprilTagPoseSystem extends CameraSystem {
   public boolean hasValidTarget() {
     for (GenericCamera camera : cameras) {
       if (camera.hasValidTarget()) {
-        values.set(HAS_VALID_TARGET, true);
+        HAS_VALID_TARGET.setValue(true);
         return true;
       }
     }
-    values.set(HAS_VALID_TARGET, false);
+    HAS_VALID_TARGET.setValue(false);
     return false;
   }
 }

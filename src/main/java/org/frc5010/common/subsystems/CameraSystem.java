@@ -7,10 +7,12 @@ package org.frc5010.common.subsystems;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.frc5010.common.arch.GenericSubsystem;
 import org.frc5010.common.constants.Constants;
 import org.frc5010.common.sensors.camera.GenericCamera;
 import org.frc5010.common.sensors.camera.SimulatedCamera;
+import org.frc5010.common.telemetry.DisplayBoolean;
 import org.ironmaple.simulation.SimulatedArena;
 import org.photonvision.estimation.TargetModel;
 import org.photonvision.simulation.VisionTargetSim;
@@ -23,7 +25,7 @@ public abstract class CameraSystem extends GenericSubsystem {
   /** The camera object. */
   protected GenericCamera camera;
 
-  protected String HAS_VALID_TARGET = "hasValidTarget";
+  protected DisplayBoolean HAS_VALID_TARGET;
   protected TargetModel targetModel = new TargetModel(0.3556);
 
   /**
@@ -33,7 +35,7 @@ public abstract class CameraSystem extends GenericSubsystem {
    */
   public CameraSystem(GenericCamera camera) {
     this.camera = camera;
-    values.declare(HAS_VALID_TARGET, false);
+    HAS_VALID_TARGET = DashBoard.makeDisplayBoolean("Has Valid Target");
   }
 
   /**
@@ -50,14 +52,18 @@ public abstract class CameraSystem extends GenericSubsystem {
   @Override
   public void simulationPeriodic() {
     List<Pose3d> gpas =
-        SimulatedArena.getInstance().getGamePiecesByType(Constants.Simulation.gamePieceA);
+        SimulatedArena.getInstance().getGamePiecesByType(Constants.Simulation.gamePieceA).stream()
+            .map(it -> it.getPose3d())
+            .collect(Collectors.toList());
     SimulatedCamera.visionSim.removeVisionTargets("GPA");
     for (Pose3d gpa : gpas) {
       VisionTargetSim simTarget = new VisionTargetSim(gpa, targetModel);
       SimulatedCamera.visionSim.addVisionTargets("GPA", simTarget);
     }
     List<Pose3d> gpbs =
-        SimulatedArena.getInstance().getGamePiecesByType(Constants.Simulation.gamePieceB);
+        SimulatedArena.getInstance().getGamePiecesByType(Constants.Simulation.gamePieceB).stream()
+            .map(it -> it.getPose3d())
+            .collect(Collectors.toList());
     SimulatedCamera.visionSim.removeVisionTargets("GPB");
     for (Pose3d gpb : gpbs) {
       VisionTargetSim simTarget = new VisionTargetSim(gpb, targetModel);

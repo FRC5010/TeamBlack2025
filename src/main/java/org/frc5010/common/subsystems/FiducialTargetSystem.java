@@ -8,37 +8,38 @@ import edu.wpi.first.math.geometry.Pose2d;
 import java.util.List;
 import org.frc5010.common.sensors.camera.FiducialTargetCamera;
 import org.frc5010.common.sensors.camera.GenericCamera;
+import org.frc5010.common.telemetry.DisplayDouble;
 
 public class FiducialTargetSystem extends CameraSystem {
   protected boolean hasTargets = false;
   protected double targetHeight = 0;
   protected double targetPitch = 0;
   protected double targetYaw = 0;
-  protected String TARGET_PITCH = "targetPitch";
-  protected String TARGET_YAW = "targetYaw";
-  protected String TARGET_DISTANCE = "targetDistance";
   protected Pose2d targetPose = new Pose2d();
+  protected DisplayDouble TARGET_PITCH;
+  protected DisplayDouble TARGET_YAW;
+  protected DisplayDouble TARGET_DISTANCE;
 
   public FiducialTargetSystem(FiducialTargetCamera camera) {
     super((GenericCamera) camera);
-    values.declare(TARGET_PITCH, 0.0);
-    values.declare(TARGET_YAW, 0.0);
-    values.declare(TARGET_DISTANCE, 0.0);
+    TARGET_DISTANCE = DashBoard.makeDisplayDouble("Target Distance");
+    TARGET_YAW = DashBoard.makeDisplayDouble("Target Yaw");
+    TARGET_PITCH = DashBoard.makeDisplayDouble("Target Pitch");
 
     this.camera.registerUpdater(
         () -> {
           hasTargets = this.camera.hasValidTarget();
-          values.set(HAS_VALID_TARGET, hasTargets);
+          HAS_VALID_TARGET.setValue(hasTargets);
         });
     this.camera.registerUpdater(
         () -> {
           targetYaw = this.camera.getTargetYaw();
-          values.set(TARGET_YAW, targetYaw);
+          TARGET_YAW.setValue(targetYaw);
         });
     this.camera.registerUpdater(
         () -> {
           targetPitch = this.camera.getTargetPitch();
-          values.set(TARGET_PITCH, targetPitch);
+          TARGET_PITCH.setValue(targetPitch);
         });
   }
 
@@ -83,7 +84,7 @@ public class FiducialTargetSystem extends CameraSystem {
   @Override
   public void periodic() {
     super.periodic();
-    values.set(TARGET_DISTANCE, getDistanceToTarget());
+    TARGET_DISTANCE.setValue(getDistanceToTarget());
   }
 
   /**

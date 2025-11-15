@@ -12,8 +12,8 @@ import org.frc5010.common.config.json.UnitValueJson;
 import org.frc5010.common.motors.GenericMotorController;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
-import yams.mechanisms.config.ShooterConfig;
-import yams.mechanisms.velocity.Shooter;
+import yams.mechanisms.config.FlyWheelConfig;
+import yams.mechanisms.velocity.FlyWheel;
 import yams.motorcontrollers.SmartMotorController;
 import yams.motorcontrollers.SmartMotorControllerConfig;
 import yams.motorcontrollers.SmartMotorControllerConfig.ControlMode;
@@ -39,7 +39,7 @@ public class YamsShooterConfigurationJson implements DeviceConfiguration {
    * @return the configured shooter
    */
   @Override
-  public Shooter configure(SubsystemBase deviceHandler) {
+  public FlyWheel configure(SubsystemBase deviceHandler) {
     GenericMotorController motor =
         DeviceConfigReader.getMotor(
             motorSetup.controllerType, motorSetup.motorType, motorSetup.canId);
@@ -71,8 +71,8 @@ public class YamsShooterConfigurationJson implements DeviceConfiguration {
         motor.getMotorConfig().getMotorSimulationType(motorSetup.numberOfMotors));
 
     SmartMotorController smartMotor = motor.getSmartMotorController(motorConfig);
-    ShooterConfig shooterConfig =
-        new ShooterConfig(smartMotor)
+    FlyWheelConfig shooterConfig =
+        new FlyWheelConfig(smartMotor)
             // .withMechanismPositionConfig(motorSetup.getMechanismPositionConfig())
             .withDiameter(UnitsParser.parseDistance(diameter))
             .withMass(UnitsParser.parseMass(mass))
@@ -82,7 +82,7 @@ public class YamsShooterConfigurationJson implements DeviceConfiguration {
     if (0 != moi) {
       shooterConfig.withMOI(moi);
     }
-    Shooter shooter = new Shooter(shooterConfig);
+    FlyWheel shooter = new FlyWheel(shooterConfig);
     return shooter;
   }
 }

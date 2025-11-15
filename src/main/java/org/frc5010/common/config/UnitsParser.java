@@ -21,9 +21,12 @@ import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Millimeters;
 import static edu.wpi.first.units.Units.Ounces;
 import static edu.wpi.first.units.Units.Pounds;
+import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecondPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
@@ -57,8 +60,12 @@ public class UnitsParser {
   public static final String RAD = "rad";
   public static final String DEGPS = "deg/s";
   public static final String RADPS = "rad/s";
+  public static final String rpm = "rpm";
+  public static final String rps = "rps";
   public static final String DEGPS2 = "deg/s^2";
   public static final String RADPS2 = "rad/s^2";
+  public static final String RPMPS = "rpmps";
+  public static final String RPS2 = "rps^2";
   public static final String AMPS = "amps";
   public static final String VOLTS = "volts";
   public static final String SEC = "sec";
@@ -569,6 +576,12 @@ public class UnitsParser {
       case "degrees/sec":
       case "degrees/second":
         return DegreesPerSecond.of(magnitude);
+      case rpm:
+      case "RPM":
+        return RPM.of(magnitude);
+      case rps:
+      case "RPS":
+        return RotationsPerSecond.of(magnitude);
       case RADPS:
       case "rad/sec":
       case "rad/second":
@@ -615,6 +628,21 @@ public class UnitsParser {
       case "degrees/s^2":
       case "degrees/s2":
         return DegreesPerSecondPerSecond.of(magnitude);
+      case RPMPS:
+      case "RPM/s":
+      case "RPM/sec":
+      case "rpm/s":
+      case "rpm/sec":
+        return RPM.of(magnitude).per(Second);
+      case RPS2:
+      case "RPS2":
+      case "RPS/s":
+      case "RPS/sec":
+      case "RPS^2":
+      case "rps2":
+      case "rps/s":
+      case "rps/sec":
+        return RotationsPerSecondPerSecond.of(magnitude);
       case RADPS2:
       case "rads/s/s":
       case "rads/s2":

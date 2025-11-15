@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import org.frc5010.common.arch.GenericRobot;
 import org.frc5010.common.arch.GenericRobot.LogLevel;
 import org.frc5010.common.arch.GenericSubsystem;
@@ -254,7 +255,9 @@ public abstract class GenericDrivetrain extends GenericSubsystem {
     SimulatedArena.getInstance().simulationPeriodic();
     int count = 0;
     List<Pose3d> gpas =
-        SimulatedArena.getInstance().getGamePiecesByType(Constants.Simulation.gamePieceA);
+        SimulatedArena.getInstance().getGamePiecesByType(Constants.Simulation.gamePieceA).stream()
+            .map(it -> it.getPose3d())
+            .collect(Collectors.toList());
     for (Pose3d gpa : gpas) {
       getField2d()
           .getObject("GPA" + count++)
@@ -266,7 +269,9 @@ public abstract class GenericDrivetrain extends GenericSubsystem {
     gamePiecePoses.accept(gpaArray);
     count = 0;
     List<Pose3d> gpbs =
-        SimulatedArena.getInstance().getGamePiecesByType(Constants.Simulation.gamePieceB);
+        SimulatedArena.getInstance().getGamePiecesByType(Constants.Simulation.gamePieceB).stream()
+            .map(it -> it.getPose3d())
+            .collect(Collectors.toList());
     for (Pose3d gpb : gpbs) {
       getField2d()
           .getObject("GPB" + count++)
@@ -286,7 +291,9 @@ public abstract class GenericDrivetrain extends GenericSubsystem {
       SimulatedArena.getInstance().placeGamePiecesOnField();
       int count = 0;
       for (Pose3d gpa :
-          SimulatedArena.getInstance().getGamePiecesByType(Constants.Simulation.gamePieceA)) {
+          SimulatedArena.getInstance().getGamePiecesByType(Constants.Simulation.gamePieceA).stream()
+              .map(it -> it.getPose3d())
+              .collect(Collectors.toList())) {
         getField2d()
             .getObject("CARPET" + count)
             .setPose(new Pose2d(gpa.getX(), gpa.getY(), new Rotation2d()));
@@ -297,7 +304,9 @@ public abstract class GenericDrivetrain extends GenericSubsystem {
       }
       count = 0;
       for (Pose3d gpb :
-          SimulatedArena.getInstance().getGamePiecesByType(Constants.Simulation.gamePieceB)) {
+          SimulatedArena.getInstance().getGamePiecesByType(Constants.Simulation.gamePieceB).stream()
+              .map(it -> it.getPose3d())
+              .collect(Collectors.toList())) {
         getField2d()
             .getObject("GPB" + count)
             .setPose(new Pose2d(gpb.getX(), gpb.getY(), gpb.getRotation().toRotation2d()));
