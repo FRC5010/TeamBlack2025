@@ -19,10 +19,10 @@ import yams.mechanisms.SmartMechanism;
 /** Base class for subsystems that provides default logging and network table support */
 public class GenericSubsystem extends SubsystemBase
     implements WpiHelperInterface, GenericDeviceHandler {
-  /** The network table values */
-  protected final WpiNetworkTableValuesHelper values = new WpiNetworkTableValuesHelper();
-
+  /** The display values helper */
   protected final DisplayValuesHelper DashBoard;
+  /** The network table values */
+  protected final WpiNetworkTableValuesHelper networkValues = new WpiNetworkTableValuesHelper();
   /** The log prefix */
   protected String logPrefix = getClass().getSimpleName();
   /** The mechanism simulation */
@@ -36,17 +36,17 @@ public class GenericSubsystem extends SubsystemBase
   /** Creates a new LoggedSubsystem. */
   protected GenericSubsystem(LoggedMechanism2d mechanismSimulation) {
     this.mechanismSimulation = mechanismSimulation;
-    DashBoard = new DisplayValuesHelper(logPrefix, "values");
+    DashBoard = new DisplayValuesHelper(logPrefix);
     WpiNetworkTableValuesHelper.register(this);
   }
 
   protected GenericSubsystem() {
-    DashBoard = new DisplayValuesHelper(logPrefix, "values");
+    DashBoard = new DisplayValuesHelper(logPrefix);
     WpiNetworkTableValuesHelper.register(this);
   }
 
   protected GenericSubsystem(String configFile) {
-    DashBoard = new DisplayValuesHelper(logPrefix, "values");
+    DashBoard = new DisplayValuesHelper(logPrefix);
     try {
       GenericRobot.subsystemParser.parseSubsystem(this, configFile);
     } catch (Exception e) {
@@ -94,6 +94,7 @@ public class GenericSubsystem extends SubsystemBase
       loggingAlert.set(true);
     }
   }
+
   /**
    * Get a device from the configuration
    *
@@ -113,7 +114,7 @@ public class GenericSubsystem extends SubsystemBase
   @Override
   public void initSendable(SendableBuilder builder) {
     log(logPrefix + ": Initializing sendables.");
-    values.initSendables(builder, this.getClass().getSimpleName());
+    networkValues.initSendables(builder, this.getClass().getSimpleName());
   }
 
   /**

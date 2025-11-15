@@ -6,38 +6,39 @@ package org.frc5010.common.subsystems;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import org.frc5010.common.sensors.camera.GenericCamera;
+import org.frc5010.common.telemetry.DisplayDouble;
 
 public class VisibleTargetSystem extends CameraSystem {
   protected boolean hasTargets = false;
   protected double targetHeight = 0;
   protected double targetPitch = 0;
   protected double targetYaw = 0;
-  protected String TARGET_PITCH = "targetPitch";
-  protected String TARGET_YAW = "targetYaw";
-  protected String TARGET_DISTANCE = "targetDistance";
+  protected DisplayDouble TARGET_PITCH;
+  protected DisplayDouble TARGET_YAW;
+  protected DisplayDouble TARGET_DISTANCE;
   protected Pose2d targetPose = new Pose2d();
 
   public VisibleTargetSystem(GenericCamera camera, double targetHeight) {
     super(camera);
     this.targetHeight = targetHeight;
-    values.declare(TARGET_PITCH, 0.0);
-    values.declare(TARGET_YAW, 0.0);
-    values.declare(TARGET_DISTANCE, 0.0);
+    TARGET_DISTANCE = DashBoard.makeDisplayDouble("Target Distance");
+    TARGET_YAW = DashBoard.makeDisplayDouble("Target Yaw");
+    TARGET_PITCH = DashBoard.makeDisplayDouble("Target Pitch");
 
     camera.registerUpdater(
         () -> {
           hasTargets = camera.hasValidTarget();
-          values.set(HAS_VALID_TARGET, hasTargets);
+          HAS_VALID_TARGET.setValue(hasTargets);
         });
     camera.registerUpdater(
         () -> {
           targetYaw = camera.getTargetYaw();
-          values.set(TARGET_YAW, targetYaw);
+          TARGET_YAW.setValue(targetYaw);
         });
     camera.registerUpdater(
         () -> {
           targetPitch = camera.getTargetPitch();
-          values.set(TARGET_PITCH, targetPitch);
+          TARGET_PITCH.setValue(targetPitch);
         });
   }
 
@@ -82,6 +83,6 @@ public class VisibleTargetSystem extends CameraSystem {
   @Override
   public void periodic() {
     super.periodic();
-    values.set(TARGET_DISTANCE, getDistanceToTarget());
+    TARGET_DISTANCE.setValue(getDistanceToTarget());
   }
 }

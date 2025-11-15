@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.io.File;
 import java.io.IOException;
-import yams.mechanisms.velocity.Shooter;
+import yams.mechanisms.velocity.FlyWheel;
 
 /** Add your docs here. */
 public class ShooterParser {
@@ -21,7 +21,7 @@ public class ShooterParser {
    * @param system the system to add the device to
    * @return the configured pivot, or null if there was an error
    */
-  public static Shooter parse(String subDirectory, String filename, SubsystemBase system) {
+  public static FlyWheel parse(String subDirectory, String filename, SubsystemBase system) {
     try {
       File directory = new File(Filesystem.getDeployDirectory(), subDirectory);
       DeviceConfigReader.checkDirectory(directory);

@@ -24,7 +24,7 @@ import org.frc5010.common.telemetry.DisplayValuesHelper;
 public class WheelRadiusCharacterization extends GenericCommand {
 
   private DisplayValuesHelper displayValuesHelper =
-      new DisplayValuesHelper("Wheel Characterization", logPrefix);
+      new DisplayValuesHelper(logPrefix, "Wheel Characterization");
   private DisplayDouble wheelRadius;
   private DisplayDouble trackRadius;
   private DisplayDouble currentConfigWheelRadius;

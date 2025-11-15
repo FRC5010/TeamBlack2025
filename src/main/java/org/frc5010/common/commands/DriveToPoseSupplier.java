@@ -28,7 +28,7 @@ public class DriveToPoseSupplier extends GenericCommand {
   private GenericSwerveDrivetrain swerveSubsystem;
   /** The PID constants for translation */
   private DisplayValuesHelper displayValuesHelper =
-      new DisplayValuesHelper("PID Values", logPrefix);
+      new DisplayValuesHelper(logPrefix, "PID Values");
 
   private DisplayDouble translationkP;
   private DisplayDouble translationkD;

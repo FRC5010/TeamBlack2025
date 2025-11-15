@@ -4,13 +4,10 @@
 
 package org.frc5010.common.arch;
 
-import edu.wpi.first.util.sendable.Sendable;
-import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import org.frc5010.common.constants.RobotConstantsDef;
 import org.frc5010.common.sensors.Controller;
+import org.frc5010.common.telemetry.DisplayValuesHelper;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
 
@@ -18,16 +15,13 @@ import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
  * GenericMechanism should be used as the parent class of any mechanism It enforces the use of the
  * functions:
  */
-public abstract class GenericMechanism implements WpiHelperInterface, Sendable {
+public abstract class GenericMechanism implements WpiHelperInterface {
   /** The visual representation of the mechanism */
   @AutoLogOutput protected LoggedMechanism2d mechVisual;
-  /** The tab for the mechanism */
-  protected ShuffleboardTab shuffleTab;
-  /** The network table values */
-  protected final WpiNetworkTableValuesHelper values = new WpiNetworkTableValuesHelper();
   /** The log prefix */
   protected String logPrefix = getClass().getSimpleName();
-
+  /** The display values helper */
+  protected final DisplayValuesHelper DashBoard;
   /**
    * Constructor for GenericMechanism
    *
@@ -36,8 +30,7 @@ public abstract class GenericMechanism implements WpiHelperInterface, Sendable {
   public GenericMechanism() {
     this.mechVisual =
         new LoggedMechanism2d(RobotConstantsDef.robotVisualH, RobotConstantsDef.robotVisualV);
-    shuffleTab = Shuffleboard.getTab(logPrefix);
-    WpiNetworkTableValuesHelper.register(this);
+    DashBoard = new DisplayValuesHelper(logPrefix);
   }
 
   /**
@@ -48,48 +41,7 @@ public abstract class GenericMechanism implements WpiHelperInterface, Sendable {
   public GenericMechanism(String tabName) {
     this.mechVisual =
         new LoggedMechanism2d(RobotConstantsDef.robotVisualH, RobotConstantsDef.robotVisualV);
-    shuffleTab = Shuffleboard.getTab(tabName);
-    WpiNetworkTableValuesHelper.register(this);
-  }
-
-  /**
-   * Constructor for GenericMechanism with specified visual
-   *
-   * @param robotMechVisual - the visual representation of the mechanism
-   * @param shuffleTab - the tab for the mechanism
-   */
-  public GenericMechanism(LoggedMechanism2d robotMechVisual, ShuffleboardTab shuffleTab) {
-    this.mechVisual = robotMechVisual;
-    this.shuffleTab = shuffleTab;
-    WpiNetworkTableValuesHelper.register(this);
-  }
-
-  /**
-   * Retrieves the ShuffleboardTab associated with this GenericMechanism.
-   *
-   * @return the ShuffleboardTab for this GenericMechanism
-   */
-  public ShuffleboardTab getDisplayTab() {
-    return shuffleTab;
-  }
-
-  /**
-   * Adds a variable to the Display in a list
-   *
-   * @param key - String name of the variable being stored.
-   */
-  public void addToTab(String key) {
-    values.addToTab(shuffleTab, key);
-  }
-
-  /**
-   * Adds a variable to the Display in a list.
-   *
-   * @param list the name of the list to add the variable to
-   * @param key the name of the variable being stored
-   */
-  public void addToTabList(String list, String key) {
-    values.addToTabList(shuffleTab, list, key);
+    DashBoard = new DisplayValuesHelper(logPrefix);
   }
 
   /**
@@ -139,15 +91,4 @@ public abstract class GenericMechanism implements WpiHelperInterface, Sendable {
 
   /** Executed periodically when robot is disabled */
   public void disabledBehavior() {}
-
-  /**
-   * Initializes the sendable builder with the necessary components for this class.
-   *
-   * @param builder the sendable builder to initialize
-   */
-  @Override
-  public void initSendable(SendableBuilder builder) {
-    log(logPrefix + ": Initializing sendables.");
-    values.initSendables(builder, this.getClass().getSimpleName());
-  }
 }

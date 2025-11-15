@@ -1,12 +1,12 @@
 {
   "HALProvider": {
     "Other Devices": {
-      "SPARK MAX [2]": {
+      "SPARK MAX [12]": {
         "header": {
           "open": true
         }
       },
-      "SPARK MAX [4]": {
+      "SPARK MAX [12] RELATIVE ENCODER": {
         "header": {
           "open": true
         }
@@ -17,6 +17,26 @@
         }
       },
       "SPARK MAX [7]": {
+        "header": {
+          "open": true
+        }
+      },
+      "Talon FX (v6)[12]": {
+        "header": {
+          "open": true
+        }
+      },
+      "Talon FX (v6)[12]/Fwd Limit": {
+        "header": {
+          "open": true
+        }
+      },
+      "Talon FX (v6)[12]/Rev Limit": {
+        "header": {
+          "open": true
+        }
+      },
+      "Talon FX (v6)[12]/Rotor Sensor": {
         "header": {
           "open": true
         }
@@ -75,12 +95,18 @@
       "/SmartDashboard/Arm/mechanism": "Mechanism2d",
       "/SmartDashboard/Auto Modes": "String Chooser",
       "/SmartDashboard/Drive Visual": "Mechanism2d",
-      "/SmartDashboard/DrivePoseEstimator/values/Pose Field": "Field2d",
+      "/SmartDashboard/DrivePoseEstimator/Pose Field": "Field2d",
       "/SmartDashboard/Elevator/mechanism": "Mechanism2d",
       "/SmartDashboard/Encoders": "Alerts",
+      "/SmartDashboard/ExampleRobot/Auto Modes": "String Chooser",
       "/SmartDashboard/Field": "Field2d",
       "/SmartDashboard/IMU": "Alerts",
       "/SmartDashboard/JSON": "Alerts",
+      "/SmartDashboard/Mechanisms/Shooter/ShooterMotor/Commands/Down": "Command",
+      "/SmartDashboard/Mechanisms/Shooter/ShooterMotor/Commands/LiveTuning": "Command",
+      "/SmartDashboard/Mechanisms/Shooter/ShooterMotor/Commands/Up": "Command",
+      "/SmartDashboard/Mechanisms/Shooter/ShooterMotor/Commands/ZeroEncoder": "Command",
+      "/SmartDashboard/Mechanisms/Shooter/ShooterMotor/LiveTuning": "Command",
       "/SmartDashboard/Motors": "Alerts",
       "/SmartDashboard/PathPlanner": "Alerts",
       "/SmartDashboard/PhotonAlerts": "Alerts",
@@ -88,6 +114,7 @@
       "/SmartDashboard/Pigeon 2 [13]": "Gyro",
       "/SmartDashboard/Robot Visual": "Mechanism2d",
       "/SmartDashboard/SendableChooser[0]": "String Chooser",
+      "/SmartDashboard/Shooter/mechanism": "Mechanism2d",
       "/SmartDashboard/Swerve Drive": "Alerts",
       "/SmartDashboard/Turret/mechanism": "Mechanism2d",
       "/SmartDashboard/VisionSystemSim-Vision/Sim Field": "Field2d",
@@ -101,17 +128,12 @@
           "visible": true
         }
       },
-      "/Shuffleboard/ExampleRobot/Auto Modes": {
-        "window": {
-          "visible": true
-        }
-      },
       "/SmartDashboard/Arm/mechanism": {
         "window": {
           "visible": true
         }
       },
-      "/SmartDashboard/DrivePoseEstimator/values/Pose Field": {
+      "/SmartDashboard/DrivePoseEstimator/Pose Field": {
         "CARPET0": {
           "image": ".\\pictures\\carpet.png",
           "length": 0.44999998807907104,
@@ -642,6 +664,11 @@
           "visible": true
         }
       },
+      "/SmartDashboard/ExampleRobot/Auto Modes": {
+        "window": {
+          "visible": true
+        }
+      },
       "/SmartDashboard/Field": {
         "OdometryPose": {
           "arrowColor": [
@@ -667,12 +694,14 @@
         "left": 534,
         "right": 3466,
         "top": 291,
-        "width": 17.54825210571289,
+        "width": 17.54825210571289
+      },
+      "/SmartDashboard/Robot Visual": {
         "window": {
           "visible": true
         }
       },
-      "/SmartDashboard/Robot Visual": {
+      "/SmartDashboard/Shooter/mechanism": {
         "window": {
           "visible": true
         }
@@ -691,6 +720,9 @@
     }
   },
   "NetworkTables": {
+    "Persistent Values": {
+      "open": false
+    },
     "persistent": {
       "Shuffleboard": {
         "BabySwerve": {
@@ -703,24 +735,32 @@
             "open": true
           },
           "open": true
-        }
+        },
+        "open": true
       }
     },
     "transitory": {
-      "FMSInfo": {
-        "open": true
-      },
       "Shuffleboard": {
-        "Pose": {
-          "open": true
-        },
-        "open": true
+        "Vision": {
+          "Camera shooter": {
+            "open": true
+          }
+        }
       },
       "SmartDashboard": {
+        "Camera": {
+          "open": true
+        },
         "DrivePoseEstimator": {
           "DrivePoseEstimator": {
             "open": true
           },
+          "open": true,
+          "values": {
+            "open": true
+          }
+        },
+        "ExampleRobot": {
           "open": true,
           "values": {
             "open": true
@@ -740,6 +780,17 @@
         },
         "Turret": {
           "open": true
+        }
+      },
+      "photonvision": {
+        "open": true,
+        "shooter": {
+          "Transform3d##v_/photonvision/shooter/targetPose": {
+            "Translation3d##v_translation": {
+              "open": true
+            },
+            "open": true
+          }
         }
       }
     }

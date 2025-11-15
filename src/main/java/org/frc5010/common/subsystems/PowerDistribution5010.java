@@ -33,22 +33,22 @@ public class PowerDistribution5010 extends GenericSubsystem {
   }
 
   private void declareInitialValues() {
-    values.declare(TOTAL_CURRENT, 0.0);
-    values.declare(PDP_VOLTAGE, 0.0);
-    values.declare(UNREGISTERED_CURRENT, 0.0);
-    values.declare(AVERAGE_PREFIX + TOTAL_CURRENT, 0.0);
-    values.declare(AVERAGE_PREFIX + PDP_VOLTAGE, 0.0);
+    networkValues.declare(TOTAL_CURRENT, 0.0);
+    networkValues.declare(PDP_VOLTAGE, 0.0);
+    networkValues.declare(UNREGISTERED_CURRENT, 0.0);
+    networkValues.declare(AVERAGE_PREFIX + TOTAL_CURRENT, 0.0);
+    networkValues.declare(AVERAGE_PREFIX + PDP_VOLTAGE, 0.0);
   }
 
   public void registerChannel(String name, int channel) {
     channels.put(name, channel);
     double initialCurrent = powerDistribution.getCurrent(channel);
-    values.declare(name, initialCurrent);
-    values.declare(AVERAGE_PREFIX + name, 0.0);
+    networkValues.declare(name, initialCurrent);
+    networkValues.declare(AVERAGE_PREFIX + name, 0.0);
   }
 
   public double getChannelCurrent(String name) {
-    return values.getDouble(name);
+    return networkValues.getDouble(name);
   }
 
   private double updateAverage(String name, double value) {
@@ -68,15 +68,15 @@ public class PowerDistribution5010 extends GenericSubsystem {
       // TODO: Maybe add a verbosity level to the logging...cause it could be a lot
       updatePdpValues(totalCurrent, pdpVoltage);
       double accountedCurrent = updateChannelValues();
-      values.set(UNREGISTERED_CURRENT, totalCurrent - accountedCurrent);
+      networkValues.set(UNREGISTERED_CURRENT, totalCurrent - accountedCurrent);
     }
   }
 
   private void updatePdpValues(double totalCurrent, double pdpVoltage) {
-    values.set(TOTAL_CURRENT, totalCurrent);
-    values.set(PDP_VOLTAGE, pdpVoltage);
-    values.set(AVERAGE_PREFIX + TOTAL_CURRENT, currentFilter.calculate(totalCurrent));
-    values.set(AVERAGE_PREFIX + PDP_VOLTAGE, voltageFilter.calculate(pdpVoltage));
+    networkValues.set(TOTAL_CURRENT, totalCurrent);
+    networkValues.set(PDP_VOLTAGE, pdpVoltage);
+    networkValues.set(AVERAGE_PREFIX + TOTAL_CURRENT, currentFilter.calculate(totalCurrent));
+    networkValues.set(AVERAGE_PREFIX + PDP_VOLTAGE, voltageFilter.calculate(pdpVoltage));
   }
 
   private double updateChannelValues() {
@@ -84,8 +84,8 @@ public class PowerDistribution5010 extends GenericSubsystem {
     for (Map.Entry<String, Integer> entry : channels.entrySet()) {
       double current = powerDistribution.getCurrent(entry.getValue());
       accountedCurrent += current;
-      values.set(entry.getKey(), current);
-      values.set(AVERAGE_PREFIX + entry.getKey(), updateAverage(entry.getKey(), current));
+      networkValues.set(entry.getKey(), current);
+      networkValues.set(AVERAGE_PREFIX + entry.getKey(), updateAverage(entry.getKey(), current));
     }
     return accountedCurrent;
   }
