@@ -10,7 +10,8 @@ import org.frc5010.common.config.DeviceConfiguration;
 import org.frc5010.common.config.UnitsParser;
 import org.frc5010.common.config.json.UnitValueJson;
 import org.frc5010.common.motors.GenericMotorController;
-import yams.mechanisms.SmartMechanism;
+import yams.gearing.GearBox;
+import yams.gearing.MechanismGearing;
 import yams.mechanisms.config.PivotConfig;
 import yams.mechanisms.positional.Pivot;
 import yams.motorcontrollers.SmartMotorController;
@@ -55,7 +56,7 @@ public class YamsPivotConfigurationJson implements DeviceConfiguration {
                 UnitsParser.parseAngularAcceleration(motorSystemId.maxAcceleration))
             .withSoftLimit(
                 UnitsParser.parseAngle(lowerSoftLimit), UnitsParser.parseAngle(upperSoftLimit))
-            .withGearing(SmartMechanism.gearing(SmartMechanism.gearbox(gearing)))
+            .withGearing(new MechanismGearing(GearBox.fromReductionStages(gearing)))
             .withIdleMode(MotorMode.valueOf(motorSetup.idleMode))
             .withTelemetry(
                 motorSetup.name + "Motor", TelemetryVerbosity.valueOf(motorSetup.logLevel))

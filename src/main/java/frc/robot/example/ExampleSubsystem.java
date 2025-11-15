@@ -56,7 +56,7 @@ public class ExampleSubsystem extends GenericSubsystem {
     super("example.json");
     this.motor = (PercentControlMotor) devices.get("percent_motor");
     this.controlledMotor = (VelocityControlMotor) devices.get("velocity_motor");
-    this.shooter = (FlyWheel) devices.get("FlyWheel");
+    this.shooter = (FlyWheel) devices.get("Shooter");
 
     this.angularMotor = angularControlledMotor();
     // verticalMotor = verticalControlledMotor();
@@ -131,7 +131,7 @@ public class ExampleSubsystem extends GenericSubsystem {
         this);
   }
 
-  public Command sysIdFlyWheel() {
+  public Command sysIdShooter() {
     return SystemIdentification.getSysIdFullCommand(
         SystemIdentification.rpmSysIdRoutine(shooter.getMotor(), logPrefix, this), 5, 3, 3);
   }

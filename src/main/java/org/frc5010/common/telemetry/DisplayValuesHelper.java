@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
 import org.frc5010.common.arch.GenericRobot.LogLevel;
 import org.frc5010.common.arch.WpiHelperInterface;
@@ -27,7 +28,7 @@ public class DisplayValuesHelper implements WpiHelperInterface {
   protected ShuffleboardTab tab;
   protected ShuffleboardLayout layout;
   protected String tabName = "frc";
-  protected String layoutName = "5010";
+  protected Optional<String> layoutName = Optional.empty();
   protected int column = 0;
   protected boolean isDisplayed;
   protected LogLevel logLevel = LogLevel.COMPETITION;
@@ -40,12 +41,19 @@ public class DisplayValuesHelper implements WpiHelperInterface {
    * starting column.
    *
    * @param tab the name of the Shuffleboard tab
-   * @param table the name of the Shuffleboard layout
-   * @param isDisplayed whether the values should be displayed on the dashboard
-   * @param startingColumn the starting column for the layout
+   */
+  public DisplayValuesHelper(String tab) {
+    this(tab, Optional.empty(), false, 0);
+  }
+
+  /**
+   * Constructs a DisplayValuesHelper with the specified tab and table names, display state, and
+   * starting column.
+   *
+   * @param tab the name of the Shuffleboard tab
    */
   public DisplayValuesHelper(String tab, String table) {
-    this(tab, table, false, 0);
+    this(tab, Optional.ofNullable(table), false, 0);
   }
 
   /**
@@ -57,7 +65,7 @@ public class DisplayValuesHelper implements WpiHelperInterface {
    * @param isDisplayed whether the values should be displayed on the dashboard
    */
   public DisplayValuesHelper(String tab, String table, boolean isDisplayed) {
-    this(tab, table, isDisplayed, 0);
+    this(tab, Optional.ofNullable(table), isDisplayed, 0);
   }
 
   /**
@@ -69,7 +77,8 @@ public class DisplayValuesHelper implements WpiHelperInterface {
    * @param isDisplayed whether the values should be displayed on the dashboard
    * @param startingColumn the starting column for the layout
    */
-  public DisplayValuesHelper(String tab, String table, boolean isDisplayed, int startingColumn) {
+  public DisplayValuesHelper(
+      String tab, Optional<String> table, boolean isDisplayed, int startingColumn) {
     column = startingColumn;
     this.isDisplayed = isDisplayed;
     tabName = tab;
@@ -87,7 +96,10 @@ public class DisplayValuesHelper implements WpiHelperInterface {
     isDisplayed = true;
     this.tab = Shuffleboard.getTab(tabName);
     this.layout =
-        this.tab.getLayout(layoutName, BuiltInLayouts.kList).withSize(2, 4).withPosition(column, 0);
+        this.tab
+            .getLayout(layoutName.orElse("values"), BuiltInLayouts.kList)
+            .withSize(2, 4)
+            .withPosition(column, 0);
   }
 
   /**
@@ -135,8 +147,9 @@ public class DisplayValuesHelper implements WpiHelperInterface {
   }
 
   public void display(String key, Sendable value) {
-    SmartDashboard.putData(tabName + "/" + layoutName + "/" + key, value);
+    SmartDashboard.putData(tabName + "/" + layoutName.map(it -> it + "/").orElse("") + key, value);
   }
+
   /**
    * Sets the logging level for the display. Values that are at a higher or equal level to the
    * specified level will be displayed on the dashboard.
@@ -162,7 +175,7 @@ public class DisplayValuesHelper implements WpiHelperInterface {
    * @param name the name of the next column
    */
   public void nextColumn(String name) {
-    layoutName = name;
+    layoutName = Optional.ofNullable(name);
     if (!isDisplayed) return;
     column += 2;
     layout = tab.getLayout(name, BuiltInLayouts.kList).withSize(2, 4).withPosition(column, 0);
@@ -174,8 +187,9 @@ public class DisplayValuesHelper implements WpiHelperInterface {
    * @return a String representing the path in the format "Shuffleboard/<tabTitle>/<layoutTitle>"
    */
   private String getNtFolder() {
-    if (!isDisplayed) return "SmartDashboard/" + tabName + "/" + layoutName;
-    return "Shuffleboard/" + tabName + "/" + layoutName;
+    if (!isDisplayed)
+      return "SmartDashboard/" + tabName + "/" + layoutName.map(it -> it).orElse("");
+    return "Shuffleboard/" + tabName + "/" + layoutName.map(it -> it).orElse("");
   }
 
   /**

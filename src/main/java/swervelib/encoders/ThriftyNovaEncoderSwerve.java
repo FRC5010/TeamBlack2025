@@ -1,6 +1,7 @@
 package swervelib.encoders;
 
 import com.thethriftybot.Conversion;
+import com.thethriftybot.Conversion.PositionUnit;
 import com.thethriftybot.Conversion.VelocityUnit;
 import com.thethriftybot.ThriftyNova;
 import com.thethriftybot.ThriftyNova.EncoderType;
@@ -19,6 +20,8 @@ public class ThriftyNovaEncoderSwerve extends SwerveAbsoluteEncoder {
   protected double offset = 0.0;
   /** Velocity conversion object for the motor encoder */
   private Conversion velocityConversion;
+  /** Position conversion object for the motor encoder */
+  private Conversion positionConversion;
 
   /**
    * Create the {@link ThriftyNovaEncoderSwerve} object as an absolute encoder from the {@link
@@ -29,6 +32,7 @@ public class ThriftyNovaEncoderSwerve extends SwerveAbsoluteEncoder {
   public ThriftyNovaEncoderSwerve(SwerveMotor motor, String encoderType) {
     this.motor = (ThriftyNova) motor.getMotor();
     velocityConversion = new Conversion(VelocityUnit.DEGREES_PER_SEC, EncoderType.ABS);
+    positionConversion = new Conversion(PositionUnit.DEGREES, EncoderType.ABS);
     this.motor.setExternalEncoder(ExternalEncoder.valueOf(encoderType));
     setAbsoluteEncoderOffset(offset);
     this.motor.setAbsoluteWrapping(true);
@@ -66,8 +70,9 @@ public class ThriftyNovaEncoderSwerve extends SwerveAbsoluteEncoder {
    */
   @Override
   public double getAbsolutePosition() {
-    double rawMotor = motor.getPositionAbs() * (360.0 / 4096);
-    return rawMotor * (inverted ? -1.0 : 1.0);
+    double rawMotor = motor.getPositionAbs();
+    double convertedPosition = positionConversion.fromMotor(rawMotor);
+    return convertedPosition * (inverted ? -1.0 : 1.0);
   }
 
   /** Get the instantiated absolute encoder Object. */

@@ -110,7 +110,7 @@ public abstract class GenericRobot extends GenericMechanism implements GenericDe
   }
 
   protected void initializeDisplay() {
-    displayValues = new DisplayValuesHelper(shuffleTab.getTitle(), logPrefix, true, 2);
+    displayValues = new DisplayValuesHelper(logPrefix);
     operator.ifPresent(
         op -> {
           if (!op.isPluggedIn()) {
@@ -190,7 +190,7 @@ public abstract class GenericRobot extends GenericMechanism implements GenericDe
       selectableCommand =
           new LoggedDashboardChooser<>("Auto Modes", AutoBuilder.buildAutoChooser());
       if (null != selectableCommand) {
-        shuffleTab.add("Auto Modes", selectableCommand.getSendableChooser()).withSize(2, 1);
+        DashBoard.display("Auto Modes", selectableCommand.getSendableChooser());
       }
     }
   }
@@ -362,6 +362,7 @@ public abstract class GenericRobot extends GenericMechanism implements GenericDe
 
   public void resetDrivePose() {
     GenericDrivetrain drivetrain = (GenericDrivetrain) subsystems.get(ConfigConstants.DRIVETRAIN);
+    drivetrain.resetPose(new Pose2d());
   }
 
   /**

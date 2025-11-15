@@ -30,7 +30,7 @@
     "uom": "rpm"
   },
   "upperSoftLimit": {
-    "val": 10000,
+    "val": 5000,
     "uom": "rpm"
   },
   "gearing": [
