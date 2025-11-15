@@ -63,6 +63,7 @@ public class ShooterSubsystem extends GenericSubsystem {
           .withDiameter(Inches.of(4))
           .withMass(Pounds.of(1))
           .withUpperSoftLimit(RPM.of(1000))
+          .withSpeedometerSimulation()
           .withTelemetry("ShooterMech", TelemetryVerbosity.HIGH);
 
   private FlyWheel shooter = new FlyWheel(shooterConfig);
