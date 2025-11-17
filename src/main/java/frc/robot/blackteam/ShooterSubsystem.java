@@ -1,12 +1,13 @@
 package frc.robot.blackteam;
 
 import static edu.wpi.first.units.Units.Amps;
-import static edu.wpi.first.units.Units.DegreesPerSecond;
-import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Pounds;
 import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
+import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Volts;
 
 import com.thethriftybot.ThriftyNova;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -41,18 +42,18 @@ public class ShooterSubsystem extends GenericSubsystem {
   private final SmartMotorControllerConfig motorConfig =
       new SmartMotorControllerConfig(this)
           .withClosedLoopController(
-              50, 0, 0, DegreesPerSecond.of(90), DegreesPerSecondPerSecond.of(45))
+              0.00024509, 0, 0, RPM.of(1000), RotationsPerSecondPerSecond.of(500))
           .withGearing(SmartMechanism.gearing(SmartMechanism.gearbox(3, 4)))
-          .withIdleMode(MotorMode.COAST)
+          .withIdleMode(MotorMode.BRAKE)
           .withTelemetry("ShooterMotor", TelemetryVerbosity.HIGH)
           .withStatorCurrentLimit(Amps.of(40))
           .withMotorInverted(false)
           .withSimClosedLoopController(
-              50, 0, 0, DegreesPerSecond.of(90), DegreesPerSecondPerSecond.of(45))
+              0.00024509, 0, 0, RPM.of(1000), RotationsPerSecondPerSecond.of(500))
           .withClosedLoopRampRate(Seconds.of(0.25))
           // .withOpenLoopRampRate(Seconds.of(0.25))
-          .withSimFeedforward(new SimpleMotorFeedforward(0, 0))
-          .withFeedforward(new SimpleMotorFeedforward(0, 0, 0))
+          .withSimFeedforward(new SimpleMotorFeedforward(0, 0.12521, 0.43498))
+          .withFeedforward(new SimpleMotorFeedforward(0, 0.12521, 0.43498))
           .withControlMode(ControlMode.CLOSED_LOOP);
 
   private final SmartMotorController motorController =
@@ -63,6 +64,7 @@ public class ShooterSubsystem extends GenericSubsystem {
           .withDiameter(Inches.of(4))
           .withMass(Pounds.of(1))
           .withUpperSoftLimit(RPM.of(1000))
+          .withLowerSoftLimit(RPM.of(-1000))
           .withSpeedometerSimulation()
           .withTelemetry("ShooterMech", TelemetryVerbosity.HIGH);
 
@@ -118,5 +120,9 @@ public class ShooterSubsystem extends GenericSubsystem {
 
   public Command setVelocity(AngularVelocity speed) {
     return shooter.setSpeed(speed);
+  }
+
+  public Command systemID() {
+    return shooter.sysId(Volts.of(12), Volts.of(1).per(Second), Seconds.of(3));
   }
 }

@@ -94,6 +94,7 @@
       "/SmartDashboard/Alerts": "Alerts",
       "/SmartDashboard/Arm/mechanism": "Mechanism2d",
       "/SmartDashboard/Auto Modes": "String Chooser",
+      "/SmartDashboard/BlackRobot/Auto Modes": "String Chooser",
       "/SmartDashboard/Drive Visual": "Mechanism2d",
       "/SmartDashboard/DrivePoseEstimator/Pose Field": "Field2d",
       "/SmartDashboard/Elevator/mechanism": "Mechanism2d",
@@ -107,14 +108,20 @@
       "/SmartDashboard/Mechanisms/Shooter/ShooterMotor/Commands/Up": "Command",
       "/SmartDashboard/Mechanisms/Shooter/ShooterMotor/Commands/ZeroEncoder": "Command",
       "/SmartDashboard/Mechanisms/Shooter/ShooterMotor/LiveTuning": "Command",
+      "/SmartDashboard/Mechanisms/ShooterMech/ShooterMotor/Commands/Down": "Command",
+      "/SmartDashboard/Mechanisms/ShooterMech/ShooterMotor/Commands/LiveTuning": "Command",
+      "/SmartDashboard/Mechanisms/ShooterMech/ShooterMotor/Commands/Up": "Command",
+      "/SmartDashboard/Mechanisms/ShooterMech/ShooterMotor/Commands/ZeroEncoder": "Command",
       "/SmartDashboard/Motors": "Alerts",
       "/SmartDashboard/PathPlanner": "Alerts",
       "/SmartDashboard/PhotonAlerts": "Alerts",
       "/SmartDashboard/Pigeon 2 (v6) [13]": "Gyro",
+      "/SmartDashboard/Pigeon 2 (v6) [9]": "Gyro",
       "/SmartDashboard/Pigeon 2 [13]": "Gyro",
       "/SmartDashboard/Robot Visual": "Mechanism2d",
       "/SmartDashboard/SendableChooser[0]": "String Chooser",
       "/SmartDashboard/Shooter/mechanism": "Mechanism2d",
+      "/SmartDashboard/ShooterMech/mechanism": "Mechanism2d",
       "/SmartDashboard/Swerve Drive": "Alerts",
       "/SmartDashboard/Turret/mechanism": "Mechanism2d",
       "/SmartDashboard/VisionSystemSim-Vision/Sim Field": "Field2d",
@@ -128,7 +135,12 @@
           "visible": true
         }
       },
-      "/SmartDashboard/Arm/mechanism": {
+      "/SmartDashboard/BlackRobot/Auto Modes": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/Drive Visual": {
         "window": {
           "visible": true
         }
@@ -694,14 +706,12 @@
         "left": 534,
         "right": 3466,
         "top": 291,
-        "width": 17.54825210571289
-      },
-      "/SmartDashboard/Robot Visual": {
+        "width": 17.54825210571289,
         "window": {
           "visible": true
         }
       },
-      "/SmartDashboard/Shooter/mechanism": {
+      "/SmartDashboard/ShooterMech/mechanism": {
         "window": {
           "visible": true
         }

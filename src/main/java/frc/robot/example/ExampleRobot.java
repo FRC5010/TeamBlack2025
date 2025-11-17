@@ -5,8 +5,9 @@
 package frc.robot.example;
 
 import static edu.wpi.first.units.Units.RPM;
-import yams.mechanisms.config.FlyWheelConfig;
-import yams.mechanisms.velocity.FlyWheel;
+
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import org.frc5010.common.arch.GenericRobot;
 import org.frc5010.common.arch.StateMachine;
 import org.frc5010.common.arch.StateMachine.State;
@@ -15,9 +16,6 @@ import org.frc5010.common.constants.SwerveConstants;
 import org.frc5010.common.drive.GenericDrivetrain;
 import org.frc5010.common.motors.function.PercentControlMotor;
 import org.frc5010.common.sensors.Controller;
-
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 
 /** This is an example robot class. */
 public class ExampleRobot extends GenericRobot {

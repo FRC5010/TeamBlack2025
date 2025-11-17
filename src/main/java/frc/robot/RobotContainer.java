@@ -4,11 +4,7 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.RPM;
-
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.blackteam.ShooterSubsystem;
 import org.frc5010.common.arch.GenericRobot;
 import org.frc5010.common.arch.WpiHelperInterface;
 import org.frc5010.common.arch.WpiNetworkTableValuesHelper;
@@ -19,20 +15,20 @@ public class RobotContainer implements WpiHelperInterface {
   private static final RobotsParser robotsParser = new RobotsParser();
   public static Constants constants;
   private GenericRobot robot;
-  private final ShooterSubsystem shootersubsystem = new ShooterSubsystem();
-
-  private final CommandXboxController xboxcontroller = new CommandXboxController(0);
 
   public RobotContainer() {
     constants = new Constants();
 
     robot = robotsParser.getRobot();
-    shootersubsystem.setDefaultCommand(shootersubsystem.set(0));
+
     initAutoCommands();
-  
+    configureButtonBindings();
     WpiNetworkTableValuesHelper.loadRegisteredToNetworkTables();
   }
 
+  private void configureButtonBindings() {
+    robot.configureButtonBindings();
+  }
 
   // Just sets up defalt commands (setUpDeftCom)
   public void setupDefaults() {
