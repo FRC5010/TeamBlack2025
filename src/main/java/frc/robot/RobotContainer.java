@@ -29,17 +29,10 @@ public class RobotContainer implements WpiHelperInterface {
     robot = robotsParser.getRobot();
     shootersubsystem.setDefaultCommand(shootersubsystem.set(0));
     initAutoCommands();
-    configureButtonBindings();
+  
     WpiNetworkTableValuesHelper.loadRegisteredToNetworkTables();
   }
 
-  private void configureButtonBindings() {
-    xboxcontroller.a().whileTrue(shootersubsystem.setVelocity(RPM.of(60)));
-    xboxcontroller.b().whileTrue(shootersubsystem.setVelocity(RPM.of(300)));
-
-    xboxcontroller.x().whileTrue(shootersubsystem.set(0.3));
-    xboxcontroller.y().whileTrue(shootersubsystem.set(-0.3));
-  }
 
   // Just sets up defalt commands (setUpDeftCom)
   public void setupDefaults() {

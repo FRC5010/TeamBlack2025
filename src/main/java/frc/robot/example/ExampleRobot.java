@@ -5,9 +5,8 @@
 package frc.robot.example;
 
 import static edu.wpi.first.units.Units.RPM;
-
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
+import yams.mechanisms.config.FlyWheelConfig;
+import yams.mechanisms.velocity.FlyWheel;
 import org.frc5010.common.arch.GenericRobot;
 import org.frc5010.common.arch.StateMachine;
 import org.frc5010.common.arch.StateMachine.State;
@@ -16,6 +15,9 @@ import org.frc5010.common.constants.SwerveConstants;
 import org.frc5010.common.drive.GenericDrivetrain;
 import org.frc5010.common.motors.function.PercentControlMotor;
 import org.frc5010.common.sensors.Controller;
+
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 
 /** This is an example robot class. */
 public class ExampleRobot extends GenericRobot {
@@ -37,7 +39,7 @@ public class ExampleRobot extends GenericRobot {
     driver.createAButton().onTrue(exampleSubsystem.addBallToRobot());
     driver.createBButton().onTrue(exampleSubsystem.launchBall());
     driver.createXButton().whileTrue(exampleSubsystem.setDutyCycle(0.5));
-    driver.createYButton().onTrue(exampleSubsystem.sysIdFlyWheel());
+    driver.createYButton().onTrue(exampleSubsystem.sysIdShooter());
 
     State idle = stateMachine.addState("idle", Commands.idle());
     stateMachine.setInitialState(idle);
