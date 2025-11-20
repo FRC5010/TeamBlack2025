@@ -39,6 +39,7 @@ public class ShooterSubsystem extends GenericSubsystem {
           Map.entry(1.0, 1000.0),
           Map.entry(1.5, 1500.0));
 
+  @SuppressWarnings("removal")
   private final SmartMotorControllerConfig motorConfig =
       new SmartMotorControllerConfig(this)
           .withClosedLoopController(
@@ -59,7 +60,7 @@ public class ShooterSubsystem extends GenericSubsystem {
   private final SmartMotorController motorController =
       new NovaWrapper(motor, DCMotor.getNEO(1), motorConfig);
 
-  private final FlyWheelConfig shooterConfig =
+  private final FlyWheelConfig lFlyWheelConfig =
       new FlyWheelConfig(motorController)
           .withDiameter(Inches.of(4))
           .withMass(Pounds.of(1))
@@ -68,11 +69,19 @@ public class ShooterSubsystem extends GenericSubsystem {
           .withSpeedometerSimulation()
           .withTelemetry("ShooterMech", TelemetryVerbosity.HIGH);
 
-  private FlyWheel shooter = new FlyWheel(shooterConfig);
-  /**
-   * @return Shooter velocity.
-   */
+  private FlyWheel lowerFlyWheel = new FlyWheel(lFlyWheelConfig);
 
+  
+  private final FlyWheelConfig uFlyWheelConfig =
+      new FlyWheelConfig(motorController)
+          .withDiameter(Inches.of(4))
+          .withMass(Pounds.of(1))
+          .withUpperSoftLimit(RPM.of(1000))
+          .withLowerSoftLimit(RPM.of(-1000))
+          .withSpeedometerSimulation()
+          .withTelemetry("ShooterMech", TelemetryVerbosity.HIGH);
+          
+          private FlyWheel upperFlyWheel = new FlyWheel(uFlyWheelConfig);
   /** Creates a new Shooter. */
   public ShooterSubsystem() {
     distanceToVelocityMap.put(0.0, 0.0);
@@ -80,7 +89,7 @@ public class ShooterSubsystem extends GenericSubsystem {
   }
 
   public Command setSpeed(double speed) {
-    return shooter.set(speed);
+    return lowerFlyWheel.set(speed);
   }
 
   /**
@@ -88,41 +97,41 @@ public class ShooterSubsystem extends GenericSubsystem {
    * @return {@link edu.wpi.first.wpilibj2.command.RunCommand}
    */
   public Command set(double dutyCycle) {
-    return shooter.set(dutyCycle);
+    return lowerFlyWheel.set(dutyCycle);
   }
 
   public Command launchToDistance(DoubleSupplier distanceSupplier) {
-    return shooter.setSpeed(
+    return lowerFlyWheel.setSpeed(
         () -> RPM.of(distanceToVelocityMap.get(distanceSupplier.getAsDouble())));
   }
 
   public Command spinAtSpeed(DoubleSupplier speedSupplier) {
-    return shooter.setSpeed(RPM.of(speedSupplier.getAsDouble()));
+    return lowerFlyWheel.setSpeed(RPM.of(speedSupplier.getAsDouble()));
   }
 
   public Supplier<AngularVelocity> getVelocity() {
-    return () -> shooter.getSpeed();
+    return () -> lowerFlyWheel.getSpeed();
   }
 
   public BooleanSupplier isNearTarget(AngularVelocity expected, AngularVelocity range) {
-    return shooter.isNear(expected, range);
+    return lowerFlyWheel.isNear(expected, range);
   }
 
   @Override
   public void periodic() {
-    shooter.updateTelemetry();
+    lowerFlyWheel.updateTelemetry();
   }
 
   @Override
   public void simulationPeriodic() {
-    shooter.simIterate();
+    lowerFlyWheel.simIterate();
   }
 
   public Command setVelocity(AngularVelocity speed) {
-    return shooter.setSpeed(speed);
+    return lowerFlyWheel.setSpeed(speed);
   }
 
   public Command systemID() {
-    return shooter.sysId(Volts.of(12), Volts.of(1).per(Second), Seconds.of(3));
+    return lowerFlyWheel.sysId(Volts.of(12), Volts.of(1).per(Second), Seconds.of(3));
   }
 }
