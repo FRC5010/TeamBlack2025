@@ -32,7 +32,8 @@ import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.local.NovaWrapper;
 
 public class ShooterSubsystem extends GenericSubsystem {
-  private final ThriftyNova motor = new ThriftyNova(10);
+  private final ThriftyNova lowerMotor = new ThriftyNova(10);
+  private final ThriftyNova upperMotor = new ThriftyNova(11);
   // private final SparkMax motor = new SparkMax(10, MotorType.kBrushless);
   private InterpolatingDoubleTreeMap distanceToVelocityMap =
       InterpolatingDoubleTreeMap.ofEntries(
@@ -60,12 +61,14 @@ public class ShooterSubsystem extends GenericSubsystem {
           .withSimFeedforward(new SimpleMotorFeedforward(0.27937, 0.089836, 0.014557))
           .withControlMode(ControlMode.CLOSED_LOOP);
 
-  private final SmartMotorController motorController =
-      new NovaWrapper(motor, DCMotor.getNEO(1), motorConfig);
+  private final SmartMotorController lowerMotorController =
+      new NovaWrapper(lowerMotor, DCMotor.getNEO(1), motorConfig);
   // new SparkWrapper(motor, DCMotor.getNEO(1), motorConfig);
+  private final SmartMotorController upperMotorController =
+      new NovaWrapper(upperMotor, DCMotor.getNEO(1), motorConfig);
 
   private final FlyWheelConfig lFlyWheelConfig =
-      new FlyWheelConfig(motorController)
+      new FlyWheelConfig(lowerMotorController)
           .withDiameter(Inches.of(3))
           .withMass(Pounds.of(1))
           .withSoftLimit(RPM.of(-500), RPM.of(500))
@@ -74,22 +77,25 @@ public class ShooterSubsystem extends GenericSubsystem {
 
   private FlyWheel lowerFlyWheel = new FlyWheel(lFlyWheelConfig);
 
-  
   private final FlyWheelConfig uFlyWheelConfig =
-      new FlyWheelConfig(motorController)
+      new FlyWheelConfig(lowerMotorController)
           .withDiameter(Inches.of(3))
           .withMass(Pounds.of(1))
           .withUpperSoftLimit(RPM.of(100000))
           .withLowerSoftLimit(RPM.of(-1000))
           .withSpeedometerSimulation()
           .withTelemetry("UpperShooterMech", TelemetryVerbosity.HIGH);
-          
-          private FlyWheel upperFlyWheel = new FlyWheel(uFlyWheelConfig);
+
+  private FlyWheel upperFlyWheel = new FlyWheel(uFlyWheelConfig);
   /** Creates a new Shooter. */
   public ShooterSubsystem() {}
 
-  public Command setSpeed(double speed) {
+  public Command setLowerFLyWheelSpeed(double speed) {
     return lowerFlyWheel.set(speed);
+  }
+
+  public Command setUpperFLyWheelSpeed(double speed) {
+    return upperFlyWheel.set(speed);
   }
 
   /**

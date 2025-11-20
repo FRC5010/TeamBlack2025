@@ -42,9 +42,9 @@ public class BlackRobot extends GenericRobot {
     driver.X_BUTTON.whileTrue(shooterSubsystem.set(0.3));
     driver.Y_BUTTON.whileTrue(shooterSubsystem.set(-0.3));
     driver.createAButton().whileTrue(shooterSubsystem.systemID());
-    driver.createAButton().onTrue(shooterSubsystem.setSpeed(0.5));
+    driver.createAButton().onTrue(shooterSubsystem.setLowerFLyWheelSpeed(0.5));
 
-    JoystickButton rightBumper = driver.createRightBumper();
+    JoystickButton bButton = driver.createBButton();
 
     State idle =
         flyWheelStateMachine.addState("idle", Commands.print("IDLE").andThen(Commands.idle()));
@@ -54,10 +54,10 @@ public class BlackRobot extends GenericRobot {
         flyWheelStateMachine.addState("fire", Commands.print("FIRE").andThen(Commands.idle()));
 
     flyWheelStateMachine.setInitialState(idle);
-    idle.switchTo(prep).when(rightBumper);
+    idle.switchTo(prep).when(bButton);
     prep.switchTo(fire).when(shooterSubsystem.isNearTarget(RPM.of(3000), RPM.of(200)));
-    prep.switchTo(idle).when(() -> !rightBumper.getAsBoolean());
-    fire.switchTo(idle).when(() -> !rightBumper.getAsBoolean());
+    prep.switchTo(idle).when(() -> !bButton.getAsBoolean());
+    fire.switchTo(idle).when(() -> !bButton.getAsBoolean());
   }
 
   @Override

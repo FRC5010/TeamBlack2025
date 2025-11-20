@@ -26,7 +26,7 @@ import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.local.NovaWrapper;
 
 /** Add your docs here. */
-public class feeder extends GenericSubsystem {
+public class Feeder extends GenericSubsystem {
   private final ThriftyNova motor = new ThriftyNova(11);
 
   private final SmartMotorControllerConfig motorConfig =
@@ -55,7 +55,7 @@ public class feeder extends GenericSubsystem {
     return feeder.set(speed);
   }
 
-  public feeder() {}
+  public Feeder() {}
 
   @Override
   public void periodic() {
