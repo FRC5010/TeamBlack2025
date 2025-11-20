@@ -42,7 +42,6 @@ public class ShooterSubsystem extends GenericSubsystem {
           Map.entry(1.0, 1000.0),
           Map.entry(1.5, 1500.0));
 
-  @SuppressWarnings("removal")
   private final SmartMotorControllerConfig motorConfig =
       new SmartMotorControllerConfig(this)
           .withClosedLoopController(
@@ -70,7 +69,7 @@ public class ShooterSubsystem extends GenericSubsystem {
   private final FlyWheelConfig lFlyWheelConfig =
       new FlyWheelConfig(lowerMotorController)
           .withDiameter(Inches.of(3))
-          .withMass(Pounds.of(1))
+          .withMass(Pounds.of(2))
           .withSoftLimit(RPM.of(-500), RPM.of(500))
           .withSpeedometerSimulation(RPM.of(750))
           .withTelemetry("ShooterMech", TelemetryVerbosity.HIGH);
@@ -80,7 +79,7 @@ public class ShooterSubsystem extends GenericSubsystem {
   private final FlyWheelConfig uFlyWheelConfig =
       new FlyWheelConfig(lowerMotorController)
           .withDiameter(Inches.of(3))
-          .withMass(Pounds.of(1))
+          .withMass(Pounds.of(2))
           .withUpperSoftLimit(RPM.of(100000))
           .withLowerSoftLimit(RPM.of(-1000))
           .withSpeedometerSimulation()
