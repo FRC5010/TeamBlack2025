@@ -50,7 +50,7 @@ public class ShooterSubsystem extends GenericSubsystem {
               0.00016541, 0, 0, RPM.of(5000), RotationsPerSecondPerSecond.of(2500))
           .withGearing(new MechanismGearing(GearBox.fromReductionStages(3, 4)))
           .withIdleMode(MotorMode.BRAKE)
-          .withTelemetry("ShooterMotor", TelemetryVerbosity.HIGH)
+          .withTelemetry("LowerShooterMotor", TelemetryVerbosity.HIGH)
           .withStatorCurrentLimit(Amps.of(40))
           .withMotorInverted(false)
           .withClosedLoopRampRate(Seconds.of(0.25))
@@ -66,7 +66,7 @@ public class ShooterSubsystem extends GenericSubsystem {
 
   private final FlyWheelConfig lFlyWheelConfig =
       new FlyWheelConfig(motorController)
-          .withDiameter(Inches.of(4))
+          .withDiameter(Inches.of(3))
           .withMass(Pounds.of(1))
           .withSoftLimit(RPM.of(-500), RPM.of(500))
           .withSpeedometerSimulation(RPM.of(750))
@@ -77,12 +77,12 @@ public class ShooterSubsystem extends GenericSubsystem {
   
   private final FlyWheelConfig uFlyWheelConfig =
       new FlyWheelConfig(motorController)
-          .withDiameter(Inches.of(4))
+          .withDiameter(Inches.of(3))
           .withMass(Pounds.of(1))
-          .withUpperSoftLimit(RPM.of(1000))
+          .withUpperSoftLimit(RPM.of(100000))
           .withLowerSoftLimit(RPM.of(-1000))
           .withSpeedometerSimulation()
-          .withTelemetry("ShooterMech", TelemetryVerbosity.HIGH);
+          .withTelemetry("UpperShooterMech", TelemetryVerbosity.HIGH);
           
           private FlyWheel upperFlyWheel = new FlyWheel(uFlyWheelConfig);
   /** Creates a new Shooter. */
