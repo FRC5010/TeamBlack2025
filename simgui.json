@@ -90,6 +90,7 @@
       "/LiveWindow/Ungrouped/Pigeon 2 [13]": "Gyro",
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
       "/Shuffleboard/BabySwerve/Auto Modes": "String Chooser",
+      "/Shuffleboard/BlackRobot/Auto Modes": "String Chooser",
       "/Shuffleboard/ExampleRobot/Auto Modes": "String Chooser",
       "/SmartDashboard/Alerts": "Alerts",
       "/SmartDashboard/Arm/mechanism": "Mechanism2d",
@@ -97,6 +98,7 @@
       "/SmartDashboard/BlackRobot/Auto Modes": "String Chooser",
       "/SmartDashboard/Drive Visual": "Mechanism2d",
       "/SmartDashboard/DrivePoseEstimator/Pose Field": "Field2d",
+      "/SmartDashboard/DrivePoseEstimator/values/Pose Field": "Field2d",
       "/SmartDashboard/Elevator/mechanism": "Mechanism2d",
       "/SmartDashboard/Encoders": "Alerts",
       "/SmartDashboard/ExampleRobot/Auto Modes": "String Chooser",
@@ -804,8 +806,5 @@
         }
       }
     }
-  },
-  "NetworkTables Info": {
-    "visible": true
   }
 }

@@ -4,7 +4,10 @@ import static edu.wpi.first.units.Units.RPM;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import org.frc5010.common.arch.GenericRobot;
+import org.frc5010.common.arch.StateMachine;
+import org.frc5010.common.arch.StateMachine.State;
 import org.frc5010.common.config.ConfigConstants;
 import org.frc5010.common.drive.GenericDrivetrain;
 import org.frc5010.common.sensors.Controller;
@@ -12,11 +15,13 @@ import org.frc5010.common.sensors.Controller;
 public class BlackRobot extends GenericRobot {
   private GenericDrivetrain drivetrain;
   private ShooterSubsystem shooterSubsystem;
+  private StateMachine flyWheelStateMachine = new StateMachine(logPrefix);
 
   public BlackRobot(String directory) {
     super(directory);
     drivetrain = (GenericDrivetrain) subsystems.get(ConfigConstants.DRIVETRAIN);
     shooterSubsystem = new ShooterSubsystem();
+
     // NamedCommands.registerCommand("shoot", launchToDistance(20));
   }
 
@@ -37,6 +42,22 @@ public class BlackRobot extends GenericRobot {
     driver.X_BUTTON.whileTrue(shooterSubsystem.set(0.3));
     driver.Y_BUTTON.whileTrue(shooterSubsystem.set(-0.3));
     driver.createAButton().whileTrue(shooterSubsystem.systemID());
+    driver.createAButton().onTrue(shooterSubsystem.setSpeed(0.5));
+
+    JoystickButton rightBumper = driver.createRightBumper();
+
+    State idle =
+        flyWheelStateMachine.addState("idle", Commands.print("IDLE").andThen(Commands.idle()));
+    State prep =
+        flyWheelStateMachine.addState("prep", Commands.print("PREP").andThen(Commands.idle()));
+    State fire =
+        flyWheelStateMachine.addState("fire", Commands.print("FIRE").andThen(Commands.idle()));
+
+    flyWheelStateMachine.setInitialState(idle);
+    idle.switchTo(prep).when(rightBumper);
+    prep.switchTo(fire).when(shooterSubsystem.isNearTarget(RPM.of(3000), RPM.of(200)));
+    prep.switchTo(idle).when(() -> !rightBumper.getAsBoolean());
+    fire.switchTo(idle).when(() -> !rightBumper.getAsBoolean());
   }
 
   @Override
