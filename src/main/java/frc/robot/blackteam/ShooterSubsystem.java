@@ -20,7 +20,8 @@ import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import org.frc5010.common.arch.GenericSubsystem;
-import yams.mechanisms.SmartMechanism;
+import yams.gearing.GearBox;
+import yams.gearing.MechanismGearing;
 import yams.mechanisms.config.FlyWheelConfig;
 import yams.mechanisms.velocity.FlyWheel;
 import yams.motorcontrollers.SmartMotorController;
@@ -32,6 +33,7 @@ import yams.motorcontrollers.local.NovaWrapper;
 
 public class ShooterSubsystem extends GenericSubsystem {
   private final ThriftyNova motor = new ThriftyNova(10);
+  // private final SparkMax motor = new SparkMax(10, MotorType.kBrushless);
   private InterpolatingDoubleTreeMap distanceToVelocityMap =
       InterpolatingDoubleTreeMap.ofEntries(
           Map.entry(0.0, 0.0),
@@ -43,30 +45,31 @@ public class ShooterSubsystem extends GenericSubsystem {
   private final SmartMotorControllerConfig motorConfig =
       new SmartMotorControllerConfig(this)
           .withClosedLoopController(
-              0.00024509, 0, 0, RPM.of(1000), RotationsPerSecondPerSecond.of(500))
-          .withGearing(SmartMechanism.gearing(SmartMechanism.gearbox(3, 4)))
+              0.00016541, 0, 0, RPM.of(5000), RotationsPerSecondPerSecond.of(2500))
+          .withSimClosedLoopController(
+              0.00016541, 0, 0, RPM.of(5000), RotationsPerSecondPerSecond.of(2500))
+          .withGearing(new MechanismGearing(GearBox.fromReductionStages(3, 4)))
           .withIdleMode(MotorMode.BRAKE)
           .withTelemetry("ShooterMotor", TelemetryVerbosity.HIGH)
           .withStatorCurrentLimit(Amps.of(40))
           .withMotorInverted(false)
-          .withSimClosedLoopController(
-              0.00024509, 0, 0, RPM.of(1000), RotationsPerSecondPerSecond.of(500))
           .withClosedLoopRampRate(Seconds.of(0.25))
+          // ThriftyNova does not support separate closed loop and open loop ramp rates
           // .withOpenLoopRampRate(Seconds.of(0.25))
-          .withSimFeedforward(new SimpleMotorFeedforward(0, 0.12521, 0.43498))
-          .withFeedforward(new SimpleMotorFeedforward(0, 0.12521, 0.43498))
+          .withFeedforward(new SimpleMotorFeedforward(0.27937, 0.089836, 0.014557))
+          .withSimFeedforward(new SimpleMotorFeedforward(0.27937, 0.089836, 0.014557))
           .withControlMode(ControlMode.CLOSED_LOOP);
 
   private final SmartMotorController motorController =
       new NovaWrapper(motor, DCMotor.getNEO(1), motorConfig);
+  // new SparkWrapper(motor, DCMotor.getNEO(1), motorConfig);
 
   private final FlyWheelConfig lFlyWheelConfig =
       new FlyWheelConfig(motorController)
           .withDiameter(Inches.of(4))
           .withMass(Pounds.of(1))
-          .withUpperSoftLimit(RPM.of(1000))
-          .withLowerSoftLimit(RPM.of(-1000))
-          .withSpeedometerSimulation()
+          .withSoftLimit(RPM.of(-500), RPM.of(500))
+          .withSpeedometerSimulation(RPM.of(750))
           .withTelemetry("ShooterMech", TelemetryVerbosity.HIGH);
 
   private FlyWheel lowerFlyWheel = new FlyWheel(lFlyWheelConfig);
@@ -83,10 +86,7 @@ public class ShooterSubsystem extends GenericSubsystem {
           
           private FlyWheel upperFlyWheel = new FlyWheel(uFlyWheelConfig);
   /** Creates a new Shooter. */
-  public ShooterSubsystem() {
-    distanceToVelocityMap.put(0.0, 0.0);
-    distanceToVelocityMap.put(0.5, 500.0);
-  }
+  public ShooterSubsystem() {}
 
   public Command setSpeed(double speed) {
     return lowerFlyWheel.set(speed);

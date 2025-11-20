@@ -9,13 +9,13 @@ import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Pounds;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Seconds;
-import static yams.mechanisms.SmartMechanism.gearbox;
-import static yams.mechanisms.SmartMechanism.gearing;
 
 import com.thethriftybot.ThriftyNova;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj2.command.Command;
 import org.frc5010.common.arch.GenericSubsystem;
+import yams.gearing.GearBox;
+import yams.gearing.MechanismGearing;
 import yams.mechanisms.config.FlyWheelConfig;
 import yams.mechanisms.velocity.FlyWheel;
 import yams.motorcontrollers.SmartMotorController;
@@ -30,7 +30,7 @@ public class feeder extends GenericSubsystem {
   private final ThriftyNova motor = new ThriftyNova(11);
   private final SmartMotorControllerConfig motorConfig =
       new SmartMotorControllerConfig(this)
-          .withGearing(gearing(gearbox(3, 4)))
+          .withGearing(new MechanismGearing(GearBox.fromReductionStages(3, 4)))
           .withIdleMode(MotorMode.BRAKE)
           .withTelemetry("FeederMotor", TelemetryVerbosity.HIGH)
           .withStatorCurrentLimit(Amps.of(40))
@@ -45,7 +45,7 @@ public class feeder extends GenericSubsystem {
       new FlyWheelConfig(motorController)
           .withDiameter(Inches.of(4))
           .withMass(Pounds.of(1))
-          .withTelemetry("ShooterMech", TelemetryVerbosity.HIGH)
+          .withTelemetry("FeederMech", TelemetryVerbosity.HIGH)
           .withUpperSoftLimit(RPM.of(5000));
 
   private final FlyWheel feeder = new FlyWheel(feederConfig);
