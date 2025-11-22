@@ -110,6 +110,10 @@
       "/SmartDashboard/Mechanisms/Shooter/ShooterMotor/Commands/Up": "Command",
       "/SmartDashboard/Mechanisms/Shooter/ShooterMotor/Commands/ZeroEncoder": "Command",
       "/SmartDashboard/Mechanisms/Shooter/ShooterMotor/LiveTuning": "Command",
+      "/SmartDashboard/Mechanisms/ShooterMech/LowerShooterMotor/Commands/Down": "Command",
+      "/SmartDashboard/Mechanisms/ShooterMech/LowerShooterMotor/Commands/LiveTuning": "Command",
+      "/SmartDashboard/Mechanisms/ShooterMech/LowerShooterMotor/Commands/Up": "Command",
+      "/SmartDashboard/Mechanisms/ShooterMech/LowerShooterMotor/Commands/ZeroEncoder": "Command",
       "/SmartDashboard/Mechanisms/ShooterMech/ShooterMotor/Commands/Down": "Command",
       "/SmartDashboard/Mechanisms/ShooterMech/ShooterMotor/Commands/LiveTuning": "Command",
       "/SmartDashboard/Mechanisms/ShooterMech/ShooterMotor/Commands/Up": "Command",
@@ -126,6 +130,7 @@
       "/SmartDashboard/ShooterMech/mechanism": "Mechanism2d",
       "/SmartDashboard/Swerve Drive": "Alerts",
       "/SmartDashboard/Turret/mechanism": "Mechanism2d",
+      "/SmartDashboard/UpperShooterMech/mechanism": "Mechanism2d",
       "/SmartDashboard/VisionSystemSim-Vision/Sim Field": "Field2d",
       "/SmartDashboard/VisionSystemSim-main/Sim Field": "Field2d",
       "/SmartDashboard/navX-Sensor[1]": "Gyro",
@@ -668,10 +673,7 @@
         "height": 6.0,
         "image": ".\\pictures\\LobbinLoco.png",
         "right": 1432,
-        "width": 14.600000381469727,
-        "window": {
-          "visible": true
-        }
+        "width": 14.600000381469727
       },
       "/SmartDashboard/Elevator/mechanism": {
         "window": {
@@ -708,10 +710,7 @@
         "left": 534,
         "right": 3466,
         "top": 291,
-        "width": 17.54825210571289,
-        "window": {
-          "visible": true
-        }
+        "width": 17.54825210571289
       },
       "/SmartDashboard/ShooterMech/mechanism": {
         "window": {
@@ -724,10 +723,7 @@
         "height": 6.0,
         "image": ".\\pictures\\LobbinLoco.png",
         "right": 1432,
-        "width": 14.600000381469727,
-        "window": {
-          "visible": true
-        }
+        "width": 14.600000381469727
       }
     }
   },
@@ -806,5 +802,8 @@
         }
       }
     }
+  },
+  "NetworkTables View": {
+    "visible": false
   }
 }
