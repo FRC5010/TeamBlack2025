@@ -24,7 +24,7 @@ public class BlackRobot extends GenericRobot {
 
     // NamedCommands.registerCommand("shoot", launchToDistance(20));
   }
-
+  private Feeder feeder = new Feeder();
   private Command launchToDistance(int i) {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Unimplemented method 'launchToDistance'");
@@ -42,7 +42,7 @@ public class BlackRobot extends GenericRobot {
     driver.X_BUTTON.whileTrue(shooterSubsystem.set(0.3));
     driver.Y_BUTTON.whileTrue(shooterSubsystem.set(-0.3));
     driver.createAButton().whileTrue(shooterSubsystem.systemID());
-    driver.createAButton().onTrue(shooterSubsystem.setSpeed(0.5));
+    driver.createAButton().onTrue(feeder.setSpeed(0.5));
 
     JoystickButton rightBumper = driver.createRightBumper();
 
