@@ -102,9 +102,14 @@
       "/SmartDashboard/Elevator/mechanism": "Mechanism2d",
       "/SmartDashboard/Encoders": "Alerts",
       "/SmartDashboard/ExampleRobot/Auto Modes": "String Chooser",
+      "/SmartDashboard/FeederMech/mechanism": "Mechanism2d",
       "/SmartDashboard/Field": "Field2d",
       "/SmartDashboard/IMU": "Alerts",
       "/SmartDashboard/JSON": "Alerts",
+      "/SmartDashboard/Mechanisms/FeederMech/FeederMotor/Commands/Down": "Command",
+      "/SmartDashboard/Mechanisms/FeederMech/FeederMotor/Commands/LiveTuning": "Command",
+      "/SmartDashboard/Mechanisms/FeederMech/FeederMotor/Commands/Up": "Command",
+      "/SmartDashboard/Mechanisms/FeederMech/FeederMotor/Commands/ZeroEncoder": "Command",
       "/SmartDashboard/Mechanisms/Shooter/ShooterMotor/Commands/Down": "Command",
       "/SmartDashboard/Mechanisms/Shooter/ShooterMotor/Commands/LiveTuning": "Command",
       "/SmartDashboard/Mechanisms/Shooter/ShooterMotor/Commands/Up": "Command",
@@ -118,6 +123,10 @@
       "/SmartDashboard/Mechanisms/ShooterMech/ShooterMotor/Commands/LiveTuning": "Command",
       "/SmartDashboard/Mechanisms/ShooterMech/ShooterMotor/Commands/Up": "Command",
       "/SmartDashboard/Mechanisms/ShooterMech/ShooterMotor/Commands/ZeroEncoder": "Command",
+      "/SmartDashboard/Mechanisms/UpperShooterMech/LowerShooterMotor/Commands/Down": "Command",
+      "/SmartDashboard/Mechanisms/UpperShooterMech/LowerShooterMotor/Commands/LiveTuning": "Command",
+      "/SmartDashboard/Mechanisms/UpperShooterMech/LowerShooterMotor/Commands/Up": "Command",
+      "/SmartDashboard/Mechanisms/UpperShooterMech/LowerShooterMotor/Commands/ZeroEncoder": "Command",
       "/SmartDashboard/Motors": "Alerts",
       "/SmartDashboard/PathPlanner": "Alerts",
       "/SmartDashboard/PhotonAlerts": "Alerts",
@@ -143,11 +152,6 @@
         }
       },
       "/SmartDashboard/BlackRobot/Auto Modes": {
-        "window": {
-          "visible": true
-        }
-      },
-      "/SmartDashboard/Drive Visual": {
         "window": {
           "visible": true
         }
@@ -673,14 +677,17 @@
         "height": 6.0,
         "image": ".\\pictures\\LobbinLoco.png",
         "right": 1432,
-        "width": 14.600000381469727
-      },
-      "/SmartDashboard/Elevator/mechanism": {
+        "width": 14.600000381469727,
         "window": {
           "visible": true
         }
       },
       "/SmartDashboard/ExampleRobot/Auto Modes": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/FeederMech/mechanism": {
         "window": {
           "visible": true
         }
@@ -710,7 +717,15 @@
         "left": 534,
         "right": 3466,
         "top": 291,
-        "width": 17.54825210571289
+        "width": 17.54825210571289,
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/Mechanisms/ShooterMech/LowerShooterMotor/Commands/Down": {
+        "window": {
+          "visible": true
+        }
       },
       "/SmartDashboard/ShooterMech/mechanism": {
         "window": {
@@ -723,7 +738,10 @@
         "height": 6.0,
         "image": ".\\pictures\\LobbinLoco.png",
         "right": 1432,
-        "width": 14.600000381469727
+        "width": 14.600000381469727,
+        "window": {
+          "visible": true
+        }
       }
     }
   },
@@ -802,6 +820,9 @@
         }
       }
     }
+  },
+  "NetworkTables Info": {
+    "visible": true
   },
   "NetworkTables View": {
     "visible": false

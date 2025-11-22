@@ -1,0 +1,19 @@
+{
+  "directory": "buttercup_swerve/yagsl_swerve",
+  "turningMotorGearRatio": 1.0,
+  "driveModules": [],
+  "startingPose": {
+    "x": {
+      "val": 1.0,
+      "uom": "m"
+    },
+    "y": {
+      "val": 1.0,
+      "uom": "m"
+    },
+    "rotation": {
+      "val": 0.0,
+      "uom": "deg"
+    }
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "drive": {
+    "type": "nova_neo",
+    "id": 3,
+    "canbus": null
+  },
+  "angle": {
+    "type": "nova_neo",
+    "id": 4,
+    "canbus": null
+  },
+  "encoder": {
+    "type": "thrifty_nova_redux",
+    "id": 0,
+    "canbus": null
+  },
+  "inverted": {
+    "drive": true,
+    "angle": false
+  },
+  "absoluteEncoderInverted": true,
+  "absoluteEncoderOffset": 221,
+  "location": {
+    "front": -9.2813,
+    "left": 9.2813
+  }
+}

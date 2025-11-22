@@ -1,0 +1,16 @@
+{
+  "userConfig": "competition_mode.json",
+  "driveType": "YAGSL_SWERVE_DRIVE",
+  "trackWidth": 18.5625,
+  "trackWidthUom": "in",
+  "wheelBase": 18.5625,
+  "wheelBaseUom": "in",
+  "wheelDiameter": 4,
+  "wheelDiameterUom": "in",
+  "physicalMaxSpeed": 5.93,
+  "physicalMaxSpeedUom": "m/s",
+  "driveMotorGearRatio": 1.0,
+  "loadSimulatedField": false,
+  "gamePieceA": "FRC5010Ball",
+  "gamePieceB": "FRC5010Ball"
+}

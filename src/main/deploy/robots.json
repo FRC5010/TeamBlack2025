@@ -4,7 +4,7 @@
     "black_robot": {
       "id": "black_robot",
       "robotClass": "frc.robot.blackteam.BlackRobot",
-      "simulate": true,
+      "simulate": false,
       "competition": true
     },
     "basic_robot": {
@@ -16,6 +16,12 @@
       "id": "baby_swerve",
       "robotClass": "frc.robot.baby_swerve.BabySwerve",
       "simulate": false
+    },
+    "buttercup_swerve": {
+      "id": "buttercup",
+      "robotClass": "frc.robot.blackteam.BlackRobot",
+      "simulate": true,
+      "competition": true
     }
   }
 }

@@ -34,7 +34,7 @@ import yams.motorcontrollers.local.NovaWrapper;
 public class ShooterSubsystem extends GenericSubsystem {
   private final ThriftyNova lowerMotor = new ThriftyNova(10);
   private final ThriftyNova upperMotor = new ThriftyNova(11);
-  // private final SparkMax motor = new SparkMax(10, MotorType.kBrushless);
+
   private InterpolatingDoubleTreeMap distanceToVelocityMap =
       InterpolatingDoubleTreeMap.ofEntries(
           Map.entry(0.0, 0.0),
@@ -105,13 +105,18 @@ public class ShooterSubsystem extends GenericSubsystem {
     return lowerFlyWheel.set(dutyCycle);
   }
 
+  // TODO: fix this to use Supplier<AngularVelocity>
   public Command launchToDistance(DoubleSupplier distanceSupplier) {
     return lowerFlyWheel.setSpeed(
         () -> RPM.of(distanceToVelocityMap.get(distanceSupplier.getAsDouble())));
   }
 
-  public Command spinAtSpeed(DoubleSupplier speedSupplier) {
-    return lowerFlyWheel.setSpeed(RPM.of(speedSupplier.getAsDouble()));
+  public Command spinAtSpeed(Supplier<AngularVelocity> speedSupplier) {
+    return lowerFlyWheel.setSpeed(speedSupplier).alongWith(upperFlyWheel.setSpeed(speedSupplier));
+  }
+
+  public Command joyStickControl(Supplier<Double> speedSupplier) {
+    return lowerFlyWheel.set(speedSupplier).alongWith(upperFlyWheel.set(speedSupplier).asProxy());
   }
 
   public Supplier<AngularVelocity> getVelocity() {

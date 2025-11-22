@@ -8,11 +8,13 @@ import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Pounds;
 import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
 
 import com.thethriftybot.ThriftyNova;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj2.command.Command;
+import java.util.function.Supplier;
 import org.frc5010.common.arch.GenericSubsystem;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
@@ -26,18 +28,22 @@ import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.local.NovaWrapper;
 
 /** Add your docs here. */
-public class Feeder extends GenericSubsystem {
-  private final ThriftyNova motor = new ThriftyNova(11);
+public class FeederSubsystem extends GenericSubsystem {
+  private final ThriftyNova motor = new ThriftyNova(12);
 
   private final SmartMotorControllerConfig motorConfig =
       new SmartMotorControllerConfig(this)
+          .withClosedLoopController(
+              0.00016541, 0, 0, RPM.of(5000), RotationsPerSecondPerSecond.of(2500))
+          .withSimClosedLoopController(
+              0.00016541, 0, 0, RPM.of(5000), RotationsPerSecondPerSecond.of(2500))
           .withGearing(new MechanismGearing(GearBox.fromReductionStages(3, 4)))
           .withIdleMode(MotorMode.BRAKE)
           .withTelemetry("FeederMotor", TelemetryVerbosity.HIGH)
           .withStatorCurrentLimit(Amps.of(40))
           .withMotorInverted(false)
-          .withOpenLoopRampRate(Seconds.of(0.25))
-          .withControlMode(ControlMode.OPEN_LOOP);
+          .withClosedLoopRampRate(Seconds.of(0.25))
+          .withControlMode(ControlMode.CLOSED_LOOP);
 
   private final SmartMotorController motorController =
       new NovaWrapper(motor, DCMotor.getNEO(1), motorConfig);
@@ -47,15 +53,15 @@ public class Feeder extends GenericSubsystem {
           .withDiameter(Inches.of(3))
           .withMass(Pounds.of(1))
           .withTelemetry("FeederMech", TelemetryVerbosity.HIGH)
-          .withUpperSoftLimit(RPM.of(5000));
-
+          .withUpperSoftLimit(RPM.of(500))
+          .withSpeedometerSimulation();
   private final FlyWheel feeder = new FlyWheel(feederConfig);
 
   public Command setSpeed(double speed) {
     return feeder.set(speed);
   }
 
-  public Feeder() {}
+  public FeederSubsystem() {}
 
   @Override
   public void periodic() {
@@ -65,5 +71,9 @@ public class Feeder extends GenericSubsystem {
   @Override
   public void simulationPeriodic() {
     feeder.simIterate();
+  }
+
+  public Command joyStickControl(Supplier<Double> speedSupplier) {
+    return feeder.set(speedSupplier);
   }
 }

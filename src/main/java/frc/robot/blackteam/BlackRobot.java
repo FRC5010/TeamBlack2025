@@ -24,26 +24,28 @@ public class BlackRobot extends GenericRobot {
 
     // NamedCommands.registerCommand("shoot", launchToDistance(20));
   }
-  private Feeder feeder = new Feeder();
+
+  private FeederSubsystem feeder = new FeederSubsystem();
+
   @SuppressWarnings("unused")
-private Command launchToDistance(int i) {
+  private Command launchToDistance(int i) {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Unimplemented method 'launchToDistance'");
   }
 
   @Override
   public void configureButtonBindings(Controller driver, Controller operator) {
+    driver.setRightTrigger(driver.createRightTrigger().cubed().deadzone(0.05));
+    driver.setLeftTrigger(driver.createLeftTrigger().cubed().deadzone(0.05));
 
-    driver.createRightBumper();
-    driver.createLeftBumper();
-    driver.LEFT_BUMPER.whileTrue(shooterSubsystem.setVelocity(RPM.of(60)));
-    driver.RIGHT_BUMPER.whileTrue(shooterSubsystem.setVelocity(RPM.of(300)));
-    driver.createXButton();
-    driver.createYButton();
-    driver.X_BUTTON.whileTrue(shooterSubsystem.set(0.3));
-    driver.Y_BUTTON.whileTrue(shooterSubsystem.set(-0.3));
+    driver.createLeftBumper().whileTrue(shooterSubsystem.setVelocity(RPM.of(60)));
+    driver.createRightBumper().whileTrue(shooterSubsystem.setVelocity(RPM.of(300)));
+
+    driver.createXButton().whileTrue(shooterSubsystem.set(0.3));
+    driver.createYButton().whileTrue(shooterSubsystem.set(-0.3));
+
     driver.createAButton().whileTrue(shooterSubsystem.systemID());
-    driver.createAButton().onTrue(feeder.setSpeed(0.5));
+    driver.createAButton().whileTrue(feeder.setSpeed(0.5));
 
     JoystickButton rightBumper = driver.createRightBumper();
 
@@ -63,8 +65,10 @@ private Command launchToDistance(int i) {
 
   @Override
   public void setupDefaultCommands(Controller driver, Controller operator) {
-    driver.setRightTrigger(driver.createRightTrigger());
+    shooterSubsystem.setDefaultCommand(
+        shooterSubsystem.joyStickControl(() -> driver.getRightTrigger()));
     drivetrain.setDefaultCommand(drivetrain.createDefaultCommand(driver));
+    feeder.setDefaultCommand(feeder.joyStickControl(() -> driver.getLeftTrigger()));
   }
 
   @Override
