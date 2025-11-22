@@ -77,7 +77,7 @@ public class ShooterSubsystem extends GenericSubsystem {
   private FlyWheel lowerFlyWheel = new FlyWheel(lFlyWheelConfig);
 
   private final FlyWheelConfig uFlyWheelConfig =
-      new FlyWheelConfig(lowerMotorController)
+      new FlyWheelConfig(upperMotorController)
           .withDiameter(Inches.of(3))
           .withMass(Pounds.of(2))
           .withUpperSoftLimit(RPM.of(100000))

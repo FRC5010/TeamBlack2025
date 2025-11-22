@@ -25,7 +25,8 @@ public class BlackRobot extends GenericRobot {
     // NamedCommands.registerCommand("shoot", launchToDistance(20));
   }
   private Feeder feeder = new Feeder();
-  private Command launchToDistance(int i) {
+  @SuppressWarnings("unused")
+private Command launchToDistance(int i) {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Unimplemented method 'launchToDistance'");
   }
