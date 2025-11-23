@@ -14,13 +14,14 @@ import edu.wpi.first.wpilibj.AddressableLEDBufferView;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.HashMap;
 import java.util.Map;
+import org.frc5010.common.arch.GenericSubsystem;
+import org.frc5010.common.config.ConfigConstants;
 
-public class LEDStrip extends SubsystemBase {
+public class LEDStrip extends GenericSubsystem {
   private int kLength = 0;
-  private LEDPattern defaultPattern = LEDPattern.solid(Color.kOrange);
+  private LEDPattern defaultPattern = LEDPattern.solid(Color.kGreen);
 
   private final AddressableLED m_led;
   private final AddressableLEDBuffer m_buffer;
@@ -129,7 +130,7 @@ public class LEDStrip extends SubsystemBase {
     m_led = new AddressableLED(kPort);
     m_buffer = new AddressableLEDBuffer(kLength);
     segments.put(
-        "FullStrip",
+        ConfigConstants.ALL_LEDS,
         Segment.create()
             .setView(m_buffer.createView(0, kLength - 1))
             .setPattern(defaultPattern)
@@ -211,11 +212,17 @@ public class LEDStrip extends SubsystemBase {
    * @param length The length of the pattern
    */
   public static void addSegment(String name, LEDPattern pattern, int startIndex, int length) {
+    if (null == instance) {
+      return;
+    }
     AddressableLEDBufferView view = instance.m_buffer.createView(startIndex, length);
     segments.put(name, Segment.create().setView(view).setPattern(pattern).setActive(true));
   }
 
   public static void addSegment(String name, int startIndex, int length) {
+    if (null == instance) {
+      return;
+    }
     AddressableLEDBufferView view = instance.m_buffer.createView(startIndex, length);
     segments.put(name, Segment.create().setView(view).setPattern(LEDPattern.kOff).setActive(false));
   }
@@ -236,6 +243,18 @@ public class LEDStrip extends SubsystemBase {
    */
   public static void clearSegments() {
     segments.clear();
+  }
+
+  /**
+   * Sets the default command to be run by the LED subsystem. If the LED subsystem has not been
+   * initialized yet, this method does nothing.
+   *
+   * @param defaultCommand the default command to be run by the LED subsystem
+   */
+  public static void setCommand(Command defaultCommand) {
+    if (null != instance) {
+      instance.setDefaultCommand(defaultCommand);
+    }
   }
 
   /**
