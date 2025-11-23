@@ -6,20 +6,62 @@
   "rotations": [
     {
       "axis": "x",
-      "degrees": 0
+      "degrees": 90
+    },
+    {
+      "axis": "z",
+      "degrees": 270
     }
   ],
   "widthInches": 574,
   "heightInches": 312,
   "defaultOrigin": "blue",
   "driverStations": [
-    [-7.62, 1.524],
-    [-7.62, 0],
-    [-7.62, -1.524],
-    [7.62, -1.524],
-    [7.62, 0],
-    [7.62, 1.524]
+    [
+      -7.62,
+      1.524
+    ],
+    [
+      -7.62,
+      0
+    ],
+    [
+      -7.62,
+      -1.524
+    ],
+    [
+      7.62,
+      -1.524
+    ],
+    [
+      7.62,
+      0
+    ],
+    [
+      7.62,
+      1.524
+    ]
   ],
-  "gamePieces": [
+  "gamePieces": [],
+  "aprilTags": [
+    {
+      "variant": "frc-36h11",
+      "id": 17,
+      "rotations": [
+        {
+          "axis": "x",
+          "degrees": 90
+        },
+        {
+          "axis": "z",
+          "degrees": 270
+        }
+      ],
+      "position": [
+        1,
+        2,
+        1
+      ]
+    }
   ]
 }
