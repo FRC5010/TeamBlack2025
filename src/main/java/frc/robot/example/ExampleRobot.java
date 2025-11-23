@@ -36,8 +36,10 @@ public class ExampleRobot extends GenericRobot {
   public void configureButtonBindings(Controller driver, Controller operator) {
     driver.createAButton().onTrue(exampleSubsystem.addBallToRobot());
     driver.createBButton().onTrue(exampleSubsystem.launchBall());
-    driver.createXButton().whileTrue(exampleSubsystem.setDutyCycle(0.5));
+    driver.createXButton().whileTrue(exampleSubsystem.setVelocity(RPM.of(2000)));
     driver.createYButton().onTrue(exampleSubsystem.sysIdShooter());
+    driver.createLeftBumper().onTrue(exampleSubsystem.setDutyCycle(0));
+    driver.createRightBumper().whileTrue(exampleSubsystem.setVelocity(RPM.of(-300)));
 
     State idle = stateMachine.addState("idle", Commands.idle());
     stateMachine.setInitialState(idle);
