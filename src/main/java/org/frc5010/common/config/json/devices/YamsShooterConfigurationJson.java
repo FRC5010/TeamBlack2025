@@ -78,6 +78,7 @@ public class YamsShooterConfigurationJson implements DeviceConfiguration {
             .withMass(UnitsParser.parseMass(mass))
             .withUpperSoftLimit(UnitsParser.parseAngularVelocity(upperSoftLimit))
             .withLowerSoftLimit(UnitsParser.parseAngularVelocity(lowerSoftLimit))
+            .withSpeedometerSimulation(UnitsParser.parseAngularVelocity(upperSoftLimit))
             .withTelemetry(motorSetup.name, TelemetryVerbosity.valueOf(motorSetup.logLevel));
     if (0 != moi) {
       shooterConfig.withMOI(moi);

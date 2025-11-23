@@ -18,6 +18,7 @@ import org.frc5010.common.config.json.DrivetrainPropertiesJson;
 import org.frc5010.common.config.json.RobotJson;
 import org.frc5010.common.config.json.VisionPropertiesJson;
 import org.frc5010.common.config.json.YAGSLDrivetrainJson;
+import org.frc5010.common.config.json.devices.LEDStripParser;
 
 /** RobotParser is used to parse JSON configuration files to build a robot. */
 public class RobotParser {
@@ -60,6 +61,10 @@ public class RobotParser {
             .readValue(new File(directory, "cameras.json"), VisionPropertiesJson.class);
     camerasMap = visionJson.readCameraSystem(directory);
 
+    // Parse LED strips
+    LEDStripParser.parse(robotDirectory);
+
+    // Read in the drivetrain
     switch (robotJson.driveType) {
       case "YAGSL_SWERVE_DRIVE":
         {
