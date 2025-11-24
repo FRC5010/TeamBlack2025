@@ -39,28 +39,30 @@ public class BlackRobot extends GenericRobot {
     driver.setLeftTrigger(driver.createLeftTrigger().cubed().deadzone(0.05));
 
     driver.createLeftBumper().whileTrue(shooterSubsystem.setVelocity(RPM.of(60)));
-    driver.createRightBumper().whileTrue(shooterSubsystem.setVelocity(RPM.of(300)));
 
     driver.createXButton().whileTrue(shooterSubsystem.set(0.3));
     driver.createYButton().whileTrue(shooterSubsystem.set(-0.3));
 
-    driver.createAButton().whileTrue(shooterSubsystem.systemID());
+    driver.createBButton().whileTrue(shooterSubsystem.systemID());
     driver.createAButton().whileTrue(feeder.setSpeed(0.5));
 
     JoystickButton rightBumper = driver.createRightBumper();
 
     State idle =
-        flyWheelStateMachine.addState("idle", Commands.print("IDLE").andThen(Commands.idle()));
+        flyWheelStateMachine.addState(
+            "idle",
+            Commands.print("IDLE").andThen(shooterSubsystem.set(0)).andThen(feeder.setSpeed(0)));
     State prep =
-        flyWheelStateMachine.addState("prep", Commands.print("PREP").andThen(Commands.idle()));
+        flyWheelStateMachine.addState(
+            "prep", Commands.print("PREP").andThen(shooterSubsystem.setVelocity(RPM.of(1000))));
     State fire =
-        flyWheelStateMachine.addState("fire", Commands.print("FIRE").andThen(Commands.idle()));
+        flyWheelStateMachine.addState("fire", Commands.print("FIRE").andThen(feeder.setSpeed(0.5)));
 
-    flyWheelStateMachine.setInitialState(idle);
-    idle.switchTo(prep).when(rightBumper);
-    prep.switchTo(fire).when(shooterSubsystem.isNearTarget(RPM.of(3000), RPM.of(200)));
+    flyWheelStateMachine.setInitialState(prep);
+    prep.switchTo(fire).when(shooterSubsystem.isNearTarget(RPM.of(20)));
     prep.switchTo(idle).when(() -> !rightBumper.getAsBoolean());
     fire.switchTo(idle).when(() -> !rightBumper.getAsBoolean());
+    rightBumper.whileTrue(flyWheelStateMachine);
   }
 
   @Override
