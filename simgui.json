@@ -11,16 +11,6 @@
           "open": true
         }
       },
-      "SPARK MAX [5]": {
-        "header": {
-          "open": true
-        }
-      },
-      "SPARK MAX [7]": {
-        "header": {
-          "open": true
-        }
-      },
       "Talon FX (v6)[12]": {
         "header": {
           "open": true
@@ -106,10 +96,15 @@
       "/SmartDashboard/Field": "Field2d",
       "/SmartDashboard/IMU": "Alerts",
       "/SmartDashboard/JSON": "Alerts",
+      "/SmartDashboard/LowerShooterMech/mechanism": "Mechanism2d",
       "/SmartDashboard/Mechanisms/FeederMech/FeederMotor/Commands/Down": "Command",
       "/SmartDashboard/Mechanisms/FeederMech/FeederMotor/Commands/LiveTuning": "Command",
       "/SmartDashboard/Mechanisms/FeederMech/FeederMotor/Commands/Up": "Command",
       "/SmartDashboard/Mechanisms/FeederMech/FeederMotor/Commands/ZeroEncoder": "Command",
+      "/SmartDashboard/Mechanisms/LowerShooterMech/LowerShooterMotor/Commands/Down": "Command",
+      "/SmartDashboard/Mechanisms/LowerShooterMech/LowerShooterMotor/Commands/LiveTuning": "Command",
+      "/SmartDashboard/Mechanisms/LowerShooterMech/LowerShooterMotor/Commands/Up": "Command",
+      "/SmartDashboard/Mechanisms/LowerShooterMech/LowerShooterMotor/Commands/ZeroEncoder": "Command",
       "/SmartDashboard/Mechanisms/Shooter/ShooterMotor/Commands/Down": "Command",
       "/SmartDashboard/Mechanisms/Shooter/ShooterMotor/Commands/LiveTuning": "Command",
       "/SmartDashboard/Mechanisms/Shooter/ShooterMotor/Commands/Up": "Command",
@@ -127,6 +122,10 @@
       "/SmartDashboard/Mechanisms/UpperShooterMech/LowerShooterMotor/Commands/LiveTuning": "Command",
       "/SmartDashboard/Mechanisms/UpperShooterMech/LowerShooterMotor/Commands/Up": "Command",
       "/SmartDashboard/Mechanisms/UpperShooterMech/LowerShooterMotor/Commands/ZeroEncoder": "Command",
+      "/SmartDashboard/Mechanisms/UpperShooterMech/UpperShooterMotor/Commands/Down": "Command",
+      "/SmartDashboard/Mechanisms/UpperShooterMech/UpperShooterMotor/Commands/LiveTuning": "Command",
+      "/SmartDashboard/Mechanisms/UpperShooterMech/UpperShooterMotor/Commands/Up": "Command",
+      "/SmartDashboard/Mechanisms/UpperShooterMech/UpperShooterMotor/Commands/ZeroEncoder": "Command",
       "/SmartDashboard/Motors": "Alerts",
       "/SmartDashboard/PathPlanner": "Alerts",
       "/SmartDashboard/PhotonAlerts": "Alerts",
@@ -682,11 +681,6 @@
           "visible": true
         }
       },
-      "/SmartDashboard/ExampleRobot/Auto Modes": {
-        "window": {
-          "visible": true
-        }
-      },
       "/SmartDashboard/FeederMech/mechanism": {
         "window": {
           "visible": true
@@ -722,12 +716,7 @@
           "visible": true
         }
       },
-      "/SmartDashboard/Mechanisms/ShooterMech/LowerShooterMotor/Commands/Down": {
-        "window": {
-          "visible": true
-        }
-      },
-      "/SmartDashboard/ShooterMech/mechanism": {
+      "/SmartDashboard/LowerShooterMech/mechanism": {
         "window": {
           "visible": true
         }
@@ -766,6 +755,27 @@
       }
     },
     "transitory": {
+      "Mechanisms": {
+        "LowerShooterMech": {
+          "LowerShooterMotor": {
+            "closedloop": {
+              "open": true,
+              "setpoint": {
+                "open": true
+              }
+            },
+            "mechanism": {
+              "open": true
+            },
+            "open": true,
+            "rotor": {
+              "open": true
+            }
+          },
+          "open": true
+        },
+        "open": true
+      },
       "Shuffleboard": {
         "Vision": {
           "Camera shooter": {
@@ -823,8 +833,5 @@
   },
   "NetworkTables Info": {
     "visible": true
-  },
-  "NetworkTables View": {
-    "visible": false
   }
 }

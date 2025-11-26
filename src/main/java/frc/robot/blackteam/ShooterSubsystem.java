@@ -44,9 +44,9 @@ public class ShooterSubsystem extends GenericSubsystem {
 
   private final SmartMotorControllerConfig lowerMotorConfig =
       new SmartMotorControllerConfig(this)
-          .withClosedLoopController(0.00016541, 0, 0)
-          .withSimClosedLoopController(0.00016541, 0, 0)
-          .withGearing(new MechanismGearing(GearBox.fromReductionStages(3, 4)))
+          .withClosedLoopController(0.0, 0, 0)
+          .withSimClosedLoopController(0.0, 0, 0)
+          .withGearing(new MechanismGearing(GearBox.fromStages("52:24")))
           .withIdleMode(MotorMode.BRAKE)
           .withTelemetry("LowerShooterMotor", TelemetryVerbosity.HIGH)
           .withStatorCurrentLimit(Amps.of(40))
@@ -54,14 +54,14 @@ public class ShooterSubsystem extends GenericSubsystem {
           .withClosedLoopRampRate(Seconds.of(0.25))
           // ThriftyNova does not support separate closed loop and open loop ramp rates
           // .withOpenLoopRampRate(Seconds.of(0.25))
-          .withFeedforward(new SimpleMotorFeedforward(0.27937, 0.12399, 0.14557))
-          .withSimFeedforward(new SimpleMotorFeedforward(0.27937, 0.12399, 0.14557))
+          .withFeedforward(new SimpleMotorFeedforward(0.04234, 0.11449, 0.094235))
+          .withSimFeedforward(new SimpleMotorFeedforward(0.04234, 0.11449, 0.094235))
           .withControlMode(ControlMode.CLOSED_LOOP);
   private final SmartMotorControllerConfig upperMotorConfig =
       new SmartMotorControllerConfig(this)
           .withClosedLoopController(0.0, 0, 0)
           .withSimClosedLoopController(0.0, 0, 0)
-          .withGearing(new MechanismGearing(GearBox.fromReductionStages(3, 4)))
+          .withGearing(new MechanismGearing(GearBox.fromStages("52:24")))
           .withIdleMode(MotorMode.BRAKE)
           .withTelemetry("UpperShooterMotor", TelemetryVerbosity.HIGH)
           .withStatorCurrentLimit(Amps.of(40))
@@ -81,10 +81,10 @@ public class ShooterSubsystem extends GenericSubsystem {
 
   private final FlyWheelConfig lFlyWheelConfig =
       new FlyWheelConfig(lowerMotorController)
-          .withDiameter(Inches.of(3))
+          .withDiameter(Inches.of(4))
           .withMass(Pounds.of(2))
-          .withSoftLimit(RPM.of(-3000), RPM.of(3000))
-          .withSpeedometerSimulation(RPM.of(5000))
+          .withSoftLimit(RPM.of(-10000), RPM.of(10000))
+          .withSpeedometerSimulation(RPM.of(12000))
           .withTelemetry("LowerShooterMech", TelemetryVerbosity.HIGH);
 
   private FlyWheel lowerFlyWheel = new FlyWheel(lFlyWheelConfig);
@@ -93,8 +93,8 @@ public class ShooterSubsystem extends GenericSubsystem {
       new FlyWheelConfig(upperMotorController)
           .withDiameter(Inches.of(3))
           .withMass(Pounds.of(2))
-          .withSoftLimit(RPM.of(-3000), RPM.of(3000))
-          .withSpeedometerSimulation(RPM.of(5000))
+          .withSoftLimit(RPM.of(-10000), RPM.of(10000))
+          .withSpeedometerSimulation(RPM.of(12000))
           .withTelemetry("UpperShooterMech", TelemetryVerbosity.HIGH);
 
   private FlyWheel upperFlyWheel = new FlyWheel(uFlyWheelConfig);
