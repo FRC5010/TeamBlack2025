@@ -151,7 +151,7 @@ public class ShooterSubsystem extends GenericSubsystem {
   }
 
   public Command setVelocity(AngularVelocity speed) {
-    setpoint = speed.times(lowerMotorConfig.getGearing().getRotorToMechanismRatio());
+    setpoint = speed;
     return lowerFlyWheel.setSpeed(speed);
   }
 
