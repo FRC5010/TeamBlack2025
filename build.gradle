@@ -5,6 +5,20 @@ plugins {
     id "com.diffplug.spotless" version "6.12.0"
 }
 
+javadoc {
+    source = fileTree('src/main/java/org/frc5010')
+    classpath = sourceSets.main.compileClasspath
+    options {
+        encoding = 'UTF-8'
+        charSet = 'UTF-8'
+        author = true
+        version = true
+        links('https://docs.oracle.com/en/java/javase/17/docs/api/')
+        windowTitle = 'FRC5010Lib Javadocs'
+        docTitle = 'FRC5010Lib Javadocs'
+    }
+}
+
 java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
