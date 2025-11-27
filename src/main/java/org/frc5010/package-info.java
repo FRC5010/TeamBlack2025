@@ -1,5 +1,5 @@
 /**
- * Yet-Another Generic Swerve Library (YAGSL) main package AKA swervelib.
+ * FRC5010Lib main package
  *
  * @version 1.0.0
  */

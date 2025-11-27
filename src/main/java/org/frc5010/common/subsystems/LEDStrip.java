@@ -146,10 +146,12 @@ public class LEDStrip extends GenericSubsystem {
   }
 
   /**
-   * Sets the default pattern to run on the entire LED strip when the LED subsystem is not running a
-   * command.
+   * Sets the default pattern to be used when the LED strip is not being controlled by a command.
+   * This pattern will be used when the LED strip is not being controlled by a command, such as when
+   * the robot is disabled or when no commands are currently running that control the LED strip.
    *
-   * @param defaultPattern the LED pattern to run by default
+   * @param pattern the default pattern to use when the LED strip is not being controlled by a
+   *     command
    */
   public void setFullPattern(LEDPattern pattern) {
     this.defaultPattern = pattern;
@@ -165,9 +167,10 @@ public class LEDStrip extends GenericSubsystem {
   }
 
   /**
-   * Creates a command that runs a pattern on the entire LED strip.
+   * Runs the active patterns on the LED strip, applying the colors specified by the patterns to the
+   * corresponding LEDs.
    *
-   * @param defaultPattern the LED pattern to run
+   * @return a command that runs the active patterns on the LED strip
    */
   public Command runPattern() {
     return run(

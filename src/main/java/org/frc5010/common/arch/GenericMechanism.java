@@ -22,11 +22,8 @@ public abstract class GenericMechanism implements WpiHelperInterface {
   protected String logPrefix = getClass().getSimpleName();
   /** The display values helper */
   protected final DisplayValuesHelper DashBoard;
-  /**
-   * Constructor for GenericMechanism
-   *
-   * @param tabName - the name of the display tab
-   */
+
+  /** Constructor for GenericMechanism */
   public GenericMechanism() {
     this.mechVisual =
         new LoggedMechanism2d(RobotConstantsDef.robotVisualH, RobotConstantsDef.robotVisualV);

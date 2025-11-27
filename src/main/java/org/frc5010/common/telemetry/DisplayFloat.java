@@ -39,7 +39,7 @@ public class DisplayFloat extends DisplayableValue {
    * @param defaultValue the default value
    * @param name the name of the variable
    * @param table the name of the table
-   * @param debug the debug mode
+   * @param logLevel the log level
    */
   public DisplayFloat(
       final float defaultValue, final String name, final String table, final LogLevel logLevel) {

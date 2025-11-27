@@ -17,7 +17,7 @@ import java.util.function.Supplier;
  * Kinematic path following constraints
  *
  * @param maxVelocityMPS Max linear velocity (M/S)
- * @param maxAccelerationMPSSq Max linear acceleration (M/S^2)
+ * @param maxPhysicalAcceleration Max physical acceleration (M/S^2)
  * @param maxAngularVelocityRadPerSec Max angular velocity (Rad/S)
  * @param maxAngularAccelerationRadPerSecSq Max angular acceleration (Rad/S^2)
  * @param nominalVoltageVolts The nominal battery voltage (Volts)
@@ -38,15 +38,22 @@ public record PathConstraints5010(
     double maxAngularAccelerationRadPerSecSq,
     double nominalVoltageVolts,
     boolean unlimited) {
+
   /**
-   * Kinematic path following constraints
-   *
-   * @param maxVelocity Max linear velocity
-   * @param maxAcceleration Max linear acceleration
-   * @param maxAngularVelocity Max angular velocity
-   * @param maxAngularAcceleration Max angular acceleration
-   * @param nominalVoltage The nominal battery voltage
-   * @param unlimited Should the constraints be unlimited
+   * @param maxVelocity
+   * @param maxPhysicalAcceleration
+   * @param maxForwardAcceleration
+   * @param maxBackwardAcceleration
+   * @param maxLeftAcceleration
+   * @param maxRightAcceleration
+   * @param maxForwardVelocity
+   * @param maxBackwardVelocity
+   * @param maxLeftVelocity
+   * @param maxRightVelocity
+   * @param maxAngularVelocity
+   * @param maxAngularAcceleration
+   * @param nominalVoltage
+   * @param unlimited
    */
   public PathConstraints5010(
       LinearVelocity maxVelocity,

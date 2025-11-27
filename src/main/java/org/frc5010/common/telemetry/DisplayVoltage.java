@@ -30,10 +30,10 @@ public class DisplayVoltage extends DisplayableValue {
   /**
    * Add a voltage to the dashboard
    *
-   * @param unit - voltage unit
-   * @param unitLength - voltage in that unit
-   * @param name - name of the variable
-   * @param table - name of the table
+   * @param voltage
+   * @param unit
+   * @param name
+   * @param table
    */
   public DisplayVoltage(
       final double voltage, final VoltageUnit unit, final String name, final String table) {
@@ -43,11 +43,11 @@ public class DisplayVoltage extends DisplayableValue {
   /**
    * Add a voltage to the dashboard
    *
-   * @param unit - voltage unit
-   * @param unitLength - voltage in that unit
-   * @param name - name of the variable
-   * @param table - name of the table
-   * @param debug - debug mode
+   * @param voltage
+   * @param unit
+   * @param name
+   * @param table
+   * @param logLevel
    */
   public DisplayVoltage(
       final double voltage,
@@ -69,9 +69,9 @@ public class DisplayVoltage extends DisplayableValue {
   /**
    * Add a voltage to the dashboard
    *
-   * @param unit - voltage with units
-   * @param name - name of the variable
-   * @param table - name of the table
+   * @param voltage
+   * @param name
+   * @param table
    */
   public DisplayVoltage(final Voltage voltage, final String name, final String table) {
     this(voltage, name, table, LogLevel.COMPETITION);
@@ -80,10 +80,10 @@ public class DisplayVoltage extends DisplayableValue {
   /**
    * Add a voltage to the dashboard
    *
-   * @param unit - voltage with units
-   * @param name - name of the variable
-   * @param table - name of the table
-   * @param debug - debug mode
+   * @param voltage
+   * @param name
+   * @param table
+   * @param logLevel
    */
   public DisplayVoltage(
       final Voltage voltage, final String name, final String table, LogLevel logLevel) {
@@ -117,22 +117,23 @@ public class DisplayVoltage extends DisplayableValue {
   }
 
   // Setters
+
   /**
-   * Sets the voltage
+   * Sets the voltage using a value and a unit, and publishes the value to the dashboard.
    *
-   * @param unit - voltage unit
-   * @param unitLength - voltage in that unit
+   * @param voltage the value of the voltage to set
+   * @param unit the unit of the voltage to set
    */
   public void setVoltage(final double voltage, final VoltageUnit unit) {
     setVoltage(voltage, unit, true);
   }
 
   /**
-   * Sets the voltage
+   * Sets the voltage using a value and a unit, and optionally publishes the value
    *
-   * @param unit - voltage unit
-   * @param unitLength - voltage in that unit
-   * @param publish - publish the value
+   * @param voltage the value of the voltage to set
+   * @param unit the unit of the voltage to set
+   * @param publish whether to publish the value after setting it
    */
   public void setVoltage(final double voltage, final VoltageUnit unit, final boolean publish) {
     setVoltage(unit.of(voltage), publish);

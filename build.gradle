@@ -6,7 +6,10 @@ plugins {
 }
 
 javadoc {
-    source = fileTree('src/main/java/org/frc5010')
+    dependsOn compileJava
+    mustRunAfter compileJava
+    inputs.files sourceSets.main.output
+    source = fileTree('src/main/java') + fileTree('build/generated/sources/annotationProcessor/java/main')
     classpath = sourceSets.main.compileClasspath
     options {
         encoding = 'UTF-8'

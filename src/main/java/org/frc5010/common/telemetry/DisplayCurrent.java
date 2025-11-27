@@ -31,8 +31,8 @@ public class DisplayCurrent extends DisplayableValue {
   /**
    * Add a current to the dashboard
    *
-   * @param unit - current unit
-   * @param unitLength - current in that unit
+   * @param current - current unit
+   * @param unit - the current unit
    * @param name - name of the variable
    * @param table - name of the table
    */
@@ -44,11 +44,11 @@ public class DisplayCurrent extends DisplayableValue {
   /**
    * Add a current to the dashboard
    *
-   * @param unit - current unit
-   * @param unitLength - current in that unit
+   * @param current - current unit
+   * @param unit - the current unit
    * @param name - name of the variable
    * @param table - name of the table
-   * @param debug - debug mode
+   * @param logLevel - log level
    */
   public DisplayCurrent(
       final double current,
@@ -70,7 +70,7 @@ public class DisplayCurrent extends DisplayableValue {
   /**
    * Add a current to the dashboard
    *
-   * @param unit - current with units
+   * @param current - current with units
    * @param name - name of the variable
    * @param table - name of the table
    */
@@ -81,10 +81,10 @@ public class DisplayCurrent extends DisplayableValue {
   /**
    * Add a current to the dashboard
    *
-   * @param unit - current with units
+   * @param current - current with units
    * @param name - name of the variable
    * @param table - name of the table
-   * @param debug - debug mode
+   * @param logLevel - log level
    */
   public DisplayCurrent(
       final Current current, final String name, final String table, LogLevel logLevel) {
@@ -118,11 +118,12 @@ public class DisplayCurrent extends DisplayableValue {
   }
 
   // Setters
+
   /**
-   * Sets the current
+   * Sets the current to the dashboard
    *
+   * @param current - current in that unit
    * @param unit - current unit
-   * @param unitLength - current in that unit
    */
   public void setCurrent(final double current, final CurrentUnit unit) {
     setCurrent(current, unit, true);

@@ -72,8 +72,8 @@ public class GenericTalonFXMotor implements GenericMotorController {
    * Construct the TalonFX swerve motor given the ID and CANBus.
    *
    * @param id ID of the TalonFX on the CANBus.
+   * @param config Motor configuration.
    * @param canbus CANBus on which the TalonFX is on.
-   * @param isDriveMotor Whether the motor is a drive or steering motor.
    */
   public GenericTalonFXMotor(int id, Motor config, String canbus) {
     motor = new TalonFX(id, canbus);

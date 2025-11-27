@@ -39,7 +39,7 @@ public class DisplayLong extends DisplayableValue {
    * @param defaultValue the default value
    * @param name the name
    * @param table the table
-   * @param debug which log level to dipslay at
+   * @param logLevel the log level
    */
   public DisplayLong(
       final long defaultValue, final String name, final String table, final LogLevel logLevel) {

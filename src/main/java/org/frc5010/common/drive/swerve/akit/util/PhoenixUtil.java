@@ -102,25 +102,14 @@ public final class PhoenixUtil {
   }
 
   /**
+   * Regulates a {@link SwerveModuleConstants} object for simulation. If running on a real robot,
+   * the input object is returned unchanged. Otherwise, simulation-specific adjustments are made to
+   * the module constants. The following adjustments are made: - Disable encoder offsets - Disable
+   * motor inversions for drive and steer motors - Disable CanCoder inversion - Adjust steer motor
+   * PID gains for simulation - Adjust friction voltages - Adjust steer inertia
    *
-   *
-   * <h2>Regulates the {@link SwerveModuleConstants} for a single module.</h2>
-   *
-   * <p>This method applies specific adjustments to the {@link SwerveModuleConstants} for simulation
-   * purposes. These changes have no effect on real robot operations and address known simulation
-   * bugs:
-   *
-   * <ul>
-   *   <li><strong>Inverted Drive Motors:</strong> Prevents drive PID issues caused by inverted
-   *       configurations.
-   *   <li><strong>Non-zero CanCoder Offsets:</strong> Fixes potential module state optimization
-   *       issues.
-   *   <li><strong>Steer Motor PID:</strong> Adjusts PID values tuned for real robots to improve
-   *       simulation performance.
-   * </ul>
-   *
-   * <h4>Note:This function is skipped when running on a real robot, ensuring no impact on constants
-   * used on real robot hardware.</h4>
+   * @param moduleConstants module constants to regulate
+   * @return regulated module constants
    */
   public static SwerveModuleConstants regulateModuleConstantForSimulation(
       SwerveModuleConstants<?, ?, ?> moduleConstants) {

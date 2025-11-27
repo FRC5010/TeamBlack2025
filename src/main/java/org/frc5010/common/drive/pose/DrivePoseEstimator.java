@@ -232,8 +232,6 @@ public class DrivePoseEstimator extends GenericSubsystem {
    * Env providers if the pose is high caliber and close ENABLED_ENV - reads the pose from the Env
    * providers and expects given pose to be correct ALL - reads and fuses poses from both Env and
    * Field sources, resetting Env pose based on update
-   *
-   * @return the command that updates the pose estimator
    */
   protected void updatePoseObservationFromProviders() {
     poseTracker.updateLocalMeasurements();
