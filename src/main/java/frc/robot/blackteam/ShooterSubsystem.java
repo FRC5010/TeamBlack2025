@@ -115,7 +115,7 @@ public class ShooterSubsystem extends GenericSubsystem {
    * @return {@link edu.wpi.first.wpilibj2.command.RunCommand}
    */
   public Command set(double dutyCycle) {
-    return lowerFlyWheel.set(dutyCycle);
+    return lowerFlyWheel.set(dutyCycle).alongWith(upperFlyWheel.set(-dutyCycle).asProxy());
   }
 
   // TODO: fix this to use Supplier<AngularVelocity>
