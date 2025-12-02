@@ -1,16 +1,10 @@
 {
   "competitionPin": 0,
   "robots": {
-    "buttercup_swerve": {
-      "id": "buttercup",
-      "robotClass": "frc.robot.blackteam.BlackRobot",
-      "simulate": true,
-      "competition": true
-    },
     "black_robot": {
       "id": "black_robot",
       "robotClass": "frc.robot.blackteam.BlackRobot",
-      "simulate": false,
+      "simulate": true,
       "competition": true
     },
     "basic_robot": {
@@ -22,6 +16,12 @@
       "id": "baby_swerve",
       "robotClass": "frc.robot.baby_swerve.BabySwerve",
       "simulate": false
+    },
+    "buttercup_swerve": {
+      "id": "00:80:2F:34:B2:C5",
+      "robotClass": "frc.robot.blackteam.BlackRobot",
+      "simulate": false,
+      "competition": false
     }
   }
 }

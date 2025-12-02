@@ -33,9 +33,12 @@ public class ThriftyNovaEncoderSwerve extends SwerveAbsoluteEncoder {
     this.motor = (ThriftyNova) motor.getMotor();
     velocityConversion = new Conversion(VelocityUnit.DEGREES_PER_SEC, EncoderType.ABS);
     positionConversion = new Conversion(PositionUnit.DEGREES, EncoderType.ABS);
-    this.motor.setExternalEncoder(ExternalEncoder.valueOf(encoderType));
+    ExternalEncoder externalEncoderType = ExternalEncoder.valueOf(encoderType);
+    this.motor.setExternalEncoder(externalEncoderType);
     setAbsoluteEncoderOffset(offset);
-    this.motor.setAbsoluteWrapping(true);
+    if (ExternalEncoder.REDUX_ENCODER == externalEncoderType) {
+      this.motor.setAbsoluteWrapping(true);
+    }
   }
 
   @Override

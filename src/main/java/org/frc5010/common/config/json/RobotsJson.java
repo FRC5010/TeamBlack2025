@@ -42,7 +42,7 @@ public class RobotsJson {
     for (String robotName : robots.keySet()) {
       RobotIdentity robotIdentity = robots.get(robotName);
       if ((RobotBase.isSimulation() && robotIdentity.simulate)
-          || (competitionSwitch.map(it -> it.get()).orElse(false) && robotIdentity.competition)
+          || (competitionSwitch.map(it -> !it.get()).orElse(false) && robotIdentity.competition)
           || robotIdentity.id.equals(whichRobot)) {
         robotDirectory = robotName;
         break;
