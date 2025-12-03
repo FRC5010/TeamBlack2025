@@ -3,7 +3,8 @@
     "name": "upperflywheel",
     "controllerType": "thrifty",
     "motorType": "Neo",
-    "canId": 11
+    "canId": 11,
+    "inverted": true
   },
   "motorSystemId": {
     "feedBack": {

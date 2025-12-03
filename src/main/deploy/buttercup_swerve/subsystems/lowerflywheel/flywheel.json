@@ -3,7 +3,8 @@
     "name": "lowerflywheel",
     "controllerType": "thrifty",
     "motorType": "Neo",
-    "canId": 10
+    "canId": 10,
+    "inverted": true
   },
   "motorSystemId": {
     "feedBack": {

@@ -17,6 +17,11 @@ public class BlackRobot extends GenericRobot {
   private LowerFlyWheel lowerFlyWheel;
   private UpperFlyWheel upperFlyWheel;
   private StateMachine flyWheelStateMachine = new StateMachine(logPrefix);
+  private final double Speed1 = 0.15;
+  private final double Speed2 = 0.16;
+  private final double Speed3 = 0.17;
+  private final double Speed4 = 0.18;
+  private final double upperOffSet = 0.01;
 
   public BlackRobot(String directory) {
     super(directory);
@@ -37,17 +42,25 @@ public class BlackRobot extends GenericRobot {
 
   @Override
   public void configureButtonBindings(Controller driver, Controller operator) {
-    driver.setRightTrigger(driver.createRightTrigger().cubed().deadzone(0.05));
-    driver.setLeftTrigger(driver.createLeftTrigger().cubed().deadzone(0.05));
+    driver.setRightTrigger(driver.createRightTrigger().cubed().deadzone(0.05).scale(0.5));
+    driver.setLeftTrigger(driver.createLeftTrigger().cubed().deadzone(0.05).scale(0.5));
 
-    driver.createLeftBumper().whileTrue(lowerFlyWheel.setVelocity(RPM.of(60)));
-
-    driver.createXButton().whileTrue(lowerFlyWheel.set(0.3).alongWith(upperFlyWheel.set(-0.3)));
-    driver.createYButton().whileTrue(lowerFlyWheel.set(-0.3).alongWith(upperFlyWheel.set(0.3)));
+    driver
+        .createAButton()
+        .whileTrue(lowerFlyWheel.set(Speed1).alongWith(upperFlyWheel.set(Speed1 + upperOffSet)));
+    driver
+        .createXButton()
+        .whileTrue(lowerFlyWheel.set(Speed2).alongWith(upperFlyWheel.set(Speed2 + upperOffSet)));
+    driver
+        .createYButton()
+        .whileTrue(lowerFlyWheel.set(Speed3).alongWith(upperFlyWheel.set(Speed3 + upperOffSet)));
+    driver
+        .createBButton()
+        .whileTrue(lowerFlyWheel.set(Speed4).alongWith(upperFlyWheel.set(Speed4 + upperOffSet)));
 
     driver.createBackButton().whileTrue(lowerFlyWheel.systemID());
     driver.createStartButton().whileTrue(upperFlyWheel.systemID());
-    driver.createAButton().whileTrue(feeder.setSpeed(0.5));
+    driver.createLeftBumper().whileTrue(feeder.setSpeed(-0.5));
 
     JoystickButton rightBumper = driver.createRightBumper();
 
@@ -72,7 +85,6 @@ public class BlackRobot extends GenericRobot {
     lowerFlyWheel.setDefaultCommand(lowerFlyWheel.joyStickControl(() -> driver.getRightTrigger()));
     upperFlyWheel.setDefaultCommand(upperFlyWheel.joyStickControl(() -> driver.getLeftTrigger()));
     drivetrain.setDefaultCommand(drivetrain.createDefaultCommand(driver));
-    feeder.setDefaultCommand(feeder.joyStickControl(() -> driver.getLeftTrigger()));
   }
 
   @Override

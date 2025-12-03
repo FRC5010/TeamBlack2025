@@ -126,6 +126,14 @@
       "/SmartDashboard/Mechanisms/UpperShooterMech/UpperShooterMotor/Commands/LiveTuning": "Command",
       "/SmartDashboard/Mechanisms/UpperShooterMech/UpperShooterMotor/Commands/Up": "Command",
       "/SmartDashboard/Mechanisms/UpperShooterMech/UpperShooterMotor/Commands/ZeroEncoder": "Command",
+      "/SmartDashboard/Mechanisms/lowerflywheel/lowerflywheelMotor/Commands/Down": "Command",
+      "/SmartDashboard/Mechanisms/lowerflywheel/lowerflywheelMotor/Commands/LiveTuning": "Command",
+      "/SmartDashboard/Mechanisms/lowerflywheel/lowerflywheelMotor/Commands/Up": "Command",
+      "/SmartDashboard/Mechanisms/lowerflywheel/lowerflywheelMotor/Commands/ZeroEncoder": "Command",
+      "/SmartDashboard/Mechanisms/upperflywheel/upperflywheelMotor/Commands/Down": "Command",
+      "/SmartDashboard/Mechanisms/upperflywheel/upperflywheelMotor/Commands/LiveTuning": "Command",
+      "/SmartDashboard/Mechanisms/upperflywheel/upperflywheelMotor/Commands/Up": "Command",
+      "/SmartDashboard/Mechanisms/upperflywheel/upperflywheelMotor/Commands/ZeroEncoder": "Command",
       "/SmartDashboard/Motors": "Alerts",
       "/SmartDashboard/PathPlanner": "Alerts",
       "/SmartDashboard/PhotonAlerts": "Alerts",
@@ -141,8 +149,10 @@
       "/SmartDashboard/UpperShooterMech/mechanism": "Mechanism2d",
       "/SmartDashboard/VisionSystemSim-Vision/Sim Field": "Field2d",
       "/SmartDashboard/VisionSystemSim-main/Sim Field": "Field2d",
+      "/SmartDashboard/lowerflywheel/mechanism": "Mechanism2d",
       "/SmartDashboard/navX-Sensor[1]": "Gyro",
-      "/SmartDashboard/navX-Sensor[4]": "Gyro"
+      "/SmartDashboard/navX-Sensor[4]": "Gyro",
+      "/SmartDashboard/upperflywheel/mechanism": "Mechanism2d"
     },
     "windows": {
       "/FMSInfo": {
