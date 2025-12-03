@@ -10,7 +10,6 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import java.util.Map;
 import java.util.function.BooleanSupplier;
-import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import org.frc5010.common.arch.GenericSubsystem;
 import yams.mechanisms.velocity.FlyWheel;
@@ -45,10 +44,8 @@ public class UpperFlyWheel extends GenericSubsystem {
     return upperFlyWheel.set(dutyCycle);
   }
 
-  // TODO: fix this to use Supplier<AngularVelocity>
-  public Command launchToDistance(DoubleSupplier distanceSupplier) {
-    return upperFlyWheel.setSpeed(
-        () -> RPM.of(distanceToVelocityMap.get(distanceSupplier.getAsDouble())));
+  public Command launchToDistance(Supplier<AngularVelocity> distanceSupplier) {
+    return upperFlyWheel.setSpeed(distanceSupplier);
   }
 
   public Command spinAtSpeed(Supplier<AngularVelocity> speedSupplier) {
