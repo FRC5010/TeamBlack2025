@@ -1,0 +1,49 @@
+{
+  "motorSetup": {
+    "name": "lowerflywheel",
+    "controllerType": "thrifty",
+    "motorType": "Neo",
+    "canId": 10
+  },
+  "motorSystemId": {
+    "feedBack": {
+      "p": 0,
+      "i": 0.0,
+      "d": 0.0
+    },
+    "feedForward": {
+      "s": 0.0,
+      "v": 0.0,
+      "a": 0.0
+    }
+  },
+  "simMotorSystemId": {
+    "feedBack": {
+      "p": 0,
+      "i": 0.0,
+      "d": 0.0
+    },
+    "feedForward": {
+      "s": 0.0,
+      "v": 0.0,
+      "a": 0.0
+    }
+  },
+  "lowerSoftLimit": {
+    "val": -10000,
+    "uom": "rpm"
+  },
+  "upperSoftLimit": {
+    "val": 10000,
+    "uom": "rpm"
+  },
+  "stages": "52:24",
+  "mass": {
+    "val": 2,
+    "uom": "kg"
+  },
+  "diameter": {
+    "val": 4,
+    "uom": "in"
+  }
+}

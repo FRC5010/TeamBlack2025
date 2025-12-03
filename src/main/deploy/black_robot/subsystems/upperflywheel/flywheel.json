@@ -1,0 +1,49 @@
+{
+  "motorSetup": {
+    "name": "upperflywheel",
+    "controllerType": "thrifty",
+    "motorType": "Neo",
+    "canId": 11
+  },
+  "motorSystemId": {
+    "feedBack": {
+      "p": 0,
+      "i": 0.0,
+      "d": 0.0
+    },
+    "feedForward": {
+      "s": 0.0,
+      "v": 0.0,
+      "a": 0.0
+    }
+  },
+  "simMotorSystemId": {
+    "feedBack": {
+      "p": 0,
+      "i": 0.0,
+      "d": 0.0
+    },
+    "feedForward": {
+      "s": 0.04234,
+      "v": 0.11449,
+      "a": 0.094235
+    }
+  },
+  "lowerSoftLimit": {
+    "val": -10000,
+    "uom": "rpm"
+  },
+  "upperSoftLimit": {
+    "val": 10000,
+    "uom": "rpm"
+  },
+  "stages": "52:24",
+  "mass": {
+    "val": 2,
+    "uom": "kg"
+  },
+  "diameter": {
+    "val": 4,
+    "uom": "in"
+  }
+}

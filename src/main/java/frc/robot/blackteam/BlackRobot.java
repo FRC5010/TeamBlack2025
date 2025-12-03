@@ -14,13 +14,15 @@ import org.frc5010.common.sensors.Controller;
 
 public class BlackRobot extends GenericRobot {
   private GenericDrivetrain drivetrain;
-  private ShooterSubsystem shooterSubsystem;
+  private LowerFlyWheel lowerFlyWheel;
+  private UpperFlyWheel upperFlyWheel;
   private StateMachine flyWheelStateMachine = new StateMachine(logPrefix);
 
   public BlackRobot(String directory) {
     super(directory);
     drivetrain = (GenericDrivetrain) subsystems.get(ConfigConstants.DRIVETRAIN);
-    shooterSubsystem = new ShooterSubsystem();
+    lowerFlyWheel = new LowerFlyWheel();
+    upperFlyWheel = new UpperFlyWheel();
 
     // NamedCommands.registerCommand("shoot", launchToDistance(20));
   }
@@ -38,36 +40,37 @@ public class BlackRobot extends GenericRobot {
     driver.setRightTrigger(driver.createRightTrigger().cubed().deadzone(0.05));
     driver.setLeftTrigger(driver.createLeftTrigger().cubed().deadzone(0.05));
 
-    driver.createLeftBumper().whileTrue(shooterSubsystem.setVelocity(RPM.of(60)));
+    driver.createLeftBumper().whileTrue(lowerFlyWheel.setVelocity(RPM.of(60)));
 
-    driver.createXButton().whileTrue(shooterSubsystem.set(0.3));
-    driver.createYButton().whileTrue(shooterSubsystem.set(-0.3));
+    driver.createXButton().whileTrue(lowerFlyWheel.set(0.3).alongWith(upperFlyWheel.set(-0.3)));
+    driver.createYButton().whileTrue(lowerFlyWheel.set(-0.3).alongWith(upperFlyWheel.set(0.3)));
 
-    driver.createBButton().whileTrue(shooterSubsystem.systemID());
+    driver.createBackButton().whileTrue(lowerFlyWheel.systemID());
+    driver.createStartButton().whileTrue(upperFlyWheel.systemID());
     driver.createAButton().whileTrue(feeder.setSpeed(0.5));
 
     JoystickButton rightBumper = driver.createRightBumper();
 
     State prep =
         flyWheelStateMachine.addState(
-            "prep", Commands.print("PREP").andThen(shooterSubsystem.setVelocity(RPM.of(1000))));
+            "prep", Commands.print("PREP").andThen(lowerFlyWheel.setVelocity(RPM.of(1000))));
     State fire =
         flyWheelStateMachine.addState("fire", Commands.print("FIRE").andThen(feeder.setSpeed(0.5)));
 
     flyWheelStateMachine.setInitialState(prep);
-    prep.switchTo(fire).when(shooterSubsystem.isNearTarget(RPM.of(200)));
+    prep.switchTo(fire).when(lowerFlyWheel.isNearTarget(RPM.of(200)));
     rightBumper.whileTrue(flyWheelStateMachine);
     rightBumper.onFalse(
-        shooterSubsystem
+        lowerFlyWheel
             .setVelocity(RPM.of(0))
-            .andThen(shooterSubsystem.set(0))
+            .andThen(lowerFlyWheel.set(0))
             .alongWith(feeder.setSpeed(0)));
   }
 
   @Override
   public void setupDefaultCommands(Controller driver, Controller operator) {
-    shooterSubsystem.setDefaultCommand(
-        shooterSubsystem.joyStickControl(() -> driver.getRightTrigger()));
+    lowerFlyWheel.setDefaultCommand(lowerFlyWheel.joyStickControl(() -> driver.getRightTrigger()));
+    upperFlyWheel.setDefaultCommand(upperFlyWheel.joyStickControl(() -> driver.getLeftTrigger()));
     drivetrain.setDefaultCommand(drivetrain.createDefaultCommand(driver));
     feeder.setDefaultCommand(feeder.joyStickControl(() -> driver.getLeftTrigger()));
   }

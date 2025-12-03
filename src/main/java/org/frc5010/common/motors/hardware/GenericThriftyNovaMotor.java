@@ -24,6 +24,7 @@ import org.frc5010.common.sensors.encoder.SimulatedEncoder;
 import org.frc5010.common.sensors.encoder.ThriftyNovaEncoder;
 import yams.motorcontrollers.SmartMotorController;
 import yams.motorcontrollers.SmartMotorControllerConfig;
+import yams.motorcontrollers.local.NovaWrapper;
 
 /** Add your docs here. */
 public class GenericThriftyNovaMotor implements GenericMotorController {
@@ -282,7 +283,6 @@ public class GenericThriftyNovaMotor implements GenericMotorController {
 
   @Override
   public SmartMotorController getSmartMotorController(SmartMotorControllerConfig config) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getSmartMotorController'");
+    return new NovaWrapper(motor, motorSim, config);
   }
 }
