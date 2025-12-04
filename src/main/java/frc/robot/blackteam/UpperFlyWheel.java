@@ -80,6 +80,6 @@ public class UpperFlyWheel extends GenericSubsystem {
   }
 
   public Command systemID() {
-    return upperFlyWheel.sysId(Volts.of(12), Volts.of(1).per(Second), Seconds.of(3));
+    return upperFlyWheel.sysId(Volts.of(12), Volts.of(1).per(Second), Seconds.of(10));
   }
 }

@@ -2,7 +2,7 @@
   "competitionPin": 0,
   "robots": {
     "black_robot": {
-      "id": "black_robot",
+      "id": "00:80:2F:33:04:33",
       "robotClass": "frc.robot.blackteam.BlackRobot",
       "simulate": true,
       "competition": true

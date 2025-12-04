@@ -12,6 +12,7 @@ import org.frc5010.common.config.ConfigConstants;
 import org.frc5010.common.drive.GenericDrivetrain;
 import org.frc5010.common.sensors.Controller;
 
+// TODO:
 public class BlackRobot extends GenericRobot {
   private GenericDrivetrain drivetrain;
   private LowerFlyWheel lowerFlyWheel;
@@ -42,8 +43,8 @@ public class BlackRobot extends GenericRobot {
 
   @Override
   public void configureButtonBindings(Controller driver, Controller operator) {
-    driver.setRightTrigger(driver.createRightTrigger().cubed().deadzone(0.05).scale(0.5));
-    driver.setLeftTrigger(driver.createLeftTrigger().cubed().deadzone(0.05).scale(0.5));
+    driver.setRightTrigger(driver.createRightTrigger().cubed().deadzone(0.05).scale(0.35));
+    driver.setLeftTrigger(driver.createLeftTrigger().cubed().deadzone(0.05).scale(0.35));
 
     driver
         .createAButton()

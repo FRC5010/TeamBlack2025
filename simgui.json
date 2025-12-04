@@ -1,5 +1,13 @@
 {
   "HALProvider": {
+    "Addressable LEDs": {
+      "0": {
+        "columns": 15
+      },
+      "window": {
+        "visible": true
+      }
+    },
     "Other Devices": {
       "SPARK MAX [12]": {
         "header": {
@@ -738,6 +746,16 @@
         "image": ".\\pictures\\LobbinLoco.png",
         "right": 1432,
         "width": 14.600000381469727,
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/lowerflywheel/mechanism": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/upperflywheel/mechanism": {
         "window": {
           "visible": true
         }
