@@ -101,8 +101,9 @@ public class YamsShooterConfigurationJson implements DeviceConfiguration {
             // .withMechanismPositionConfig(motorSetup.getMechanismPositionConfig())
             .withDiameter(UnitsParser.parseDistance(diameter))
             .withMass(UnitsParser.parseMass(mass))
-            .withUpperSoftLimit(UnitsParser.parseAngularVelocity(upperSoftLimit))
-            .withLowerSoftLimit(UnitsParser.parseAngularVelocity(lowerSoftLimit))
+            .withSoftLimit(
+                UnitsParser.parseAngularVelocity(lowerSoftLimit),
+                UnitsParser.parseAngularVelocity(upperSoftLimit))
             .withSpeedometerSimulation(UnitsParser.parseAngularVelocity(upperSoftLimit))
             .withTelemetry(motorSetup.name, TelemetryVerbosity.valueOf(motorSetup.logLevel));
     if (0 != moi) {

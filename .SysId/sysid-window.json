@@ -15,13 +15,13 @@
   "Window": {
     "###Analyzer": {
       "Collapsed": "0",
-      "Pos": "445,24",
-      "Size": "447,698"
+      "Pos": "320,25",
+      "Size": "360,689"
     },
     "###Data Selector": {
       "Collapsed": "0",
       "Pos": "5,480",
-      "Size": "431,250"
+      "Size": "310,291"
     },
     "###Log Loader": {
       "Collapsed": "0",
@@ -30,8 +30,8 @@
     },
     "###Program Log": {
       "Collapsed": "0",
-      "Pos": "21,745",
-      "Size": "795,171"
+      "Pos": "327,701",
+      "Size": "360,135"
     },
     "Debug##Default": {
       "Collapsed": "0",
@@ -40,8 +40,18 @@
     },
     "Diagnostic Plots": {
       "Collapsed": "0",
-      "Pos": "894,26",
-      "Size": "1023,929"
+      "Pos": "685,25",
+      "Size": "1225,779"
+    },
+    "Exception Caught!": {
+      "Collapsed": "0",
+      "Pos": "720,431",
+      "Size": "480,128"
+    },
+    "Override Units": {
+      "Collapsed": "0",
+      "Pos": "481,289",
+      "Size": "320,144"
     }
   }
 }
