@@ -2,6 +2,7 @@ package frc.robot.blackteam;
 
 import static edu.wpi.first.units.Units.RPM;
 
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -11,6 +12,7 @@ import org.frc5010.common.arch.StateMachine.State;
 import org.frc5010.common.config.ConfigConstants;
 import org.frc5010.common.drive.GenericDrivetrain;
 import org.frc5010.common.sensors.Controller;
+import org.frc5010.common.subsystems.LEDStrip;
 
 // TODO:
 public class BlackRobot extends GenericRobot {
@@ -48,7 +50,13 @@ public class BlackRobot extends GenericRobot {
 
     driver
         .createAButton()
-        .whileTrue(lowerFlyWheel.set(Speed1).alongWith(upperFlyWheel.set(Speed1 + upperOffSet)));
+        .whileTrue(
+            Commands.run(
+                    () ->
+                        LEDStrip.changeSegmentPattern(
+                            "status_indicator", LEDStrip.getSolidPattern(Color.kAquamarine)))
+                .andThen(
+                    lowerFlyWheel.set(Speed1).alongWith(upperFlyWheel.set(Speed1 + upperOffSet))));
     driver
         .createXButton()
         .whileTrue(lowerFlyWheel.set(Speed2).alongWith(upperFlyWheel.set(Speed2 + upperOffSet)));
