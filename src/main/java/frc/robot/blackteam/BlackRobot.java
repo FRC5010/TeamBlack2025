@@ -2,6 +2,7 @@ package frc.robot.blackteam;
 
 import static edu.wpi.first.units.Units.RPM;
 
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -27,6 +28,8 @@ public class BlackRobot extends GenericRobot {
   private final double Speed3 = 0.17;
   private final double Speed4 = 0.18;
   private final double upperOffSet = 0.01;
+  private final AngularVelocity velocity2 = RPM.of(1500);
+  private final String STATUS_LED = "status_indicator";
 
   public BlackRobot(String directory) {
     super(directory);
@@ -49,9 +52,9 @@ public class BlackRobot extends GenericRobot {
   public void configureButtonBindings(Controller driver, Controller operator) {
     driver.setRightTrigger(driver.createRightTrigger().cubed().deadzone(0.05).scale(0.35));
     driver.setLeftTrigger(driver.createLeftTrigger().cubed().deadzone(0.05).scale(0.35));
-    LEDStrip.setSegmentActive("status_indicator", true);
+    LEDStrip.setSegmentActive(STATUS_LED, false);
     new Trigger(DriverStation::isTeleopEnabled)
-        .onTrue(Commands.run(() -> LEDStrip.setSegmentActive(ConfigConstants.ALL_LEDS, false)));
+        .onTrue(Commands.run(() -> LEDStrip.setSegmentActive(STATUS_LED, true)));
     driver
         .createAButton()
         .whileTrue(
@@ -61,17 +64,15 @@ public class BlackRobot extends GenericRobot {
                 .beforeStarting(
                     () ->
                         LEDStrip.changeSegmentPattern(
-                            "status_indicator", LEDStrip.getSolidPattern(Color.kAquamarine)))
+                            STATUS_LED, LEDStrip.getSolidPattern(Color.kAquamarine)))
                 .finallyDo(
                     () ->
                         LEDStrip.changeSegmentPattern(
-                            "status_indicator", LEDStrip.getSolidPattern(Color.kBlack))));
+                            STATUS_LED, LEDStrip.getSolidPattern(Color.kBlack))));
     driver
         .createXButton()
         .whileTrue(
-            lowerFlyWheel
-                .setVelocity(RPM.of(1000))
-                .alongWith(upperFlyWheel.setVelocity(RPM.of(1000))));
+            lowerFlyWheel.setVelocity(velocity2).alongWith(upperFlyWheel.setVelocity(velocity2)));
     driver
         .createYButton()
         .whileTrue(lowerFlyWheel.set(Speed3).alongWith(upperFlyWheel.set(Speed3 + upperOffSet)));

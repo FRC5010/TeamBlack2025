@@ -15,6 +15,7 @@ public class LEDStripConfigJson {
     public String name = "";
     public int start = 0;
     public int end = 0;
+    public int order = 1;
   }
 
   public SegmentConfigJson[] segments = new SegmentConfigJson[0];
@@ -22,7 +23,7 @@ public class LEDStripConfigJson {
   public void configure() {
     LEDStrip.createInstance(dataPin, length);
     for (SegmentConfigJson entry : segments) {
-      LEDStrip.addSegment(entry.name, entry.start, entry.end);
+      LEDStrip.addSegment(entry.name, entry.start, entry.end, entry.order);
     }
   }
 }
