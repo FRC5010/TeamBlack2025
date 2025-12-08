@@ -17,7 +17,6 @@ import org.frc5010.common.drive.GenericDrivetrain;
 import org.frc5010.common.sensors.Controller;
 import org.frc5010.common.subsystems.LEDStrip;
 
-// TODO:
 public class BlackRobot extends GenericRobot {
   private GenericDrivetrain drivetrain;
   private LowerFlyWheel lowerFlyWheel;
@@ -77,6 +76,32 @@ public class BlackRobot extends GenericRobot {
     driver
         .createYButton()
         .whileTrue(lowerFlyWheel.set(SPEED3).alongWith(upperFlyWheel.set(SPEED3 + UPPEROFFSET)));
+            lowerFlyWheel
+                .set(SPEED2)
+                .alongWith(upperFlyWheel.set(SPEED3 + UPPEROFFSET))
+                .beforeStarting(
+                    () ->
+                        LEDStrip.changeSegmentPattern(
+                            STATUS_LED, LEDStrip.getSolidPattern(Color.kAquamarine)))
+                .finallyDo(
+                    () ->
+                        LEDStrip.changeSegmentPattern(
+                            STATUS_LED, LEDStrip.getSolidPattern(Color.kRed)));
+
+    driver
+        .createYButton()
+        .whileTrue(
+            lowerFlyWheel
+                .set(SPEED3)
+                .alongWith(upperFlyWheel.set(SPEED3 + UPPEROFFSET))
+                .beforeStarting(
+                    () ->
+                        LEDStrip.changeSegmentPattern(
+                            STATUS_LED, LEDStrip.getSolidPattern(Color.kAquamarine)))
+                .finallyDo(
+                    () ->
+                        LEDStrip.changeSegmentPattern(
+                            STATUS_LED, LEDStrip.getSolidPattern(Color.kYellowGreen))));
     driver
         .createBButton()
         .whileTrue(
