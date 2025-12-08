@@ -1,5 +1,5 @@
 {
-  "length": 30,
+  "length": 34,
   "dataPin": 0,
   "segments": [
     {
@@ -11,6 +11,16 @@
       "name": "team_colors",
       "start": 10,
       "end": 29
+    },
+    {
+      "name": "left_half",
+      "start": 0,
+      "end": 16
+    },
+    {
+      "name": "right_half",
+      "start": 17,
+      "end": 33
     }
   ]
 }

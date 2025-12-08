@@ -1,6 +1,7 @@
 package frc.robot.blackteam;
 
 import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.Seconds;
 
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -28,8 +29,8 @@ public class BlackRobot extends GenericRobot {
   private final double SPEED4 = 0.18;
   private final double UPPEROFFSET = 0.01;
   private final AngularVelocity VELOCITY2 = RPM.of(1500);
-  private final String STATUS_LED = "status_indicator";
-  private final String TEAM_COLORS = "team_colors";
+  private final String FEEDER_LED = "left_half";
+  private final String SHOOTER_LED = "right_half";
 
   public BlackRobot(String directory) {
     super(directory);
@@ -52,9 +53,9 @@ public class BlackRobot extends GenericRobot {
   public void configureButtonBindings(Controller driver, Controller operator) {
     driver.setRightTrigger(driver.createRightTrigger().cubed().deadzone(0.05).scale(0.35));
     driver.setLeftTrigger(driver.createLeftTrigger().cubed().deadzone(0.05).scale(0.35));
-    LEDStrip.setSegmentActive(STATUS_LED, false);
+    LEDStrip.setSegmentActive(FEEDER_LED, false);
     new Trigger(DriverStation::isTeleopEnabled)
-        .onTrue(Commands.run(() -> LEDStrip.setSegmentActive(STATUS_LED, true)));
+        .onTrue(Commands.run(() -> LEDStrip.setSegmentActive(FEEDER_LED, true)));
     driver
         .createAButton()
         .whileTrue(
@@ -62,32 +63,26 @@ public class BlackRobot extends GenericRobot {
                 .set(SPEED1)
                 .alongWith(upperFlyWheel.set(SPEED1 + UPPEROFFSET))
                 .beforeStarting(
-                    () ->
-                        LEDStrip.changeSegmentPattern(
-                            STATUS_LED, LEDStrip.getSolidPattern(Color.kAquamarine)))
-                .finallyDo(
-                    () ->
-                        LEDStrip.changeSegmentPattern(
-                            STATUS_LED, LEDStrip.getSolidPattern(Color.kBlack))));
+                    () -> {
+                      LEDStrip.setSegmentActive(SHOOTER_LED, true);
+                      LEDStrip.changeSegmentPattern(SHOOTER_LED, LEDStrip.getRainbowPattern(50));
+                    })
+                .finallyDo(() -> LEDStrip.setSegmentActive(SHOOTER_LED, false)));
+
     driver
         .createXButton()
         .whileTrue(
-            lowerFlyWheel.setVelocity(VELOCITY2).alongWith(upperFlyWheel.setVelocity(VELOCITY2)));
-    driver
-        .createYButton()
-        .whileTrue(lowerFlyWheel.set(SPEED3).alongWith(upperFlyWheel.set(SPEED3 + UPPEROFFSET)));
             lowerFlyWheel
-                .set(SPEED2)
-                .alongWith(upperFlyWheel.set(SPEED3 + UPPEROFFSET))
+                .setVelocity(VELOCITY2)
+                .alongWith(upperFlyWheel.setVelocity(VELOCITY2))
                 .beforeStarting(
                     () ->
                         LEDStrip.changeSegmentPattern(
-                            STATUS_LED, LEDStrip.getSolidPattern(Color.kAquamarine)))
+                            SHOOTER_LED, LEDStrip.getSolidPattern(Color.kAquamarine)))
                 .finallyDo(
                     () ->
                         LEDStrip.changeSegmentPattern(
-                            STATUS_LED, LEDStrip.getSolidPattern(Color.kRed)));
-
+                            SHOOTER_LED, LEDStrip.getSolidPattern(Color.kRed))));
     driver
         .createYButton()
         .whileTrue(
@@ -95,13 +90,11 @@ public class BlackRobot extends GenericRobot {
                 .set(SPEED3)
                 .alongWith(upperFlyWheel.set(SPEED3 + UPPEROFFSET))
                 .beforeStarting(
-                    () ->
-                        LEDStrip.changeSegmentPattern(
-                            STATUS_LED, LEDStrip.getSolidPattern(Color.kAquamarine)))
-                .finallyDo(
-                    () ->
-                        LEDStrip.changeSegmentPattern(
-                            STATUS_LED, LEDStrip.getSolidPattern(Color.kYellowGreen))));
+                    () -> {
+                      LEDStrip.setSegmentActive(SHOOTER_LED, true);
+                      LEDStrip.changeSegmentPattern(SHOOTER_LED, LEDStrip.getRainbowPattern(100));
+                    })
+                .finallyDo(() -> LEDStrip.setSegmentActive(SHOOTER_LED, false)));
     driver
         .createBButton()
         .whileTrue(
@@ -110,14 +103,29 @@ public class BlackRobot extends GenericRobot {
                 .alongWith(upperFlyWheel.set(SPEED4 + UPPEROFFSET))
                 .beforeStarting(
                     () -> {
-                      LEDStrip.setSegmentActive(TEAM_COLORS, true);
-                      LEDStrip.changeSegmentPattern(TEAM_COLORS, LEDStrip.getRainbowPattern(200));
+                      LEDStrip.setSegmentActive(SHOOTER_LED, true);
+                      LEDStrip.changeSegmentPattern(SHOOTER_LED, LEDStrip.getRainbowPattern(200));
                     })
-                .finallyDo(() -> LEDStrip.setSegmentActive(TEAM_COLORS, false)));
+                .finallyDo(() -> LEDStrip.setSegmentActive(SHOOTER_LED, false)));
 
     driver.createBackButton().whileTrue(lowerFlyWheel.systemID());
     driver.createStartButton().whileTrue(upperFlyWheel.systemID());
-    driver.createLeftBumper().whileTrue(feeder.setSpeed(-0.5));
+    driver
+        .createLeftBumper()
+        .whileTrue(
+            feeder
+                .setSpeed(-0.5)
+                .beforeStarting(
+                    () -> {
+                      LEDStrip.setSegmentActive(FEEDER_LED, true);
+                      LEDStrip.changeSegmentPattern(
+                          FEEDER_LED,
+                          LEDStrip.getSolidPattern(Color.kGreen).blink(Seconds.of(.25)));
+                    })
+                .finallyDo(
+                    () ->
+                        LEDStrip.changeSegmentPattern(
+                            FEEDER_LED, LEDStrip.getSolidPattern(Color.kRed))));
 
     JoystickButton rightBumper = driver.createRightBumper();
 
