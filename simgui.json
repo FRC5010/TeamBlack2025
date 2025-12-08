@@ -163,16 +163,6 @@
       "/SmartDashboard/upperflywheel/mechanism": "Mechanism2d"
     },
     "windows": {
-      "/FMSInfo": {
-        "window": {
-          "visible": true
-        }
-      },
-      "/SmartDashboard/BlackRobot/Auto Modes": {
-        "window": {
-          "visible": true
-        }
-      },
       "/SmartDashboard/DrivePoseEstimator/Pose Field": {
         "CARPET0": {
           "image": ".\\pictures\\carpet.png",
@@ -861,5 +851,8 @@
   },
   "NetworkTables Info": {
     "visible": true
+  },
+  "NetworkTables View": {
+    "visible": false
   }
 }

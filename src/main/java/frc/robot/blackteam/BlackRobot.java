@@ -23,13 +23,14 @@ public class BlackRobot extends GenericRobot {
   private LowerFlyWheel lowerFlyWheel;
   private UpperFlyWheel upperFlyWheel;
   private StateMachine flyWheelStateMachine = new StateMachine(logPrefix);
-  private final double Speed1 = 0.15;
-  private final double Speed2 = 0.16;
-  private final double Speed3 = 0.17;
-  private final double Speed4 = 0.18;
-  private final double upperOffSet = 0.01;
-  private final AngularVelocity velocity2 = RPM.of(1500);
+  private final double SPEED1 = 0.15;
+  private final double SPEED2 = 0.16;
+  private final double SPEED3 = 0.17;
+  private final double SPEED4 = 0.18;
+  private final double UPPEROFFSET = 0.01;
+  private final AngularVelocity VELOCITY2 = RPM.of(1500);
   private final String STATUS_LED = "status_indicator";
+  private final String TEAM_COLORS = "team_colors";
 
   public BlackRobot(String directory) {
     super(directory);
@@ -59,8 +60,8 @@ public class BlackRobot extends GenericRobot {
         .createAButton()
         .whileTrue(
             lowerFlyWheel
-                .set(Speed1)
-                .alongWith(upperFlyWheel.set(Speed1 + upperOffSet))
+                .set(SPEED1)
+                .alongWith(upperFlyWheel.set(SPEED1 + UPPEROFFSET))
                 .beforeStarting(
                     () ->
                         LEDStrip.changeSegmentPattern(
@@ -72,13 +73,22 @@ public class BlackRobot extends GenericRobot {
     driver
         .createXButton()
         .whileTrue(
-            lowerFlyWheel.setVelocity(velocity2).alongWith(upperFlyWheel.setVelocity(velocity2)));
+            lowerFlyWheel.setVelocity(VELOCITY2).alongWith(upperFlyWheel.setVelocity(VELOCITY2)));
     driver
         .createYButton()
-        .whileTrue(lowerFlyWheel.set(Speed3).alongWith(upperFlyWheel.set(Speed3 + upperOffSet)));
+        .whileTrue(lowerFlyWheel.set(SPEED3).alongWith(upperFlyWheel.set(SPEED3 + UPPEROFFSET)));
     driver
         .createBButton()
-        .whileTrue(lowerFlyWheel.set(Speed4).alongWith(upperFlyWheel.set(Speed4 + upperOffSet)));
+        .whileTrue(
+            lowerFlyWheel
+                .set(SPEED4)
+                .alongWith(upperFlyWheel.set(SPEED4 + UPPEROFFSET))
+                .beforeStarting(
+                    () -> {
+                      LEDStrip.setSegmentActive(TEAM_COLORS, true);
+                      LEDStrip.changeSegmentPattern(TEAM_COLORS, LEDStrip.getRainbowPattern(200));
+                    })
+                .finallyDo(() -> LEDStrip.setSegmentActive(TEAM_COLORS, false)));
 
     driver.createBackButton().whileTrue(lowerFlyWheel.systemID());
     driver.createStartButton().whileTrue(upperFlyWheel.systemID());
