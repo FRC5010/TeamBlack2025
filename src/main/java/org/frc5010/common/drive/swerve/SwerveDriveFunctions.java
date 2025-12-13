@@ -4,22 +4,37 @@
 
 package org.frc5010.common.drive.swerve;
 
+import static org.frc5010.common.drive.swerve.akit.DriveConstants.ppConfig;
+
+import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.util.DriveFeedforwards;
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Force;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import java.util.Optional;
+import java.util.function.Supplier;
 import org.frc5010.common.drive.pose.DrivePoseEstimator;
+import org.ironmaple.simulation.drivesims.AbstractDriveTrainSimulation;
+import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
+import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
 import swervelib.SwerveDrive;
 
 /** Add your docs here. */
 public abstract class SwerveDriveFunctions {
+  public static DriveTrainSimulationConfig mapleSimConfig = DriveTrainSimulationConfig.Default();
+  public static SwerveDriveSimulation driveSimulation = null;
+
   protected GenericSwerveModuleInfo[] moduleInfos;
 
   public abstract GenericSwerveModuleInfo[] getModulesInfo();
@@ -55,6 +70,11 @@ public abstract class SwerveDriveFunctions {
 
   public abstract Command sysIdAngleMotorCommand(SubsystemBase swerveSubsystem);
 
+  public abstract void addVisionMeasurement(
+      Pose2d visionRobotPoseMeters,
+      double timestampSeconds,
+      Matrix<N3, N1> visionMeasurementStdDevs);
+
   /**
    * Drive the robot using the {@link SwerveModuleState}, it is recommended to have {@link
    * SwerveDrive#setCosineCompensator(boolean)} set to false for this.<br>
@@ -68,6 +88,12 @@ public abstract class SwerveDriveFunctions {
       ChassisSpeeds robotRelativeVelocity, SwerveModuleState[] states, Force[] feedforwardForces);
 
   public abstract Pose2d getPose();
+
+  public abstract void setPose(Pose2d pose);
+
+  public abstract Rotation2d getRotation();
+
+  public abstract Pose2d getSimPose();
 
   /**
    * Gets the current module states (azimuth and velocity)
@@ -93,5 +119,15 @@ public abstract class SwerveDriveFunctions {
 
   public void updateSimulation() {
     // Default empty
+  }
+
+  public Supplier<RobotConfig> getPPRobotConfigSupplier() {
+    return () -> ppConfig;
+  }
+
+  public void setPPRobotConfigSupplier(Supplier<RobotConfig> robotConfigSupplier) {}
+
+  public Supplier<Optional<AbstractDriveTrainSimulation>> getDriveTrainSimulationSupplier() {
+    return () -> Optional.ofNullable(driveSimulation);
   }
 }

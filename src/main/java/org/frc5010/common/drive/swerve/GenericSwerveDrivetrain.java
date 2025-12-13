@@ -15,7 +15,6 @@ import static edu.wpi.first.units.Units.Volts;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.config.PIDConstants;
-import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.util.DriveFeedforwards;
@@ -77,8 +76,10 @@ public class GenericSwerveDrivetrain extends GenericDrivetrain {
     this.swerveDrive = swerveDriveFunctions;
     this.swerveConstants = swerveConstants;
 
+    ppRobotConfigSupplier = swerveDrive.getPPRobotConfigSupplier();
     setDrivetrainPoseEstimator(swerveDrive.initializePoseEstimator());
     initializeSimulation(swerveConstants);
+    driveTrainSimulationSupplier = swerveDrive.getDriveTrainSimulationSupplier();
   }
 
   @Override
@@ -114,7 +115,7 @@ public class GenericSwerveDrivetrain extends GenericDrivetrain {
             new PIDConstants(4, 0, 0), // Translation PID constants
             new PIDConstants(1.0, 0, 0) // Rotation PID constants
             ),
-        config, // The robot configuration
+        ppRobotConfigSupplier.get(), // The robot configuration
         () -> {
           // Boolean supplier that controls when the path will be mirrored for the red
           // alliance
@@ -350,7 +351,7 @@ public class GenericSwerveDrivetrain extends GenericDrivetrain {
                     new PIDConstants(2.0, 0, 0.0), // Translation PID constants
                     new PIDConstants(1.0, 0, 0.0) // Rotation PID constants
                     ),
-                config,
+                ppRobotConfigSupplier.get(),
                 this)
             .beforeStarting(
                 () -> {
@@ -441,7 +442,7 @@ public class GenericSwerveDrivetrain extends GenericDrivetrain {
                     new PIDConstants(4.0, 0, 0.0), // Translation PID constants
                     new PIDConstants(4.0, 0, 0.0) // Rotation PID constants
                     ),
-                config,
+                ppRobotConfigSupplier.get(),
                 this)
             .beforeStarting(
                 () -> {
@@ -506,7 +507,7 @@ public class GenericSwerveDrivetrain extends GenericDrivetrain {
                     new PIDConstants(4.0, 0, 0.0), // Translation PID constants
                     new PIDConstants(4.0, 0, 0.0) // Rotation PID constants
                     ),
-                config,
+                ppRobotConfigSupplier.get(),
                 this)
             .beforeStarting(
                 () -> {
@@ -611,7 +612,7 @@ public class GenericSwerveDrivetrain extends GenericDrivetrain {
       throws IOException, ParseException {
     SwerveSetpointGenerator5010 setpointGenerator =
         new SwerveSetpointGenerator5010(
-            RobotConfig.fromGUISettings(),
+            ppRobotConfigSupplier.get(),
             swerveDrive.getMaximumModuleAngleVelocity().in(RadiansPerSecond));
 
     AtomicReference<SwerveSetpoint> prevSetpoint =

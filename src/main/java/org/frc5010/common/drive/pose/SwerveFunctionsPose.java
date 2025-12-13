@@ -9,13 +9,12 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
-import org.frc5010.common.drive.swerve.akit.AkitSwerveDrive;
+import org.frc5010.common.drive.swerve.SwerveDriveFunctions;
 
-/** Add your docs here. */
-public class AkitSwervePose extends GenericPose {
-  private final AkitSwerveDrive drivetrain;
+public class SwerveFunctionsPose extends GenericPose {
+  private SwerveDriveFunctions drivetrain;
 
-  public AkitSwervePose(AkitSwerveDrive drivetrain) {
+  public SwerveFunctionsPose(SwerveDriveFunctions drivetrain) {
     super(null);
     this.drivetrain = drivetrain;
     field2d = drivetrain.getField2d();
@@ -30,7 +29,7 @@ public class AkitSwervePose extends GenericPose {
   @Override
   public void updateVisionMeasurements(
       Pose2d robotPose, double imageCaptureTime, Matrix<N3, N1> stdVector) {
-    visionConsumer.accept(robotPose, imageCaptureTime, stdVector);
+    drivetrain.addVisionMeasurement(robotPose, imageCaptureTime, stdVector);
   }
 
   @Override

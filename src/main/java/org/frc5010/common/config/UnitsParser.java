@@ -14,6 +14,7 @@ import static edu.wpi.first.units.Units.FeetPerSecond;
 import static edu.wpi.first.units.Units.FeetPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.InchesPerSecond;
+import static edu.wpi.first.units.Units.KilogramSquareMeters;
 import static edu.wpi.first.units.Units.Kilograms;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
@@ -25,6 +26,7 @@ import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecondPerSecond;
+import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Second;
@@ -40,6 +42,7 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearAcceleration;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Mass;
+import edu.wpi.first.units.measure.MomentOfInertia;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.units.measure.Voltage;
 import org.frc5010.common.config.json.UnitValueJson;
@@ -155,6 +158,7 @@ public class UnitsParser {
     switch (unit.trim().toLowerCase()) {
       case MPS:
       case "m/sec":
+      case "mps":
       case "meter/sec":
       case "meters/sec":
       case "meter/second":
@@ -539,6 +543,10 @@ public class UnitsParser {
       case RAD:
       case "radians":
         return Radians.of(magnitude);
+      case "rot":
+      case "rotation":
+      case "rotations":
+        return Rotations.of(magnitude);
       default:
         System.err.println(
             "Unknown unit: " + unit + " for " + magnitude + ". Defaulting to degrees.");
@@ -655,6 +663,34 @@ public class UnitsParser {
         System.err.println(
             "Unknown unit: " + unit + " for " + magnitude + ". Defaulting to degrees/sec^2.");
         return DegreesPerSecondPerSecond.of(magnitude);
+    }
+  }
+
+  /**
+   * Converts a magnitude and a unit into a {@link MomentOfInertia} object.
+   *
+   * @param unitValueJson A json object containing the magnitude and unit of the moment of inertia.
+   * @return The {@link MomentOfInertia} object.
+   */
+  public static MomentOfInertia parseMomentOfInertia(UnitValueJson unitValueJson) {
+    return parseMomentOfInertia(unitValueJson.getMagnitude(), unitValueJson.getUnit());
+  }
+
+  /**
+   * Converts a magnitude and a unit into a {@link MomentOfInertia} object.
+   *
+   * @param magnitude The magnitude of the moment of inertia
+   * @param unit The unit of the moment moment @return The {@link MomentOfInertia} object
+   */
+  public static MomentOfInertia parseMomentOfInertia(double magnitude, String unit) {
+    switch (unit.trim().toLowerCase()) {
+      case "kg*m^2":
+      case "kg*m2":
+      case "kg*sqm":
+        return KilogramSquareMeters.of(magnitude);
+      default:
+        System.err.println("Unknown unit: " + unit + ". Defaulting to kg*m^2.");
+        return KilogramSquareMeters.of(magnitude);
     }
   }
 }

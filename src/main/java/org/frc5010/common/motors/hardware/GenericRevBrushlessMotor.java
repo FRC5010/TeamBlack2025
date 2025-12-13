@@ -13,6 +13,7 @@ import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
@@ -44,7 +45,7 @@ import yams.motorcontrollers.local.SparkWrapper;
 /** A class for a generic REV brushless motor */
 public class GenericRevBrushlessMotor implements GenericMotorController {
   /** {@link SparkMax} Instance. */
-  private final SparkMax motor;
+  private final SparkBase motor;
   /** The current limit */
   protected int currentLimit;
   /** The simulated instance of the motor */
@@ -67,6 +68,14 @@ public class GenericRevBrushlessMotor implements GenericMotorController {
   private RevEncoder encoder = null;
 
   private RevSparkController controller;
+
+  public GenericRevBrushlessMotor(int port, boolean maxOrFlex) {
+    if (maxOrFlex) {
+      motor = new SparkMax(port, MotorType.kBrushless);
+    } else {
+      motor = new SparkFlex(port, MotorType.kBrushless);
+    }
+  }
 
   /**
    * Constructor for a generic REV brushless motor
@@ -457,7 +466,7 @@ public class GenericRevBrushlessMotor implements GenericMotorController {
   @Override
   public void setMotorSimulationType(DCMotor motorSimulationType) {
     motorSim = motorSimulationType;
-    encoder.setSimulation(new SparkMaxSim(motor, motorSim));
+    encoder.setSimulation(new SparkMaxSim(((SparkMax) motor), motorSim));
   }
 
   /**

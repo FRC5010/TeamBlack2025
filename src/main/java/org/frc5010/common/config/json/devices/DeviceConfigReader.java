@@ -9,11 +9,11 @@ import java.io.IOException;
 import java.util.Optional;
 import org.frc5010.common.arch.GenericSubsystem;
 import org.frc5010.common.config.ConfigConstants;
-import org.frc5010.common.config.json.devices.ReflectionsManager.SparkBaseType;
 import org.frc5010.common.config.json.devices.ReflectionsManager.VENDOR;
 import org.frc5010.common.motors.GenericMotorController;
 import org.frc5010.common.motors.MotorConstants.Motor;
 import org.frc5010.common.motors.MotorFactory;
+import org.frc5010.common.motors.hardware.GenericRevBrushlessMotor;
 import yams.motorcontrollers.SmartMotorController;
 import yams.motorcontrollers.SmartMotorControllerConfig;
 import yams.motorcontrollers.SmartMotorFactory;
@@ -118,11 +118,21 @@ public class DeviceConfigReader {
    * @return {@link SmartMotorController} wrapper for the motor controller.
    */
   public static Optional<SmartMotorController> getSmartMotor(
-      String controller, String type, int id, SmartMotorControllerConfig config) {
+      String controller, String type, int id, SmartMotorControllerConfig config, String canbus) {
     Optional<SmartMotorController> motor = Optional.empty();
     DCMotor motorSim = null;
     int numberOfMotors = config.getFollowers().map(it -> it.length + 1).orElse(1);
-    Object motorController = getMotor(controller, type, id);
+    Object motorController = getReflectedGenericMotor(controller, id, canbus);
+    motorSim = getSimulatedMotor(type, numberOfMotors);
+
+    motor =
+        SmartMotorFactory.create(
+            ((GenericMotorController) motorController).getMotor(), motorSim, config);
+    return motor;
+  }
+
+  public static DCMotor getSimulatedMotor(String type, int numberOfMotors) {
+    DCMotor motorSim = null;
     switch (type.toLowerCase()) {
       case "neo":
         motorSim = DCMotor.getNEO(numberOfMotors);
@@ -138,11 +148,7 @@ public class DeviceConfigReader {
         break;
       default:
     }
-
-    motor =
-        SmartMotorFactory.create(
-            ((SmartMotorController) motorController).getMotorController(), motorSim, config);
-    return motor;
+    return motorSim;
   }
 
   /**
@@ -152,40 +158,41 @@ public class DeviceConfigReader {
    *     "thrifty_nova", or "thriftynova"
    * @param type The type of motor, e.g. "neo", "neo550", "krakenx60", or "krakenx44"
    * @param id The CAN ID of the motor controller
+   * @param canbus The CAN bus of the motor controller
    * @return The motor controller object
    */
-  public static Object getReflectedMotor(String controller, String type, int id) {
+  public static Object getReflectedGenericMotor(String controller, int id, String canbus) {
     ReflectionsManager.VENDOR vendorType = VENDOR.REV;
     switch (controller.toLowerCase()) {
       case "spark":
       case "sparkmax":
         vendorType = VENDOR.REV;
-        return ReflectionsManager.<SmartMotorController>create(
+        return ReflectionsManager.<GenericRevBrushlessMotor>create(
             vendorType,
-            "yams.motorcontrollers.local.SparkWrapper",
-            new Class[] {int.class, SparkBaseType.class},
-            new Object[] {id, SparkBaseType.SPARK_MAX});
+            "org.frc5010.common.motors.hardware.GenericRevBrushlessMotor",
+            new Class[] {int.class, boolean.class},
+            new Object[] {id, true});
       case "sparkflex":
         vendorType = VENDOR.REV;
-        return ReflectionsManager.<SmartMotorController>create(
+        return ReflectionsManager.<GenericRevBrushlessMotor>create(
             vendorType,
-            "yams.motorcontrollers.local.SparkWrapper",
-            new Class[] {int.class, SparkBaseType.class},
-            new Object[] {id, SparkBaseType.SPARK_FLEX});
+            "org.frc5010.common.motors.hardware.GenericRevBrushlessMotor",
+            new Class[] {int.class, boolean.class},
+            new Object[] {id, false});
       case "talonfx":
         vendorType = VENDOR.PHOENIX5;
         return ReflectionsManager.<SmartMotorController>create(
             vendorType,
-            "yams.motorcontrollers.remote.TalonFXWrapper",
-            new Class[] {int.class},
-            new Object[] {id});
+            "org.frc5010.common.motors.hardware.GenericTalonFXMotor",
+            new Class[] {int.class, String.class},
+            new Object[] {id, canbus});
       case "talonfxs":
         vendorType = VENDOR.PHOENIX6;
         return ReflectionsManager.<SmartMotorController>create(
             vendorType,
-            "yams.motorcontrollers.remote.TalonFXSWrapper",
-            new Class[] {int.class},
-            new Object[] {id});
+            "org.frc5010.common.motors.hardware.GenericTalonFXSMotor",
+            new Class[] {int.class, String.class},
+            new Object[] {id, canbus});
       case "nova":
       case "thrifty":
       case "thrifty_nova":
@@ -193,7 +200,7 @@ public class DeviceConfigReader {
         vendorType = VENDOR.THRIFTYBOT;
         return ReflectionsManager.<SmartMotorController>create(
             vendorType,
-            "yams.motorcontrollers.local.NovaWrapper",
+            "org.frc5010.common.motors.hardware.GenericThriftyNovaMotor",
             new Class[] {int.class},
             new Object[] {id});
       default:

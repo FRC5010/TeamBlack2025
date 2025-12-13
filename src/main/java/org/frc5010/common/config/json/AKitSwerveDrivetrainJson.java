@@ -5,26 +5,33 @@
 package org.frc5010.common.config.json;
 
 import static edu.wpi.first.units.Units.KilogramSquareMeters;
-import static edu.wpi.first.units.Units.Kilograms;
 import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
+import com.ctre.phoenix6.CANBus;
+import com.pathplanner.lib.config.ModuleConfig;
+import com.pathplanner.lib.config.RobotConfig;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.RobotBase;
-import frc.robot.generated.TunerConstants;
 import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
 import org.frc5010.common.arch.GenericRobot;
 import org.frc5010.common.config.ConfigConstants;
+import org.frc5010.common.config.json.devices.DeviceConfigReader;
+import org.frc5010.common.config.json.devices.DrivetrainConstantsJson;
 import org.frc5010.common.constants.RobotConstantsDef;
+import org.frc5010.common.drive.swerve.AkitTalonFXSwerveConfig;
 import org.frc5010.common.drive.swerve.GenericSwerveDrivetrain;
+import org.frc5010.common.drive.swerve.SwerveDriveFunctions;
+import org.frc5010.common.drive.swerve.akit.AKitTalonFXSwerveDrive;
 import org.frc5010.common.drive.swerve.akit.AkitSwerveDrive;
 import org.frc5010.common.drive.swerve.akit.GyroIOPigeon2;
 import org.frc5010.common.drive.swerve.akit.GyroIOSim;
+import org.frc5010.common.drive.swerve.akit.ModuleIOSim;
 import org.frc5010.common.drive.swerve.akit.ModuleIOSpark;
 import org.frc5010.common.drive.swerve.akit.ModuleIOSparkTalon;
 import org.frc5010.common.drive.swerve.akit.ModuleIOTalonFXReal;
@@ -39,65 +46,102 @@ import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
 /** Add your docs here. */
 public class AKitSwerveDrivetrainJson implements DrivetrainPropertiesJson {
   public String type = "SparkTalon";
-  public double robotMassKg = 74.088;
-  public double robotMOI = 6.883;
-  public double wheelCOF = 1.2;
+  public DrivetrainConstantsJson constants;
   private Optional<GamePiecesJson> gamePiecesJson = Optional.empty();
 
   @Override
-  public void readDrivetrainConfiguration(GenericRobot robot, File directory) throws IOException {
-    AkitSwerveDrive.mapleSimConfig =
-        DriveTrainSimulationConfig.Default()
-            .withRobotMass(Kilograms.of(robotMassKg))
-            .withCustomModuleTranslations(getModuleTranslations())
-            .withGyro(COTS.ofPigeon2())
-            .withSwerveModule(
-                new SwerveModuleSimulationConfig(
-                    DCMotor.getKrakenX60(1),
-                    DCMotor.getFalcon500(1),
-                    TunerConstants.FrontLeft.DriveMotorGearRatio,
-                    TunerConstants.FrontLeft.SteerMotorGearRatio,
-                    Volts.of(TunerConstants.FrontLeft.DriveFrictionVoltage),
-                    Volts.of(TunerConstants.FrontLeft.SteerFrictionVoltage),
-                    Meters.of(TunerConstants.FrontLeft.WheelRadius),
-                    KilogramSquareMeters.of(TunerConstants.FrontLeft.SteerInertia),
-                    wheelCOF));
-  }
+  public void readDrivetrainConfiguration(GenericRobot robot, File directory) throws IOException {}
 
   @Override
   public void createDriveTrain(GenericRobot robot) {
-    AkitSwerveDrive drive;
-    if (RobotBase.isSimulation()) {
+    SwerveDriveFunctions driveFunctions;
+    AkitTalonFXSwerveConfig config;
+    GenericSwerveDrivetrain drivetrain = null;
+    config = AkitTalonFXSwerveConfig.builder(constants, drivetrain);
 
-      AkitSwerveDrive.driveSimulation =
+    RobotConfig PP_CONFIG =
+        new RobotConfig(
+            config.getRobotMass(),
+            config.getDriveInertia(),
+            new ModuleConfig(
+                config.FrontLeft.WheelRadius,
+                config.getMaxDriveSpeed().in(MetersPerSecond),
+                constants.wheelCOF,
+                DeviceConfigReader.getSimulatedMotor(
+                        constants.modules.get("frontLeft").driveMotorSetup.motorType, 1)
+                    .withReduction(config.FrontLeft.DriveMotorGearRatio),
+                config.FrontLeft.SlipCurrent,
+                1),
+            getModuleTranslations(config));
+
+    SwerveDriveFunctions.mapleSimConfig =
+        DriveTrainSimulationConfig.Default()
+            .withBumperSize(config.getBumperFrameWidth(), config.getBumperFrameLength())
+            .withRobotMass(config.getRobotMass())
+            .withCustomModuleTranslations(getModuleTranslations(config))
+            .withGyro(COTS.ofPigeon2())
+            .withSwerveModule(
+                new SwerveModuleSimulationConfig(
+                    DeviceConfigReader.getSimulatedMotor(
+                        constants.modules.get("frontLeft").driveMotorSetup.motorType, 1),
+                    DeviceConfigReader.getSimulatedMotor(
+                        constants.modules.get("frontLeft").steerMotorSetup.motorType, 1),
+                    config.getDriveGearRatio(),
+                    config.getSteerGearRatio(),
+                    Volts.of(config.FrontLeft.DriveFrictionVoltage),
+                    Volts.of(config.FrontLeft.SteerFrictionVoltage),
+                    Meters.of(config.FrontLeft.WheelRadius),
+                    KilogramSquareMeters.of(config.FrontLeft.SteerInertia),
+                    constants.wheelCOF));
+
+    if (RobotBase.isSimulation()) {
+      SwerveDriveFunctions.driveSimulation =
           new SwerveDriveSimulation(
-              AkitSwerveDrive.mapleSimConfig, new Pose2d(3, 3, new Rotation2d()));
-      SimulatedArena.getInstance().addDriveTrainSimulation(AkitSwerveDrive.driveSimulation);
-      drive =
-          new AkitSwerveDrive(
-              new GyroIOSim(AkitSwerveDrive.driveSimulation.getGyroSimulation()),
-              new ModuleIOTalonFXSim(
-                  TunerConstants.FrontLeft, AkitSwerveDrive.driveSimulation.getModules()[0]),
-              new ModuleIOTalonFXSim(
-                  TunerConstants.FrontRight, AkitSwerveDrive.driveSimulation.getModules()[1]),
-              new ModuleIOTalonFXSim(
-                  TunerConstants.BackLeft, AkitSwerveDrive.driveSimulation.getModules()[2]),
-              new ModuleIOTalonFXSim(
-                  TunerConstants.BackRight, AkitSwerveDrive.driveSimulation.getModules()[3]),
-              AkitSwerveDrive.driveSimulation::setSimulationWorldPose);
-    } else {
-      if ("SparkTalon".equals(type)) {
-        drive =
+              SwerveDriveFunctions.mapleSimConfig, new Pose2d(3, 3, new Rotation2d()));
+      SimulatedArena.getInstance().addDriveTrainSimulation(SwerveDriveFunctions.driveSimulation);
+      if ("TalonFX".equals(type)) {
+        driveFunctions =
+            new AKitTalonFXSwerveDrive(
+                config,
+                new GyroIOSim(SwerveDriveFunctions.driveSimulation.getGyroSimulation()),
+                new ModuleIOTalonFXSim(
+                    config, config.FrontLeft, SwerveDriveFunctions.driveSimulation.getModules()[0]),
+                new ModuleIOTalonFXSim(
+                    config,
+                    config.FrontRight,
+                    SwerveDriveFunctions.driveSimulation.getModules()[1]),
+                new ModuleIOTalonFXSim(
+                    config, config.BackLeft, SwerveDriveFunctions.driveSimulation.getModules()[2]),
+                new ModuleIOTalonFXSim(
+                    config, config.BackRight, SwerveDriveFunctions.driveSimulation.getModules()[3]),
+                SwerveDriveFunctions.driveSimulation::setSimulationWorldPose);
+      } else {
+        driveFunctions =
             new AkitSwerveDrive(
+                config,
+                new GyroIOSim(SwerveDriveFunctions.driveSimulation.getGyroSimulation()),
+                new ModuleIOSim(),
+                new ModuleIOSim(),
+                new ModuleIOSim(),
+                new ModuleIOSim(),
+                SwerveDriveFunctions.driveSimulation::setSimulationWorldPose);
+      }
+    } else {
+      config.ODOMETRY_FREQUENCY = new CANBus(config.getCanbus()).isNetworkFD() ? 250.0 : 100.0;
+      if ("SparkTalon".equals(type)) {
+        driveFunctions =
+            new AkitSwerveDrive(
+                config,
                 new GyroIOPigeon2(),
-                new ModuleIOSparkTalon(TunerConstants.FrontLeft),
-                new ModuleIOSparkTalon(TunerConstants.FrontRight),
-                new ModuleIOSparkTalon(TunerConstants.BackLeft),
-                new ModuleIOSparkTalon(TunerConstants.BackRight),
+                new ModuleIOSparkTalon(config, config.FrontLeft),
+                new ModuleIOSparkTalon(config, config.FrontRight),
+                new ModuleIOSparkTalon(config, config.BackLeft),
+                new ModuleIOSparkTalon(config, config.BackRight),
                 (pose) -> {});
       } else if ("Spark".equals(type)) {
-        drive =
+        driveFunctions =
             new AkitSwerveDrive(
+                config,
                 new GyroIOPigeon2(),
                 new ModuleIOSpark(0),
                 new ModuleIOSpark(1),
@@ -105,36 +149,39 @@ public class AKitSwerveDrivetrainJson implements DrivetrainPropertiesJson {
                 new ModuleIOSpark(3),
                 (pose) -> {});
       } else if ("TalonFX".equals(type)) {
-        drive =
-            new AkitSwerveDrive(
+        driveFunctions =
+            new AKitTalonFXSwerveDrive(
+                config,
                 new GyroIOPigeon2(),
-                new ModuleIOTalonFXReal(TunerConstants.FrontLeft),
-                new ModuleIOTalonFXReal(TunerConstants.FrontRight),
-                new ModuleIOTalonFXReal(TunerConstants.BackLeft),
-                new ModuleIOTalonFXReal(TunerConstants.BackRight),
+                new ModuleIOTalonFXReal(config, config.FrontLeft),
+                new ModuleIOTalonFXReal(config, config.FrontRight),
+                new ModuleIOTalonFXReal(config, config.BackLeft),
+                new ModuleIOTalonFXReal(config, config.BackRight),
                 (pose) -> {});
       } else {
         throw new IllegalArgumentException("Unknown AkitSwerveDrive type: " + type);
       }
     }
-    GenericSwerveDrivetrain drivetrain =
+    driveFunctions.setPPRobotConfigSupplier(() -> PP_CONFIG);
+    drivetrain =
         new GenericSwerveDrivetrain(
             new LoggedMechanism2d(RobotConstantsDef.robotVisualH, RobotConstantsDef.robotVisualV),
             robot.getDrivetrainConstants(),
-            drive);
+            driveFunctions);
+    final GenericSwerveDrivetrain dt = drivetrain;
     robot.addSubsystem(ConfigConstants.DRIVETRAIN, drivetrain);
-    robot.setPoseSupplier(() -> drivetrain.getPoseEstimator().getCurrentPose());
-    robot.setSimulatedPoseSupplier(() -> drive.getMapleSimPose());
-    gamePiecesJson.ifPresent(it -> it.createGamePieces(drivetrain));
+    robot.setPoseSupplier(() -> dt.getPoseEstimator().getCurrentPose());
+    robot.setSimulatedPoseSupplier(() -> driveFunctions.getSimPose());
+    gamePiecesJson.ifPresent(it -> it.createGamePieces(dt));
   }
 
   /** Returns an array of module translations. */
-  public static Translation2d[] getModuleTranslations() {
+  public static Translation2d[] getModuleTranslations(AkitTalonFXSwerveConfig config) {
     return new Translation2d[] {
-      new Translation2d(TunerConstants.FrontLeft.LocationX, TunerConstants.FrontLeft.LocationY),
-      new Translation2d(TunerConstants.FrontRight.LocationX, TunerConstants.FrontRight.LocationY),
-      new Translation2d(TunerConstants.BackLeft.LocationX, TunerConstants.BackLeft.LocationY),
-      new Translation2d(TunerConstants.BackRight.LocationX, TunerConstants.BackRight.LocationY)
+      new Translation2d(config.FrontLeft.LocationX, config.FrontLeft.LocationY),
+      new Translation2d(config.FrontRight.LocationX, config.FrontRight.LocationY),
+      new Translation2d(config.BackLeft.LocationX, config.BackLeft.LocationY),
+      new Translation2d(config.BackRight.LocationX, config.BackRight.LocationY)
     };
   }
 }

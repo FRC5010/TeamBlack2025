@@ -31,6 +31,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -44,6 +45,8 @@ import org.frc5010.common.drive.pose.DrivePoseEstimator;
 import org.frc5010.common.sensors.Controller;
 import org.frc5010.common.telemetry.DisplayBoolean;
 import org.ironmaple.simulation.SimulatedArena;
+import org.ironmaple.simulation.drivesims.AbstractDriveTrainSimulation;
+import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
 import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
@@ -59,8 +62,12 @@ public abstract class GenericDrivetrain extends GenericSubsystem {
    * Load the RobotConfig from the GUI settings. You should probably store this in your Constants
    * file
    */
-  protected RobotConfig config;
+  protected RobotConfig ppRobotConfig;
 
+  protected Supplier<RobotConfig> ppRobotConfigSupplier = () -> ppRobotConfig;
+
+  protected static Supplier<Optional<AbstractDriveTrainSimulation>> driveTrainSimulationSupplier =
+      () -> null;
   protected DisplayBoolean hasIssues;
   protected DoubleSupplier angleSpeedSupplier = null;
   public Supplier<Double> maxForwardAcceleration,
@@ -90,10 +97,10 @@ public abstract class GenericDrivetrain extends GenericSubsystem {
   public GenericDrivetrain(LoggedMechanism2d mechVisual) {
     super(mechVisual);
     try {
-      config = RobotConfig.fromGUISettings();
+      ppRobotConfig = RobotConfig.fromGUISettings();
     } catch (Exception e) {
       // A default config in case the GUI settings can't be loaded
-      config =
+      ppRobotConfig =
           new RobotConfig(
               Kilogram.of(68).magnitude(),
               SingleJointedArmSim.estimateMOI(0.5, Kilogram.of(68).magnitude()),
@@ -430,5 +437,16 @@ public abstract class GenericDrivetrain extends GenericSubsystem {
       return badConnections > 5 || !positionOk;
     }
     return false;
+  }
+
+  /**
+   * Gets the maple-sim drivetrain simulation instance This is used to add intake simulation /
+   * launch game pieces from the robot
+   *
+   * @return an optional maple-sim {@link SwerveDriveSimulation} object, or {@link Optional#empty()}
+   *     when calling from a real robot
+   */
+  public static Optional<AbstractDriveTrainSimulation> getMapleSimDrive() {
+    return driveTrainSimulationSupplier.get();
   }
 }

@@ -4,6 +4,7 @@
 
 package org.frc5010.common.utils;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.ArrayList;
@@ -44,6 +45,7 @@ public class RobotIdentity {
       String whichRobot =
           macList.stream().map(it -> String.format("%02X", it)).collect(Collectors.joining(":"));
       MAC_Address = whichRobot;
+      SmartDashboard.putString("My ID", whichRobot);
       return whichRobot;
     } catch (SocketException e) {
       throw new RuntimeException(e);

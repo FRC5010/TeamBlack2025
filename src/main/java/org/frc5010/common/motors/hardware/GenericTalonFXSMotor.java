@@ -8,12 +8,13 @@ import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.SignalLogger;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.configs.TalonFXConfigurator;
+import com.ctre.phoenix6.configs.TalonFXSConfiguration;
+import com.ctre.phoenix6.configs.TalonFXSConfigurator;
 import com.ctre.phoenix6.controls.ControlRequest;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.hardware.TalonFXS;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -32,24 +33,24 @@ import org.frc5010.common.sensors.encoder.GenericEncoder;
 import org.frc5010.common.sensors.encoder.TalonFXEncoder;
 import yams.motorcontrollers.SmartMotorController;
 import yams.motorcontrollers.SmartMotorControllerConfig;
-import yams.motorcontrollers.remote.TalonFXWrapper;
+import yams.motorcontrollers.remote.TalonFXSWrapper;
 
 /** A class for a generic TalonFX motor */
-public class GenericTalonFXMotor implements GenericMotorController {
+public class GenericTalonFXSMotor implements GenericMotorController {
   /** Wait time for status frames to show up. */
   public static double STATUS_TIMEOUT_SECONDS = 0.02;
   /** Factory default already occurred. */
   private final boolean factoryDefaultOccurred = false;
   /** TalonFX motor controller. */
-  private final TalonFX motor;
+  private final TalonFXS motor;
   /** TalonFX controller */
   protected TalonFXController controller;
   /** TalonFX encoder */
   protected TalonFXEncoder encoder;
   /** Current TalonFX configuration. */
-  private TalonFXConfiguration configuration = new TalonFXConfiguration();
+  private TalonFXSConfiguration configuration = new TalonFXSConfiguration();
   /** Current TalonFX Configurator. */
-  private TalonFXConfigurator cfg;
+  private TalonFXSConfigurator cfg;
   /** Current motor current limit */
   protected int motorCurrentLimit;
   /** Current motor supply current limit */
@@ -68,8 +69,8 @@ public class GenericTalonFXMotor implements GenericMotorController {
   /** Configuration */
   protected Motor config;
 
-  public GenericTalonFXMotor(int id, String canbus) {
-    motor = new TalonFX(id, canbus);
+  public GenericTalonFXSMotor(int id, String canbus) {
+    motor = new TalonFXS(id, canbus);
   }
   /**
    * Construct the TalonFX swerve motor given the ID and CANBus.
@@ -78,8 +79,8 @@ public class GenericTalonFXMotor implements GenericMotorController {
    * @param config Motor configuration.
    * @param canbus CANBus on which the TalonFX is on.
    */
-  public GenericTalonFXMotor(int id, Motor config, String canbus) {
-    motor = new TalonFX(id, canbus);
+  public GenericTalonFXSMotor(int id, Motor config, String canbus) {
+    motor = new TalonFXS(id, canbus);
     this.cfg = motor.getConfigurator();
 
     factoryDefaults();
@@ -89,11 +90,11 @@ public class GenericTalonFXMotor implements GenericMotorController {
     setMotorSimulationType(config.getMotorSimulationType());
     setMaxRPM(config.maxRpm);
     this.config = config;
-    encoder = new TalonFXEncoder(this);
-    controller = new TalonFXController(this);
+    // encoder = new TalonFXEncoder(this);
+    // controller = new TalonFXController(this);
   }
 
-  public GenericTalonFXMotor(int canId, Motor config) {
+  public GenericTalonFXSMotor(int canId, Motor config) {
     this(canId, config, "");
   }
 
@@ -240,7 +241,7 @@ public class GenericTalonFXMotor implements GenericMotorController {
    */
   @Override
   public GenericEncoder createMotorEncoder(int countsPerRev) {
-    GenericEncoder encoder = new TalonFXEncoder(this);
+    // GenericEncoder encoder = new TalonFXEncoder(this);
     encoder.setPositionConversion(countsPerRev);
     encoder.setVelocityConversion(countsPerRev);
     return encoder;
@@ -518,6 +519,6 @@ public class GenericTalonFXMotor implements GenericMotorController {
 
   @Override
   public SmartMotorController getSmartMotorController(SmartMotorControllerConfig config) {
-    return new TalonFXWrapper(motor, motorSim, config);
+    return new TalonFXSWrapper(motor, motorSim, config);
   }
 }

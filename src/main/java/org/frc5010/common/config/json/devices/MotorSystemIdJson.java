@@ -7,7 +7,7 @@ package org.frc5010.common.config.json.devices;
 import org.frc5010.common.config.UnitsParser;
 import org.frc5010.common.config.json.UnitValueJson;
 
-/** Add your docs here. */
+/** System identification parameters for a motor. */
 public class MotorSystemIdJson {
   public static class FeedBack {
     public double p = 0;

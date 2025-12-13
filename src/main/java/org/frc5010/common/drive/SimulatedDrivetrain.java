@@ -87,7 +87,7 @@ public class SimulatedDrivetrain extends GenericDrivetrain {
             new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
             new PIDConstants(5.0, 0.0, 0.0) // Rotation PID constants
             ),
-        config, // The robot configuration
+        ppRobotConfig, // The robot configuration
         () -> {
           // Boolean supplier that controls when the path will be mirrored for the red
           // alliance

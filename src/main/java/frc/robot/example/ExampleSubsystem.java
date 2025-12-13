@@ -21,6 +21,7 @@ import java.util.function.Supplier;
 import org.frc5010.common.arch.GenericSubsystem;
 import org.frc5010.common.constants.GenericPID;
 import org.frc5010.common.constants.MotorFeedFwdConstants;
+import org.frc5010.common.drive.GenericDrivetrain;
 import org.frc5010.common.drive.swerve.YAGSLSwerveDrivetrain;
 import org.frc5010.common.motors.MotorConstants.Motor;
 import org.frc5010.common.motors.MotorFactory;
@@ -63,7 +64,7 @@ public class ExampleSubsystem extends GenericSubsystem {
     intakeSimulation =
         IntakeSimulation.InTheFrameIntake(
             "FRC5010Ball",
-            YAGSLSwerveDrivetrain.getSwerveDrive().getMapleSimDrive().get(),
+            GenericDrivetrain.getMapleSimDrive().get(),
             Inches.of(24.25),
             IntakeSide.FRONT,
             1);

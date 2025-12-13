@@ -1,6 +1,6 @@
 {
   "userConfig": "competition_mode.json",
-  "driveType": "YAGSL_SWERVE_DRIVE",
+  "driveType": "AKIT_SWERVE_DRIVE",
   "trackWidth": 16.8,
   "trackWidthUom": "in",
   "wheelBase": 18.5,

@@ -29,6 +29,7 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants;
 import frc.robot.generated.TunerConstants;
+import org.frc5010.common.drive.swerve.AkitTalonFXSwerveConfig;
 
 public abstract class ModuleIOTalonFX implements ModuleIO {
   protected final SwerveModuleConstants<
@@ -68,6 +69,7 @@ public abstract class ModuleIOTalonFX implements ModuleIO {
   private final Debouncer turnEncoderConnectedDebounce = new Debouncer(0.5);
 
   protected ModuleIOTalonFX(
+      AkitTalonFXSwerveConfig config,
       SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>
           constants) {
     this.constants = constants;
@@ -144,7 +146,7 @@ public abstract class ModuleIOTalonFX implements ModuleIO {
 
     // Configure periodic frames
     BaseStatusSignal.setUpdateFrequencyForAll(
-        AkitSwerveDrive.ODOMETRY_FREQUENCY, turnAbsolutePosition, drivePosition);
+        config.ODOMETRY_FREQUENCY, turnAbsolutePosition, drivePosition);
     BaseStatusSignal.setUpdateFrequencyForAll(
         50.0,
         driveVelocity,

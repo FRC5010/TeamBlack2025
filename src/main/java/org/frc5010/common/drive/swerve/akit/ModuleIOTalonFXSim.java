@@ -17,6 +17,7 @@ import static edu.wpi.first.units.Units.Radians;
 
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import java.util.Arrays;
+import org.frc5010.common.drive.swerve.AkitTalonFXSwerveConfig;
 import org.frc5010.common.drive.swerve.akit.util.PhoenixUtil;
 import org.ironmaple.simulation.drivesims.SwerveModuleSimulation;
 
@@ -27,8 +28,11 @@ import org.ironmaple.simulation.drivesims.SwerveModuleSimulation;
 public class ModuleIOTalonFXSim extends ModuleIOTalonFX {
   private final SwerveModuleSimulation simulation;
 
-  public ModuleIOTalonFXSim(SwerveModuleConstants constants, SwerveModuleSimulation simulation) {
-    super(PhoenixUtil.regulateModuleConstantForSimulation(constants));
+  public ModuleIOTalonFXSim(
+      AkitTalonFXSwerveConfig config,
+      SwerveModuleConstants constants,
+      SwerveModuleSimulation simulation) {
+    super(config, PhoenixUtil.regulateModuleConstantForSimulation(constants));
 
     this.simulation = simulation;
     simulation.useDriveMotorController(new PhoenixUtil.TalonFXMotorControllerSim(driveTalon));

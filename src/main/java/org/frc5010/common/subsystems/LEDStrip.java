@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.AddressableLEDBufferView;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import org.frc5010.common.arch.GenericSubsystem;
@@ -30,6 +31,7 @@ public class LEDStrip extends GenericSubsystem {
     public LEDPattern pattern;
     public AddressableLEDBufferView view;
     public boolean active = false;
+    public int order = 0;
 
     /**
      * Creates a new ActivePattern object.
@@ -75,6 +77,17 @@ public class LEDStrip extends GenericSubsystem {
     }
 
     /**
+     * Sets the order of the active pattern.
+     *
+     * @param order the order to set
+     * @return the active pattern object
+     */
+    public Segment setOrder(int order) {
+      this.order = order;
+      return this;
+    }
+
+    /**
      * Gets the pattern of the active pattern.
      *
      * @return the pattern of the active pattern
@@ -99,6 +112,15 @@ public class LEDStrip extends GenericSubsystem {
      */
     public boolean isActive() {
       return active;
+    }
+
+    /**
+     * Gets the order of the active pattern.
+     *
+     * @return the order of the active pattern
+     */
+    public int getOrder() {
+      return order;
     }
   }
 
@@ -146,12 +168,10 @@ public class LEDStrip extends GenericSubsystem {
   }
 
   /**
-   * Sets the default pattern to be used when the LED strip is not being controlled by a command.
-   * This pattern will be used when the LED strip is not being controlled by a command, such as when
-   * the robot is disabled or when no commands are currently running that control the LED strip.
+   * Sets the default pattern to run on the entire LED strip when the LED subsystem is not running a
+   * command.
    *
-   * @param pattern the default pattern to use when the LED strip is not being controlled by a
-   *     command
+   * @param defaultPattern the LED pattern to run by default
    */
   public void setFullPattern(LEDPattern pattern) {
     this.defaultPattern = pattern;
@@ -167,19 +187,21 @@ public class LEDStrip extends GenericSubsystem {
   }
 
   /**
-   * Runs the active patterns on the LED strip, applying the colors specified by the patterns to the
-   * corresponding LEDs.
+   * Creates a command that runs a pattern on the entire LED strip.
    *
-   * @return a command that runs the active patterns on the LED strip
+   * @param defaultPattern the LED pattern to run
    */
   public Command runPattern() {
     return run(
         () -> {
-          for (Segment ap : segments.values()) {
-            if (ap.isActive()) {
-              ap.getPattern().applyTo(ap.getView());
-            }
-          }
+          segments.values().stream()
+              .sorted(Comparator.comparingInt(Segment::getOrder))
+              .forEach(
+                  ap -> {
+                    if (ap.isActive()) {
+                      ap.getPattern().applyTo(ap.getView());
+                    }
+                  });
         });
   }
 
@@ -222,12 +244,45 @@ public class LEDStrip extends GenericSubsystem {
     segments.put(name, Segment.create().setView(view).setPattern(pattern).setActive(true));
   }
 
+  /**
+   * Adds a pattern to the LED strip with the given name, starting at the given index and spanning
+   * the given length. If the name already corresponds to a pattern, this method does nothing.
+   *
+   * @param name The name of the pattern to add
+   * @param startIndex The starting index of the pattern
+   * @param length The length of the pattern
+   */
   public static void addSegment(String name, int startIndex, int length) {
     if (null == instance) {
       return;
     }
     AddressableLEDBufferView view = instance.m_buffer.createView(startIndex, length);
     segments.put(name, Segment.create().setView(view).setPattern(LEDPattern.kOff).setActive(false));
+  }
+
+  /**
+   * Adds a pattern to the LED strip with the given name, starting at the given index and spanning
+   * the given length. The pattern is active by default. If the name already corresponds to a
+   * pattern, this method does nothing.
+   *
+   * @param name The name of the pattern to add
+   * @param startIndex The starting index of the pattern
+   * @param length The length of the pattern
+   * @param order The order in which the pattern will be displayed. Lower order patterns will be
+   *     displayed before higher order patterns.
+   */
+  public static void addSegment(String name, int startIndex, int length, int order) {
+    if (null == instance) {
+      return;
+    }
+    AddressableLEDBufferView view = instance.m_buffer.createView(startIndex, length);
+    segments.put(
+        name,
+        Segment.create()
+            .setView(view)
+            .setPattern(LEDPattern.kOff)
+            .setActive(false)
+            .setOrder(order));
   }
 
   /**

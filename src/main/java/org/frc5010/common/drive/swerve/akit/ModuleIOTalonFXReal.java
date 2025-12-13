@@ -17,6 +17,7 @@ import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import java.util.Queue;
+import org.frc5010.common.drive.swerve.AkitTalonFXSwerveConfig;
 
 /**
  * Module IO implementation for Talon FX drive motor controller, Talon FX turn motor controller, and
@@ -30,14 +31,14 @@ public class ModuleIOTalonFXReal extends ModuleIOTalonFX {
   private final Queue<Double> drivePositionQueue;
   private final Queue<Double> turnPositionQueue;
 
-  public ModuleIOTalonFXReal(SwerveModuleConstants constants) {
-    super(constants);
+  public ModuleIOTalonFXReal(AkitTalonFXSwerveConfig config, SwerveModuleConstants constants) {
+    super(config, constants);
 
-    this.timestampQueue = PhoenixOdometryThread.getInstance().makeTimestampQueue();
+    this.timestampQueue = PhoenixOdometryThread.getInstance(config).makeTimestampQueue();
     this.drivePositionQueue =
-        PhoenixOdometryThread.getInstance().registerSignal(super.drivePosition);
+        PhoenixOdometryThread.getInstance(config).registerSignal(super.drivePosition);
     this.turnPositionQueue =
-        PhoenixOdometryThread.getInstance().registerSignal(super.turnAbsolutePosition);
+        PhoenixOdometryThread.getInstance(config).registerSignal(super.turnAbsolutePosition);
   }
 
   @Override

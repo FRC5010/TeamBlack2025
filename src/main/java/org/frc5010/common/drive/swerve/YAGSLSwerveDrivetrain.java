@@ -38,10 +38,13 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import java.io.File;
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 import org.frc5010.common.constants.GenericDrivetrainConstants;
 import org.frc5010.common.drive.pose.DrivePoseEstimator;
-import org.frc5010.common.drive.pose.YAGSLSwervePose;
+import org.frc5010.common.drive.pose.SwerveFunctionsPose;
+import org.ironmaple.simulation.drivesims.AbstractDriveTrainSimulation;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
 import swervelib.SwerveDriveTest;
@@ -118,23 +121,6 @@ public class YAGSLSwerveDrivetrain extends SwerveDriveFunctions {
     // offsets onto it. Throws warning if not possible
 
     /** 5010 Code */
-    // SwerveConstants swerveConstants = (SwerveConstants) constants;
-    // if (swerveConstants.getSwerveModuleConstants().getDriveFeedForward().size() >
-    // 0) {
-    // Map<String, MotorFeedFwdConstants> motorFFMap =
-    // swerveConstants.getSwerveModuleConstants().getDriveFeedForward();
-    // Map<String, SwerveModule> swerveModuleMap = swerveDrive.getModuleMap();
-    // motorFFMap.keySet().stream()
-    // .forEach(
-    // module -> {
-    // MotorFeedFwdConstants ff = motorFFMap.get(module);
-    // double kS = ff.getkS();
-    // double kV = ff.getkV();
-    // double kA = ff.getkA();
-    // swerveModuleMap.get(module).setFeedforward(new SimpleMotorFeedforward(kS, kV,
-    // kA));
-    // });
-    // }
   }
 
   /**
@@ -144,7 +130,7 @@ public class YAGSLSwerveDrivetrain extends SwerveDriveFunctions {
    */
   @Override
   public DrivePoseEstimator initializePoseEstimator() {
-    return new DrivePoseEstimator(new YAGSLSwervePose(this));
+    return new DrivePoseEstimator(new SwerveFunctionsPose(this));
   }
 
   @Override
@@ -406,7 +392,8 @@ public class YAGSLSwerveDrivetrain extends SwerveDriveFunctions {
    *
    * @param initialHolonomicPose The pose to set the odometry to
    */
-  public void resetOdometry(Pose2d initialHolonomicPose) {
+  @Override
+  public void setPose(Pose2d initialHolonomicPose) {
     swerveDrive.resetOdometry(initialHolonomicPose);
   }
 
@@ -454,7 +441,7 @@ public class YAGSLSwerveDrivetrain extends SwerveDriveFunctions {
     if (isRedAlliance()) {
       zeroGyro();
       // Set the pose 180 degrees
-      resetOdometry(new Pose2d(getPose().getTranslation(), Rotation2d.fromDegrees(180)));
+      setPose(new Pose2d(getPose().getTranslation(), Rotation2d.fromDegrees(180)));
     } else {
       zeroGyro();
     }
@@ -476,7 +463,8 @@ public class YAGSLSwerveDrivetrain extends SwerveDriveFunctions {
    *
    * @return The yaw angle
    */
-  public Rotation2d getHeading() {
+  @Override
+  public Rotation2d getRotation() {
     return getPose().getRotation();
   }
 
@@ -495,7 +483,7 @@ public class YAGSLSwerveDrivetrain extends SwerveDriveFunctions {
     xInput = Math.pow(xInput, 3);
     yInput = Math.pow(yInput, 3);
     return swerveDrive.swerveController.getTargetSpeeds(
-        xInput, yInput, headingX, headingY, getHeading().getRadians(), maximumSpeed);
+        xInput, yInput, headingX, headingY, getRotation().getRadians(), maximumSpeed);
   }
 
   /**
@@ -511,7 +499,7 @@ public class YAGSLSwerveDrivetrain extends SwerveDriveFunctions {
     xInput = Math.pow(xInput, 3);
     yInput = Math.pow(yInput, 3);
     return swerveDrive.swerveController.getTargetSpeeds(
-        xInput, yInput, angle.getRadians(), getHeading().getRadians(), maximumSpeed);
+        xInput, yInput, angle.getRadians(), getRotation().getRadians(), maximumSpeed);
   }
 
   /**
@@ -594,7 +582,8 @@ public class YAGSLSwerveDrivetrain extends SwerveDriveFunctions {
    * measurements from vision less. This matrix is in the form [x, y, theta]^T, with units in meters
    * and radians.
    */
-  public void updateVisionMeasurements(
+  @Override
+  public void addVisionMeasurement(
       Pose2d robotPose, double imageCaptureTime, Matrix<N3, N1> stdVector) {
     swerveDrive.addVisionMeasurement(robotPose, imageCaptureTime, stdVector);
   }
@@ -604,7 +593,8 @@ public class YAGSLSwerveDrivetrain extends SwerveDriveFunctions {
    *
    * @return The current pose of the simulated drivetrain as a {@link Pose2d}.
    */
-  public Pose2d getMapleSimPose() {
+  @Override
+  public Pose2d getSimPose() {
     return swerveDrive.getMapleSimDrive().get().getSimulatedDriveTrainPose();
   }
 
@@ -645,5 +635,17 @@ public class YAGSLSwerveDrivetrain extends SwerveDriveFunctions {
   @Override
   public void driveRobotRelative(ChassisSpeeds velocity) {
     swerveDrive.drive(velocity);
+  }
+
+  /**
+   * Gets a supplier of the current simulated drivetrain, or an empty optional if not running in
+   * simulation.
+   *
+   * @return A supplier of the current simulated drivetrain, or an empty optional if not running in
+   *     simulation.
+   */
+  @Override
+  public Supplier<Optional<AbstractDriveTrainSimulation>> getDriveTrainSimulationSupplier() {
+    return () -> Optional.ofNullable(swerveDrive.getMapleSimDrive().get());
   }
 }

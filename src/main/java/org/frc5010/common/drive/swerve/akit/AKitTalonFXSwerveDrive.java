@@ -1,18 +1,21 @@
-// Copyright (c) 2021-2025 Littleton Robotics
+// Copyright 2021-2025 FRC 6328
 // http://github.com/Mechanical-Advantage
 //
-// Use of this source code is governed by a BSD
-// license that can be found in the LICENSE file
-// at the root directory of this project.
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// version 3 as published by the Free Software Foundation or
+// available in the root directory of this project.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
 
 package org.frc5010.common.drive.swerve.akit;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Volts;
-import static org.frc5010.common.drive.swerve.akit.DriveConstants.driveBaseRadius;
-import static org.frc5010.common.drive.swerve.akit.DriveConstants.maxSpeedMetersPerSec;
-import static org.frc5010.common.drive.swerve.akit.DriveConstants.moduleTranslations;
 
-import com.ctre.phoenix6.CANBus;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.util.DriveFeedforwards;
 import com.pathplanner.lib.util.PathPlannerLogging;
@@ -23,6 +26,7 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -46,57 +50,58 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import org.frc5010.common.drive.SwerveDriveConfig;
 import org.frc5010.common.drive.pose.DrivePoseEstimator;
 import org.frc5010.common.drive.pose.SwerveFunctionsPose;
+import org.frc5010.common.drive.swerve.AkitTalonFXSwerveConfig;
 import org.frc5010.common.drive.swerve.GenericSwerveModuleInfo;
 import org.frc5010.common.drive.swerve.SwerveDriveFunctions;
-import org.ironmaple.simulation.SimulatedArena;
-import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
-import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
-public class AkitSwerveDrive extends SwerveDriveFunctions {
-  final double ODOMETRY_FREQUENCY;
+public class AKitTalonFXSwerveDrive extends SwerveDriveFunctions {
+  // The config doesn't include these constants, so they are declared locally
 
-  public static DriveTrainSimulationConfig mapleSimConfig = DriveTrainSimulationConfig.Default();
+  final AkitTalonFXSwerveConfig config;
   static final Lock odometryLock = new ReentrantLock();
   private final GyroIO gyroIO;
   private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
   private final Module[] modules = new Module[4]; // FL, FR, BL, BR
   private SysIdRoutine sysId;
   private Field2d field = new Field2d(); // For visualization in SmartDashboard
-  private Supplier<RobotConfig> robotConfigSupplier = () -> null;
-  public static SwerveDriveSimulation driveSimulation = null;
 
+  public Supplier<RobotConfig> robotConfigSupplier;
   private final Alert gyroDisconnectedAlert =
       new Alert("Disconnected gyro, using kinematics as fallback.", AlertType.kError);
 
-  private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(moduleTranslations);
+  private final SwerveDriveKinematics kinematics;
   private Rotation2d rawGyroRotation = new Rotation2d();
-  private SwerveModulePosition[] lastModulePositions = // For delta tracking
+  private final SwerveModulePosition[] lastModulePositions = // For delta tracking
       new SwerveModulePosition[] {
         new SwerveModulePosition(),
         new SwerveModulePosition(),
         new SwerveModulePosition(),
         new SwerveModulePosition()
       };
-  private SwerveDrivePoseEstimator poseEstimator =
-      new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
+  private SwerveDrivePoseEstimator poseEstimator;
 
   private final Consumer<Pose2d> resetSimulationPoseCallBack;
 
-  public AkitSwerveDrive(
-      SwerveDriveConfig config,
+  public AKitTalonFXSwerveDrive(
+      AkitTalonFXSwerveConfig config,
       GyroIO gyroIO,
       ModuleIO flModuleIO,
       ModuleIO frModuleIO,
       ModuleIO blModuleIO,
       ModuleIO brModuleIO,
       Consumer<Pose2d> resetSimulationPoseCallBack) {
-    ODOMETRY_FREQUENCY = new CANBus(config.getCanbus()).isNetworkFD() ? 250.0 : 100.0;
+    this.config = config;
+    kinematics = new SwerveDriveKinematics(getModuleTranslations());
+    poseEstimator =
+        new SwerveDrivePoseEstimator(
+            kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
+
     this.gyroIO = gyroIO;
+
     this.resetSimulationPoseCallBack = resetSimulationPoseCallBack;
     modules[0] = new Module(flModuleIO, 0);
     modules[1] = new Module(frModuleIO, 1);
@@ -107,11 +112,9 @@ public class AkitSwerveDrive extends SwerveDriveFunctions {
     HAL.report(tResourceType.kResourceType_RobotDrive, tInstances.kRobotDriveSwerve_AdvantageKit);
 
     // Start odometry thread
-    SparkOdometryThread.getInstance().start();
+    PhoenixOdometryThread.getInstance(config).start();
 
-    // Should we keep this?
-    // Pathfinding.setPathfinder(new LocalADStarAK());
-
+    // Configure AutoBuilder for PathPlanner
     PathPlannerLogging.setLogActivePathCallback(
         (activePath) -> {
           Logger.recordOutput(
@@ -183,19 +186,59 @@ public class AkitSwerveDrive extends SwerveDriveFunctions {
   }
 
   /**
+   * Returns a SysIdRoutine instance configured for system identification of the drive.
+   *
+   * <p>If the instance variable sysId is null, a new SysIdRoutine instance is created with the
+   * provided SubsystemBase and a default configuration. The default configuration includes a no-op
+   * mechanism and a logger which records the state of the SysIdRoutine to the {@link Logger}.
+   *
+   * @param swerveSubsystem The subsystem to add to the requirements of the SysIdRoutine
+   * @return A SysIdRoutine instance configured for system identification of the drive
+   */
+  protected SysIdRoutine getSysId(SubsystemBase swerveSubsystem) {
+    if (null == sysId) {
+      sysId =
+          new SysIdRoutine(
+              new SysIdRoutine.Config(
+                  null,
+                  null,
+                  null,
+                  (state) -> Logger.recordOutput("Drive/SysIdState", state.toString())),
+              new SysIdRoutine.Mechanism(
+                  (voltage) -> runCharacterization(voltage.in(Volts)), null, swerveSubsystem));
+    }
+    return sysId;
+  }
+
+  @Override
+  public Command sysIdDriveMotorCommand(SubsystemBase swerveSubsystem) {
+    // Configure SysId
+    return sysIdQuasistatic(SysIdRoutine.Direction.kForward)
+        .andThen(sysIdQuasistatic(SysIdRoutine.Direction.kReverse))
+        .andThen(sysIdDynamic(SysIdRoutine.Direction.kForward))
+        .andThen(sysIdDynamic(SysIdRoutine.Direction.kReverse));
+  }
+
+  @Override
+  public Command sysIdAngleMotorCommand(SubsystemBase swerveSubsystem) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'sysIdAngleMotorCommand'");
+  }
+
+  /**
    * Runs the drive at the desired velocity.
    *
    * @param speeds Speeds in meters/sec
    */
   public void runVelocity(ChassisSpeeds speeds) {
     // Calculate module setpoints
-    ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
-    SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(discreteSpeeds);
-    SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, maxSpeedMetersPerSec);
+    speeds = ChassisSpeeds.discretize(speeds, 0.02);
+    SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(speeds);
+    SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, config.getMaxDriveSpeed());
 
-    // Log unoptimized setpoints
+    // Log unoptimized setpoints and setpoint speeds
     Logger.recordOutput("SwerveStates/Setpoints", setpointStates);
-    Logger.recordOutput("SwerveChassisSpeeds/Setpoints", discreteSpeeds);
+    Logger.recordOutput("SwerveChassisSpeeds/Setpoints", speeds);
 
     // Send setpoints to modules
     for (int i = 0; i < 4; i++) {
@@ -225,7 +268,7 @@ public class AkitSwerveDrive extends SwerveDriveFunctions {
   public void stopWithX() {
     Rotation2d[] headings = new Rotation2d[4];
     for (int i = 0; i < 4; i++) {
-      headings[i] = moduleTranslations[i].getAngle();
+      headings[i] = getModuleTranslations()[i].getAngle();
     }
     kinematics.resetHeadings(headings);
     stop();
@@ -278,7 +321,7 @@ public class AkitSwerveDrive extends SwerveDriveFunctions {
     return values;
   }
 
-  /** Returns the average velocity of the modules in rad/sec. */
+  /** Returns the average velocity of the modules in rotations/sec (Phoenix native units). */
   public double getFFCharacterizationVelocity() {
     double output = 0.0;
     for (int i = 0; i < 4; i++) {
@@ -315,12 +358,22 @@ public class AkitSwerveDrive extends SwerveDriveFunctions {
 
   /** Returns the maximum linear speed in meters per sec. */
   public double getMaxLinearSpeedMetersPerSec() {
-    return maxSpeedMetersPerSec;
+    return config.getMaxDriveSpeed().in(MetersPerSecond);
   }
 
   /** Returns the maximum angular speed in radians per sec. */
   public double getMaxAngularSpeedRadPerSec() {
-    return maxSpeedMetersPerSec / driveBaseRadius;
+    return getMaxLinearSpeedMetersPerSec() / config.DRIVE_BASE_RADIUS;
+  }
+
+  /** Returns an array of module translations. */
+  public Translation2d[] getModuleTranslations() {
+    return new Translation2d[] {
+      new Translation2d(config.FrontLeft.LocationX, config.FrontLeft.LocationY),
+      new Translation2d(config.FrontRight.LocationX, config.FrontRight.LocationY),
+      new Translation2d(config.BackLeft.LocationX, config.BackLeft.LocationY),
+      new Translation2d(config.BackRight.LocationX, config.BackRight.LocationY)
+    };
   }
 
   @Override
@@ -355,7 +408,7 @@ public class AkitSwerveDrive extends SwerveDriveFunctions {
 
   @Override
   public void driveRobotRelative(ChassisSpeeds velocity) {
-    runVelocity(velocity);
+    runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(velocity, gyroInputs.yawPosition));
   }
 
   @Override
@@ -364,46 +417,6 @@ public class AkitSwerveDrive extends SwerveDriveFunctions {
   @Override
   public double getGyroRate() {
     return Units.radiansToDegrees(gyroInputs.yawVelocityRadPerSec);
-  }
-
-  /**
-   * Returns a SysIdRoutine instance configured for system identification of the drive.
-   *
-   * <p>If the instance variable sysId is null, a new SysIdRoutine instance is created with the
-   * provided SubsystemBase and a default configuration. The default configuration includes a no-op
-   * mechanism and a logger which records the state of the SysIdRoutine to the {@link Logger}.
-   *
-   * @param swerveSubsystem The subsystem to add to the requirements of the SysIdRoutine
-   * @return A SysIdRoutine instance configured for system identification of the drive
-   */
-  protected SysIdRoutine getSysId(SubsystemBase swerveSubsystem) {
-    if (null == sysId) {
-      sysId =
-          new SysIdRoutine(
-              new SysIdRoutine.Config(
-                  null,
-                  null,
-                  null,
-                  (state) -> Logger.recordOutput("Drive/SysIdState", state.toString())),
-              new SysIdRoutine.Mechanism(
-                  (voltage) -> runCharacterization(voltage.in(Volts)), null, swerveSubsystem));
-    }
-    return sysId;
-  }
-
-  @Override
-  public Command sysIdDriveMotorCommand(SubsystemBase swerveSubsystem) {
-    // Configure SysId
-    return sysIdQuasistatic(SysIdRoutine.Direction.kForward)
-        .andThen(sysIdQuasistatic(SysIdRoutine.Direction.kReverse))
-        .andThen(sysIdDynamic(SysIdRoutine.Direction.kForward))
-        .andThen(sysIdDynamic(SysIdRoutine.Direction.kReverse));
-  }
-
-  @Override
-  public Command sysIdAngleMotorCommand(SubsystemBase swerveSubsystem) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'sysIdAngleMotorCommand'");
   }
 
   @Override
@@ -418,12 +431,6 @@ public class AkitSwerveDrive extends SwerveDriveFunctions {
   }
 
   @Override
-  public AngularVelocity getMaximumModuleAngleVelocity() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getMaximumModuleAngleVelocity'");
-  }
-
-  @Override
   public GenericSwerveModuleInfo[] getModulesInfo() {
     if (null == moduleInfos) moduleInfos = new GenericSwerveModuleInfo[modules.length];
     for (int i = 0; i < modules.length; i++) {
@@ -432,14 +439,10 @@ public class AkitSwerveDrive extends SwerveDriveFunctions {
     return moduleInfos;
   }
 
-  /**
-   * Retrieves the pose of the simulated drivetrain from the MapleSim system.
-   *
-   * @return The current pose of the simulated drivetrain as a {@link Pose2d}.
-   */
   @Override
-  public Pose2d getSimPose() {
-    return driveSimulation.getSimulatedDriveTrainPose();
+  public AngularVelocity getMaximumModuleAngleVelocity() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'getMaximumModuleAngleVelocity'");
   }
 
   @Override
@@ -452,13 +455,13 @@ public class AkitSwerveDrive extends SwerveDriveFunctions {
     this.robotConfigSupplier = robotConfigSupplier;
   }
 
-  public void updateSimulation() {
-    SimulatedArena.getInstance().simulationPeriodic();
-    Logger.recordOutput(
-        "FieldSimulation/RobotPosition", driveSimulation.getSimulatedDriveTrainPose());
-    Logger.recordOutput(
-        "FieldSimulation/Coral", SimulatedArena.getInstance().getGamePiecesArrayByType("Coral"));
-    Logger.recordOutput(
-        "FieldSimulation/Algae", SimulatedArena.getInstance().getGamePiecesArrayByType("Algae"));
+  /**
+   * Retrieves the pose of the simulated drivetrain from the MapleSim system.
+   *
+   * @return The current pose of the simulated drivetrain as a {@link Pose2d}.
+   */
+  @Override
+  public Pose2d getSimPose() {
+    return driveSimulation.getSimulatedDriveTrainPose();
   }
 }

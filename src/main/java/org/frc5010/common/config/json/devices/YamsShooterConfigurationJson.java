@@ -6,10 +6,10 @@ package org.frc5010.common.config.json.devices;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import java.util.Optional;
 import org.frc5010.common.config.DeviceConfiguration;
 import org.frc5010.common.config.UnitsParser;
 import org.frc5010.common.config.json.UnitValueJson;
-import org.frc5010.common.motors.GenericMotorController;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
 import yams.mechanisms.config.FlyWheelConfig;
@@ -40,10 +40,6 @@ public class YamsShooterConfigurationJson implements DeviceConfiguration {
    */
   @Override
   public FlyWheel configure(SubsystemBase deviceHandler) {
-    GenericMotorController motor =
-        DeviceConfigReader.getMotor(
-            motorSetup.controllerType, motorSetup.motorType, motorSetup.canId);
-
     SmartMotorControllerConfig motorConfig =
         new SmartMotorControllerConfig(deviceHandler)
             .withClosedLoopController(
@@ -67,12 +63,24 @@ public class YamsShooterConfigurationJson implements DeviceConfiguration {
                     motorSystemId.feedForward.a))
             .withControlMode(ControlMode.valueOf(motorSystemId.controlMode));
     MotorSetupJson.setupFollowers(motorConfig, motorSetup);
-    motor.setMotorSimulationType(
-        motor.getMotorConfig().getMotorSimulationType(motorSetup.numberOfMotors));
-
-    SmartMotorController smartMotor = motor.getSmartMotorController(motorConfig);
+    Optional<SmartMotorController> smartMotor =
+        DeviceConfigReader.getSmartMotor(
+            motorSetup.controllerType,
+            motorSetup.motorType,
+            motorSetup.canId,
+            motorConfig,
+            motorSetup.canBus);
+    if (smartMotor.isEmpty()) {
+      throw new RuntimeException(
+          "Smart motor not found. ID: "
+              + motorSetup.canId
+              + " Controller: "
+              + motorSetup.controllerType
+              + " Motor: "
+              + motorSetup.motorType);
+    }
     FlyWheelConfig shooterConfig =
-        new FlyWheelConfig(smartMotor)
+        new FlyWheelConfig(smartMotor.get())
             // .withMechanismPositionConfig(motorSetup.getMechanismPositionConfig())
             .withDiameter(UnitsParser.parseDistance(diameter))
             .withMass(UnitsParser.parseMass(mass))

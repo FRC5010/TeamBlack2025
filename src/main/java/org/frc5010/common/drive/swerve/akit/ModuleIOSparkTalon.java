@@ -57,6 +57,7 @@ import edu.wpi.first.units.measure.Voltage;
 import frc.robot.generated.TunerConstants;
 import java.util.Queue;
 import java.util.function.DoubleSupplier;
+import org.frc5010.common.drive.swerve.AkitTalonFXSwerveConfig;
 import org.frc5010.common.drive.swerve.akit.util.PhoenixUtil;
 
 /**
@@ -104,6 +105,7 @@ public class ModuleIOSparkTalon implements ModuleIO {
   private final Debouncer turnConnectedDebounce = new Debouncer(0.5);
 
   public ModuleIOSparkTalon(
+      AkitTalonFXSwerveConfig config,
       SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>
           constants) {
 
@@ -170,7 +172,8 @@ public class ModuleIOSparkTalon implements ModuleIO {
 
     // Create drive status signals
     drivePosition = driveTalon.getPosition();
-    drivePositionQueue = PhoenixOdometryThread.getInstance().registerSignal(drivePosition.clone());
+    drivePositionQueue =
+        PhoenixOdometryThread.getInstance(config).registerSignal(drivePosition.clone());
     driveVelocity = driveTalon.getVelocity();
     driveAppliedVolts = driveTalon.getMotorVoltage();
     driveCurrent = driveTalon.getStatorCurrent();

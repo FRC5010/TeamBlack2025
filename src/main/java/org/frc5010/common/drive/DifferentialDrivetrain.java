@@ -208,7 +208,7 @@ public class DifferentialDrivetrain extends GenericDrivetrain {
         this::drive,
         new PPLTVController(0.02),
         // PPLTVController is the built in path following controller for differential drive trains
-        config, // The robot configuration
+        ppRobotConfig, // The robot configuration
         () -> {
           // Boolean supplier that controls when the path will be mirrored for the red
           // alliance
