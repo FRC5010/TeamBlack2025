@@ -9,13 +9,13 @@ package org.frc5010.common.drive.swerve.akit;
 
 import com.revrobotics.REVLibError;
 import com.revrobotics.spark.SparkBase;
-import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.function.DoubleSupplier;
+import org.frc5010.common.drive.swerve.SwerveDriveFunctions;
 
 /**
  * Provides an interface for asynchronously reading high-frequency measurements to a set of queues.
@@ -23,76 +23,42 @@ import java.util.function.DoubleSupplier;
  * <p>This version includes an overload for Spark signals, which checks for errors to ensure that
  * all measurements in the sample are valid.
  */
-public class SparkOdometryThread {
+public class SparkOdometryThread extends OdometryThread {
   private final List<SparkBase> sparks = new ArrayList<>();
   private final List<DoubleSupplier> sparkSignals = new ArrayList<>();
-  private final List<DoubleSupplier> genericSignals = new ArrayList<>();
   private final List<Queue<Double>> sparkQueues = new ArrayList<>();
-  private final List<Queue<Double>> genericQueues = new ArrayList<>();
-  private final List<Queue<Double>> timestampQueues = new ArrayList<>();
 
-  private static SparkOdometryThread instance = null;
-  private Notifier notifier = new Notifier(this::run);
-
-  public static SparkOdometryThread getInstance() {
+  public static void createInstance() {
     if (instance == null) {
       instance = new SparkOdometryThread();
     }
-    return instance;
+  }
+
+  public static SparkOdometryThread getInstance() {
+    return (SparkOdometryThread) instance;
   }
 
   private SparkOdometryThread() {
-    notifier.setName("OdometryThread");
-  }
-
-  public void start() {
-    if (timestampQueues.size() > 0) {
-      notifier.startPeriodic(1.0 / DriveConstants.odometryFrequency);
-    }
+    super("SparkOdometryThread");
   }
 
   /** Registers a Spark signal to be read from the thread. */
   public Queue<Double> registerSignal(SparkBase spark, DoubleSupplier signal) {
     Queue<Double> queue = new ArrayBlockingQueue<>(20);
-    AkitSwerveDrive.odometryLock.lock();
+    SwerveDriveFunctions.odometryLock.lock();
     try {
       sparks.add(spark);
       sparkSignals.add(signal);
       sparkQueues.add(queue);
     } finally {
-      AkitSwerveDrive.odometryLock.unlock();
+      SwerveDriveFunctions.odometryLock.unlock();
     }
     return queue;
   }
 
-  /** Registers a generic signal to be read from the thread. */
-  public Queue<Double> registerSignal(DoubleSupplier signal) {
-    Queue<Double> queue = new ArrayBlockingQueue<>(20);
-    AkitSwerveDrive.odometryLock.lock();
-    try {
-      genericSignals.add(signal);
-      genericQueues.add(queue);
-    } finally {
-      AkitSwerveDrive.odometryLock.unlock();
-    }
-    return queue;
-  }
-
-  /** Returns a new queue that returns timestamp values for each sample. */
-  public Queue<Double> makeTimestampQueue() {
-    Queue<Double> queue = new ArrayBlockingQueue<>(20);
-    AkitSwerveDrive.odometryLock.lock();
-    try {
-      timestampQueues.add(queue);
-    } finally {
-      AkitSwerveDrive.odometryLock.unlock();
-    }
-    return queue;
-  }
-
-  private void run() {
-    // Save new data to queues
-    AkitSwerveDrive.odometryLock.lock();
+  @Override
+  protected void runThreadLogic() {
+    SwerveDriveFunctions.odometryLock.lock();
     try {
       // Get sample timestamp
       double timestamp = RobotController.getFPGATime() / 1e6;

@@ -42,8 +42,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import org.frc5010.common.drive.SwerveDriveConfig;
@@ -61,7 +59,6 @@ public class AkitSwerveDrive extends SwerveDriveFunctions {
   final double ODOMETRY_FREQUENCY;
 
   public static DriveTrainSimulationConfig mapleSimConfig = DriveTrainSimulationConfig.Default();
-  static final Lock odometryLock = new ReentrantLock();
   private final GyroIO gyroIO;
   private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
   private final Module[] modules = new Module[4]; // FL, FR, BL, BR
@@ -107,7 +104,7 @@ public class AkitSwerveDrive extends SwerveDriveFunctions {
     HAL.report(tResourceType.kResourceType_RobotDrive, tInstances.kRobotDriveSwerve_AdvantageKit);
 
     // Start odometry thread
-    SparkOdometryThread.getInstance().start();
+    OdometryThread.getInstance().start();
 
     // Should we keep this?
     // Pathfinding.setPathfinder(new LocalADStarAK());

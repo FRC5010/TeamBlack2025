@@ -24,7 +24,7 @@ import org.frc5010.common.config.ConfigConstants;
 import org.frc5010.common.config.json.devices.DeviceConfigReader;
 import org.frc5010.common.config.json.devices.DrivetrainConstantsJson;
 import org.frc5010.common.constants.RobotConstantsDef;
-import org.frc5010.common.drive.swerve.AkitTalonFXSwerveConfig;
+import org.frc5010.common.drive.swerve.AkitSwerveConfig;
 import org.frc5010.common.drive.swerve.GenericSwerveDrivetrain;
 import org.frc5010.common.drive.swerve.SwerveDriveFunctions;
 import org.frc5010.common.drive.swerve.akit.AKitTalonFXSwerveDrive;
@@ -36,6 +36,8 @@ import org.frc5010.common.drive.swerve.akit.ModuleIOSpark;
 import org.frc5010.common.drive.swerve.akit.ModuleIOSparkTalon;
 import org.frc5010.common.drive.swerve.akit.ModuleIOTalonFXReal;
 import org.frc5010.common.drive.swerve.akit.ModuleIOTalonFXSim;
+import org.frc5010.common.drive.swerve.akit.PhoenixOdometryThread;
+import org.frc5010.common.drive.swerve.akit.SparkOdometryThread;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.COTS;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
@@ -55,9 +57,9 @@ public class AKitSwerveDrivetrainJson implements DrivetrainPropertiesJson {
   @Override
   public void createDriveTrain(GenericRobot robot) {
     SwerveDriveFunctions driveFunctions;
-    AkitTalonFXSwerveConfig config;
+    AkitSwerveConfig config;
     GenericSwerveDrivetrain drivetrain = null;
-    config = AkitTalonFXSwerveConfig.builder(constants, drivetrain);
+    config = AkitSwerveConfig.builder(constants, drivetrain);
 
     RobotConfig PP_CONFIG =
         new RobotConfig(
@@ -100,6 +102,7 @@ public class AKitSwerveDrivetrainJson implements DrivetrainPropertiesJson {
               SwerveDriveFunctions.mapleSimConfig, new Pose2d(3, 3, new Rotation2d()));
       SimulatedArena.getInstance().addDriveTrainSimulation(SwerveDriveFunctions.driveSimulation);
       if ("TalonFX".equals(type)) {
+        PhoenixOdometryThread.createtInstance(config);
         driveFunctions =
             new AKitTalonFXSwerveDrive(
                 config,
@@ -116,6 +119,7 @@ public class AKitSwerveDrivetrainJson implements DrivetrainPropertiesJson {
                     config, config.BackRight, SwerveDriveFunctions.driveSimulation.getModules()[3]),
                 SwerveDriveFunctions.driveSimulation::setSimulationWorldPose);
       } else {
+        PhoenixOdometryThread.createtInstance(config);
         driveFunctions =
             new AkitSwerveDrive(
                 config,
@@ -129,30 +133,33 @@ public class AKitSwerveDrivetrainJson implements DrivetrainPropertiesJson {
     } else {
       config.ODOMETRY_FREQUENCY = new CANBus(config.getCanbus()).isNetworkFD() ? 250.0 : 100.0;
       if ("SparkTalon".equals(type)) {
+        SparkOdometryThread.createInstance();
         driveFunctions =
             new AkitSwerveDrive(
                 config,
-                new GyroIOPigeon2(),
+                new GyroIOPigeon2(config),
                 new ModuleIOSparkTalon(config, config.FrontLeft),
                 new ModuleIOSparkTalon(config, config.FrontRight),
                 new ModuleIOSparkTalon(config, config.BackLeft),
                 new ModuleIOSparkTalon(config, config.BackRight),
                 (pose) -> {});
       } else if ("Spark".equals(type)) {
+        SparkOdometryThread.createInstance();
         driveFunctions =
             new AkitSwerveDrive(
                 config,
-                new GyroIOPigeon2(),
+                new GyroIOPigeon2(config),
                 new ModuleIOSpark(0),
                 new ModuleIOSpark(1),
                 new ModuleIOSpark(2),
                 new ModuleIOSpark(3),
                 (pose) -> {});
       } else if ("TalonFX".equals(type)) {
+        PhoenixOdometryThread.createtInstance(config);
         driveFunctions =
             new AKitTalonFXSwerveDrive(
                 config,
-                new GyroIOPigeon2(),
+                new GyroIOPigeon2(config),
                 new ModuleIOTalonFXReal(config, config.FrontLeft),
                 new ModuleIOTalonFXReal(config, config.FrontRight),
                 new ModuleIOTalonFXReal(config, config.BackLeft),
@@ -176,7 +183,7 @@ public class AKitSwerveDrivetrainJson implements DrivetrainPropertiesJson {
   }
 
   /** Returns an array of module translations. */
-  public static Translation2d[] getModuleTranslations(AkitTalonFXSwerveConfig config) {
+  public static Translation2d[] getModuleTranslations(AkitSwerveConfig config) {
     return new Translation2d[] {
       new Translation2d(config.FrontLeft.LocationX, config.FrontLeft.LocationY),
       new Translation2d(config.FrontRight.LocationX, config.FrontRight.LocationY),

@@ -20,6 +20,7 @@ import com.ctre.phoenix6.swerve.SwerveModuleConstants.SteerMotorArrangement;
 import com.ctre.phoenix6.swerve.SwerveModuleConstantsFactory;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import org.frc5010.common.config.UnitsParser;
 import org.frc5010.common.config.json.devices.DrivetrainConstantsJson;
 import org.frc5010.common.drive.SwerveDriveConfig;
@@ -27,7 +28,7 @@ import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
 
 /** Add your docs here. */
-public class AkitTalonFXSwerveConfig extends SwerveDriveConfig {
+public class AkitSwerveConfig extends SwerveDriveConfig {
   public final SwerveDrivetrainConstants DrivetrainConstants;
 
   public final SwerveModuleConstants<
@@ -45,7 +46,7 @@ public class AkitTalonFXSwerveConfig extends SwerveDriveConfig {
   public double ODOMETRY_FREQUENCY;
   public final double DRIVE_BASE_RADIUS;
 
-  public AkitTalonFXSwerveConfig(AkitTalonFXSwerveConfigBuilder builder) {
+  public AkitSwerveConfig(AkitTalonFXSwerveConfigBuilder builder) {
     super(builder);
     this.DrivetrainConstants = builder.DrivetrainConstants;
     this.FrontLeft = builder.FrontLeft;
@@ -62,9 +63,9 @@ public class AkitTalonFXSwerveConfig extends SwerveDriveConfig {
                 Math.hypot(BackRight.LocationX, BackRight.LocationY)));
   }
 
-  public static AkitTalonFXSwerveConfig builder(
+  public static AkitSwerveConfig builder(
       DrivetrainConstantsJson constants, SubsystemBase subsystem) {
-    return new AkitTalonFXSwerveConfig(new AkitTalonFXSwerveConfigBuilder(constants, subsystem));
+    return new AkitSwerveConfig(new AkitTalonFXSwerveConfigBuilder(constants, subsystem));
   }
 
   public static class AkitTalonFXSwerveConfigBuilder
@@ -98,6 +99,7 @@ public class AkitTalonFXSwerveConfig extends SwerveDriveConfig {
       robotMass = UnitsParser.parseMass(constants.robotMass);
       driveInertia = UnitsParser.parseMomentOfInertia(constants.driveInertia);
       steerInertia = UnitsParser.parseMomentOfInertia(constants.steerInertia);
+      canbus = Constants.CURRENT_MODE == Constants.SIM_MODE ? "" : constants.canbus;
       driveGearRatio =
           new MechanismGearing(GearBox.fromStages(constants.driveGearRatio))
               .getRotorToMechanismRatio();
@@ -151,12 +153,9 @@ public class AkitTalonFXSwerveConfig extends SwerveDriveConfig {
                       .withCurrentLimits(
                           new CurrentLimitsConfigs()
                               // Swerve azimuth does not require much torque output, so we can set
-                              // a
-                              // relatively
-                              // low
-                              // stator current limit to help avoid brownouts without impacting
-                              // performance.
-                              .withStatorCurrentLimit(Amps.of(60))
+                              // arelatively low stator current limit to help avoid brownouts
+                              // without impacting performance.
+                              .withStatorCurrentLimit(Amps.of(30))
                               .withStatorCurrentLimitEnable(true)))
               .withEncoderInitialConfigs(new CANcoderConfiguration())
               .withSteerInertia(UnitsParser.parseMomentOfInertia(constants.steerInertia))

@@ -28,8 +28,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants;
-import frc.robot.generated.TunerConstants;
-import org.frc5010.common.drive.swerve.AkitTalonFXSwerveConfig;
+import org.frc5010.common.drive.swerve.AkitSwerveConfig;
 
 public abstract class ModuleIOTalonFX implements ModuleIO {
   protected final SwerveModuleConstants<
@@ -69,14 +68,14 @@ public abstract class ModuleIOTalonFX implements ModuleIO {
   private final Debouncer turnEncoderConnectedDebounce = new Debouncer(0.5);
 
   protected ModuleIOTalonFX(
-      AkitTalonFXSwerveConfig config,
+      AkitSwerveConfig config,
       SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>
           constants) {
     this.constants = constants;
 
-    driveTalon = new TalonFX(constants.DriveMotorId, TunerConstants.DrivetrainConstants.CANBusName);
-    turnTalon = new TalonFX(constants.SteerMotorId, TunerConstants.DrivetrainConstants.CANBusName);
-    cancoder = new CANcoder(constants.EncoderId, TunerConstants.DrivetrainConstants.CANBusName);
+    driveTalon = new TalonFX(constants.DriveMotorId, config.getCanbus());
+    turnTalon = new TalonFX(constants.SteerMotorId, config.getCanbus());
+    cancoder = new CANcoder(constants.EncoderId, config.getCanbus());
 
     // Configure drive motor
     var driveConfig = constants.DriveMotorInitialConfigs;

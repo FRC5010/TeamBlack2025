@@ -46,13 +46,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import org.frc5010.common.drive.pose.DrivePoseEstimator;
 import org.frc5010.common.drive.pose.SwerveFunctionsPose;
-import org.frc5010.common.drive.swerve.AkitTalonFXSwerveConfig;
+import org.frc5010.common.drive.swerve.AkitSwerveConfig;
 import org.frc5010.common.drive.swerve.GenericSwerveModuleInfo;
 import org.frc5010.common.drive.swerve.SwerveDriveFunctions;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -61,8 +59,7 @@ import org.littletonrobotics.junction.Logger;
 public class AKitTalonFXSwerveDrive extends SwerveDriveFunctions {
   // The config doesn't include these constants, so they are declared locally
 
-  final AkitTalonFXSwerveConfig config;
-  static final Lock odometryLock = new ReentrantLock();
+  final AkitSwerveConfig config;
   private final GyroIO gyroIO;
   private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
   private final Module[] modules = new Module[4]; // FL, FR, BL, BR
@@ -87,7 +84,7 @@ public class AKitTalonFXSwerveDrive extends SwerveDriveFunctions {
   private final Consumer<Pose2d> resetSimulationPoseCallBack;
 
   public AKitTalonFXSwerveDrive(
-      AkitTalonFXSwerveConfig config,
+      AkitSwerveConfig config,
       GyroIO gyroIO,
       ModuleIO flModuleIO,
       ModuleIO frModuleIO,
@@ -112,7 +109,7 @@ public class AKitTalonFXSwerveDrive extends SwerveDriveFunctions {
     HAL.report(tResourceType.kResourceType_RobotDrive, tInstances.kRobotDriveSwerve_AdvantageKit);
 
     // Start odometry thread
-    PhoenixOdometryThread.getInstance(config).start();
+    OdometryThread.getInstance().start();
 
     // Configure AutoBuilder for PathPlanner
     PathPlannerLogging.setLogActivePathCallback(
@@ -148,6 +145,8 @@ public class AKitTalonFXSwerveDrive extends SwerveDriveFunctions {
       Logger.recordOutput("SwerveStates/Setpoints", new SwerveModuleState[] {});
       Logger.recordOutput("SwerveStates/SetpointsOptimized", new SwerveModuleState[] {});
     }
+
+    getChassisSpeeds();
 
     // Update odometry
     double[] sampleTimestamps =

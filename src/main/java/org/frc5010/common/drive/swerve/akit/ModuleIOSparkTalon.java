@@ -54,10 +54,9 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
-import frc.robot.generated.TunerConstants;
 import java.util.Queue;
 import java.util.function.DoubleSupplier;
-import org.frc5010.common.drive.swerve.AkitTalonFXSwerveConfig;
+import org.frc5010.common.drive.swerve.AkitSwerveConfig;
 import org.frc5010.common.drive.swerve.akit.util.PhoenixUtil;
 
 /**
@@ -105,13 +104,13 @@ public class ModuleIOSparkTalon implements ModuleIO {
   private final Debouncer turnConnectedDebounce = new Debouncer(0.5);
 
   public ModuleIOSparkTalon(
-      AkitTalonFXSwerveConfig config,
+      AkitSwerveConfig config,
       SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>
           constants) {
 
     this.constants = constants;
     zeroRotation = new Rotation2d();
-    driveTalon = new TalonFX(constants.DriveMotorId, TunerConstants.DrivetrainConstants.CANBusName);
+    driveTalon = new TalonFX(constants.DriveMotorId, config.getCanbus());
     turnSpark = new SparkMax(constants.SteerMotorId, MotorType.kBrushless);
 
     turnEncoder = turnSpark.getAbsoluteEncoder();
@@ -172,8 +171,7 @@ public class ModuleIOSparkTalon implements ModuleIO {
 
     // Create drive status signals
     drivePosition = driveTalon.getPosition();
-    drivePositionQueue =
-        PhoenixOdometryThread.getInstance(config).registerSignal(drivePosition.clone());
+    drivePositionQueue = PhoenixOdometryThread.getInstance().registerSignal(drivePosition.clone());
     driveVelocity = driveTalon.getVelocity();
     driveAppliedVolts = driveTalon.getMotorVoltage();
     driveCurrent = driveTalon.getStatorCurrent();

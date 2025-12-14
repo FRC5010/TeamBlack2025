@@ -54,7 +54,7 @@
         "driveMotorSetup": {
           "name": "frontLeftDrive",
           "controllerType": "talonfx",
-          "motorType": "Krakenx60",
+          "motorType": "KrakenX60",
           "canId": 1
         },
         "steerMotorSetup": {
@@ -63,7 +63,7 @@
           "motorType": "Krakenx60",
           "canId": 2
         },
-        "encoderId": 9,
+        "encoderId": 0,
         "absoluteOffset": {
           "val": 0.15234375,
           "uom": "rotations"
@@ -83,7 +83,7 @@
           "motorType": "Krakenx60",
           "canId": 4
         },
-        "encoderId": 10,
+        "encoderId": 1,
         "absoluteOffset": {
           "val": -0.4873046875,
           "uom": "rotations"
@@ -103,7 +103,7 @@
           "motorType": "Krakenx60",
           "canId": 6
         },
-        "encoderId": 11,
+        "encoderId": 2,
         "absoluteOffset": {
           "val": -0.219482421875,
           "uom": "rotations"
@@ -123,7 +123,7 @@
           "motorType": "Krakenx60",
           "canId": 8
         },
-        "encoderId": 12,
+        "encoderId": 3,
         "absoluteOffset": {
           "val": 0.17236328125,
           "uom": "rotations"

@@ -23,6 +23,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.Optional;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Supplier;
 import org.frc5010.common.drive.pose.DrivePoseEstimator;
 import org.ironmaple.simulation.drivesims.AbstractDriveTrainSimulation;
@@ -34,6 +36,8 @@ import swervelib.SwerveDrive;
 public abstract class SwerveDriveFunctions {
   public static DriveTrainSimulationConfig mapleSimConfig = DriveTrainSimulationConfig.Default();
   public static SwerveDriveSimulation driveSimulation = null;
+
+  public static final Lock odometryLock = new ReentrantLock();
 
   protected GenericSwerveModuleInfo[] moduleInfos;
 
