@@ -58,6 +58,7 @@ public class PhoenixOdometryThread extends OdometryThread {
   public Queue<Double> registerSignal(StatusSignal<Angle> signal) {
     Queue<Double> queue = new ArrayBlockingQueue<>(20);
     signalsLock.lock();
+    SwerveDriveFunctions.odometryLock.lock();
     try {
       BaseStatusSignal[] newSignals = new BaseStatusSignal[phoenixSignals.length + 1];
       System.arraycopy(phoenixSignals, 0, newSignals, 0, phoenixSignals.length);
@@ -66,6 +67,7 @@ public class PhoenixOdometryThread extends OdometryThread {
       phoenixQueues.add(queue);
     } finally {
       signalsLock.unlock();
+      SwerveDriveFunctions.odometryLock.unlock();
     }
     return queue;
   }

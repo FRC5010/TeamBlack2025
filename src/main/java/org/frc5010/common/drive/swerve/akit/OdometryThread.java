@@ -4,6 +4,7 @@
 
 package org.frc5010.common.drive.swerve.akit;
 
+import edu.wpi.first.wpilibj.RobotBase;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
@@ -36,7 +37,7 @@ public abstract class OdometryThread extends Thread {
 
   @Override
   public void start() {
-    if (!timestampQueues.isEmpty()) {
+    if (!timestampQueues.isEmpty() && RobotBase.isReal()) {
       super.start();
     }
   }

@@ -56,7 +56,7 @@ public class DrivetrainConstantsJson {
   /** The current limit of the drive motors */
   public UnitValueJson slipCurrent = new UnitValueJson(40, "amps");
   /** The CAN bus for the drivetrain */
-  public String canbus = "rio";
+  public String canbus = "";
 
   /** Configuration for a swerve module */
   public static class ModuleConfigJson {

@@ -1,5 +1,5 @@
 {
-  "type": "TalonFX",
+  "type": "Spark",
   "constants": {
     "trackWidth": {
       "val": 28,
@@ -21,7 +21,7 @@
       "type": "pigeon2",
       "id": 13,
       "inverted": false,
-      "canbus": "rio"
+      "canbus": "canivore"
     },
     "driveGearRatio": "1:7.363636363636365",
     "steerGearRatio": "1:15.42857142857143",
@@ -151,6 +151,6 @@
       "val": 120,
       "uom": "amps"
     },
-    "canbus": "rio"
+    "canbus": "canivore"
   }
 }

@@ -16,7 +16,7 @@ public class GyroSettingsConfigurationJson implements DeviceConfiguration {
   /** Whether the gyro sensor is inverted */
   public boolean inverted = false;
   /** The CAN bus the gyro is connected to */
-  public String canbus = "rio";
+  public String canbus = "";
 
   /**
    * Configures a gyro sensor based on the specified type.

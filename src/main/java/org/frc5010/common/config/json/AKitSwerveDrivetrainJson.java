@@ -27,7 +27,6 @@ import org.frc5010.common.constants.RobotConstantsDef;
 import org.frc5010.common.drive.swerve.AkitSwerveConfig;
 import org.frc5010.common.drive.swerve.GenericSwerveDrivetrain;
 import org.frc5010.common.drive.swerve.SwerveDriveFunctions;
-import org.frc5010.common.drive.swerve.akit.AKitTalonFXSwerveDrive;
 import org.frc5010.common.drive.swerve.akit.AkitSwerveDrive;
 import org.frc5010.common.drive.swerve.akit.GyroIOPigeon2;
 import org.frc5010.common.drive.swerve.akit.GyroIOSim;
@@ -104,7 +103,7 @@ public class AKitSwerveDrivetrainJson implements DrivetrainPropertiesJson {
       if ("TalonFX".equals(type)) {
         PhoenixOdometryThread.createtInstance(config);
         driveFunctions =
-            new AKitTalonFXSwerveDrive(
+            new AkitSwerveDrive(
                 config,
                 new GyroIOSim(SwerveDriveFunctions.driveSimulation.getGyroSimulation()),
                 new ModuleIOTalonFXSim(
@@ -157,7 +156,7 @@ public class AKitSwerveDrivetrainJson implements DrivetrainPropertiesJson {
       } else if ("TalonFX".equals(type)) {
         PhoenixOdometryThread.createtInstance(config);
         driveFunctions =
-            new AKitTalonFXSwerveDrive(
+            new AkitSwerveDrive(
                 config,
                 new GyroIOPigeon2(config),
                 new ModuleIOTalonFXReal(config, config.FrontLeft),

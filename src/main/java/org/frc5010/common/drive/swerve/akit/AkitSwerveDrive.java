@@ -7,12 +7,9 @@
 
 package org.frc5010.common.drive.swerve.akit;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Volts;
-import static org.frc5010.common.drive.swerve.akit.DriveConstants.driveBaseRadius;
-import static org.frc5010.common.drive.swerve.akit.DriveConstants.maxSpeedMetersPerSec;
-import static org.frc5010.common.drive.swerve.akit.DriveConstants.moduleTranslations;
 
-import com.ctre.phoenix6.CANBus;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.util.DriveFeedforwards;
 import com.pathplanner.lib.util.PathPlannerLogging;
@@ -23,6 +20,7 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -44,33 +42,28 @@ import frc.robot.Constants;
 import frc.robot.Constants.Mode;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import org.frc5010.common.drive.SwerveDriveConfig;
 import org.frc5010.common.drive.pose.DrivePoseEstimator;
 import org.frc5010.common.drive.pose.SwerveFunctionsPose;
+import org.frc5010.common.drive.swerve.AkitSwerveConfig;
 import org.frc5010.common.drive.swerve.GenericSwerveModuleInfo;
 import org.frc5010.common.drive.swerve.SwerveDriveFunctions;
 import org.ironmaple.simulation.SimulatedArena;
-import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
-import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class AkitSwerveDrive extends SwerveDriveFunctions {
-  final double ODOMETRY_FREQUENCY;
-
-  public static DriveTrainSimulationConfig mapleSimConfig = DriveTrainSimulationConfig.Default();
+  final AkitSwerveConfig config;
   private final GyroIO gyroIO;
   private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
   private final Module[] modules = new Module[4]; // FL, FR, BL, BR
   private SysIdRoutine sysId;
   private Field2d field = new Field2d(); // For visualization in SmartDashboard
   private Supplier<RobotConfig> robotConfigSupplier = () -> null;
-  public static SwerveDriveSimulation driveSimulation = null;
 
   private final Alert gyroDisconnectedAlert =
       new Alert("Disconnected gyro, using kinematics as fallback.", AlertType.kError);
 
-  private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(moduleTranslations);
+  private SwerveDriveKinematics kinematics;
   private Rotation2d rawGyroRotation = new Rotation2d();
   private SwerveModulePosition[] lastModulePositions = // For delta tracking
       new SwerveModulePosition[] {
@@ -79,20 +72,23 @@ public class AkitSwerveDrive extends SwerveDriveFunctions {
         new SwerveModulePosition(),
         new SwerveModulePosition()
       };
-  private SwerveDrivePoseEstimator poseEstimator =
-      new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
-
+  private SwerveDrivePoseEstimator poseEstimator;
   private final Consumer<Pose2d> resetSimulationPoseCallBack;
 
   public AkitSwerveDrive(
-      SwerveDriveConfig config,
+      AkitSwerveConfig config,
       GyroIO gyroIO,
       ModuleIO flModuleIO,
       ModuleIO frModuleIO,
       ModuleIO blModuleIO,
       ModuleIO brModuleIO,
       Consumer<Pose2d> resetSimulationPoseCallBack) {
-    ODOMETRY_FREQUENCY = new CANBus(config.getCanbus()).isNetworkFD() ? 250.0 : 100.0;
+    this.config = config;
+    kinematics = new SwerveDriveKinematics(getModuleTranslations());
+    poseEstimator =
+        new SwerveDrivePoseEstimator(
+            kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
+
     this.gyroIO = gyroIO;
     this.resetSimulationPoseCallBack = resetSimulationPoseCallBack;
     modules[0] = new Module(flModuleIO, 0);
@@ -188,7 +184,7 @@ public class AkitSwerveDrive extends SwerveDriveFunctions {
     // Calculate module setpoints
     ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
     SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(discreteSpeeds);
-    SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, maxSpeedMetersPerSec);
+    SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, config.getMaxDriveSpeed());
 
     // Log unoptimized setpoints
     Logger.recordOutput("SwerveStates/Setpoints", setpointStates);
@@ -221,6 +217,7 @@ public class AkitSwerveDrive extends SwerveDriveFunctions {
    */
   public void stopWithX() {
     Rotation2d[] headings = new Rotation2d[4];
+    Translation2d[] moduleTranslations = getModuleTranslations();
     for (int i = 0; i < 4; i++) {
       headings[i] = moduleTranslations[i].getAngle();
     }
@@ -312,12 +309,12 @@ public class AkitSwerveDrive extends SwerveDriveFunctions {
 
   /** Returns the maximum linear speed in meters per sec. */
   public double getMaxLinearSpeedMetersPerSec() {
-    return maxSpeedMetersPerSec;
+    return config.getMaxDriveSpeed().in(MetersPerSecond);
   }
 
   /** Returns the maximum angular speed in radians per sec. */
   public double getMaxAngularSpeedRadPerSec() {
-    return maxSpeedMetersPerSec / driveBaseRadius;
+    return getMaxLinearSpeedMetersPerSec() / config.DRIVE_BASE_RADIUS;
   }
 
   @Override
@@ -427,6 +424,16 @@ public class AkitSwerveDrive extends SwerveDriveFunctions {
       moduleInfos[i] = new GenericSwerveModuleInfo(modules[i]);
     }
     return moduleInfos;
+  }
+
+  /** Returns an array of module translations. */
+  public Translation2d[] getModuleTranslations() {
+    return new Translation2d[] {
+      new Translation2d(config.FrontLeft.LocationX, config.FrontLeft.LocationY),
+      new Translation2d(config.FrontRight.LocationX, config.FrontRight.LocationY),
+      new Translation2d(config.BackLeft.LocationX, config.BackLeft.LocationY),
+      new Translation2d(config.BackRight.LocationX, config.BackRight.LocationY)
+    };
   }
 
   /**

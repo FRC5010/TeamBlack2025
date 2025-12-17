@@ -57,8 +57,6 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class AKitTalonFXSwerveDrive extends SwerveDriveFunctions {
-  // The config doesn't include these constants, so they are declared locally
-
   final AkitSwerveConfig config;
   private final GyroIO gyroIO;
   private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
@@ -266,8 +264,9 @@ public class AKitTalonFXSwerveDrive extends SwerveDriveFunctions {
    */
   public void stopWithX() {
     Rotation2d[] headings = new Rotation2d[4];
+    Translation2d[] moduleTranslations = getModuleTranslations();
     for (int i = 0; i < 4; i++) {
-      headings[i] = getModuleTranslations()[i].getAngle();
+      headings[i] = moduleTranslations[i].getAngle();
     }
     kinematics.resetHeadings(headings);
     stop();

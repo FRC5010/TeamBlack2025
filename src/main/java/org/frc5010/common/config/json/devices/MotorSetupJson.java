@@ -25,7 +25,7 @@ public class MotorSetupJson {
   public String controllerType;
   public int canId;
   /** The CAN bus for the motor */
-  public String canBus = "rio";
+  public String canBus = "";
 
   public FollowerMotorJson[] followers = new FollowerMotorJson[0];
   public String idleMode = "BRAKE";
