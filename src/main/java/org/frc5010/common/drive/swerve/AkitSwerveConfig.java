@@ -6,6 +6,7 @@ package org.frc5010.common.drive.swerve;
 
 import static edu.wpi.first.units.Units.Amps;
 
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -92,7 +93,7 @@ public class AkitSwerveConfig extends SwerveDriveConfig {
     public AkitTalonFXSwerveConfigBuilder(
         DrivetrainConstantsJson constants, SubsystemBase subsystem) {
       super();
-
+      CANBus kCANBus = new CANBus(constants.canbus, "./logs/example.hoot");
       bumperFrameLength = UnitsParser.parseDistance(constants.bumperFrameLength);
       bumperFrameWidth = UnitsParser.parseDistance(constants.bumperFrameWidth);
       maxDriveSpeed = UnitsParser.parseVelocity(constants.maxDriveSpeed);
@@ -108,10 +109,11 @@ public class AkitSwerveConfig extends SwerveDriveConfig {
               .getRotorToMechanismRatio();
       DrivetrainConstants =
           new SwerveDrivetrainConstants()
-              .withCANBusName(constants.canbus)
+              .withCANBusName(kCANBus.getName())
               .withPigeon2Id(constants.gyro.id)
               .withPigeon2Configs(null);
 
+      CANcoderConfiguration encoderInitialConfigs = new CANcoderConfiguration();
       ConstantCreator =
           new SwerveModuleConstantsFactory<
                   TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>()
@@ -157,7 +159,7 @@ public class AkitSwerveConfig extends SwerveDriveConfig {
                               // without impacting performance.
                               .withStatorCurrentLimit(Amps.of(30))
                               .withStatorCurrentLimitEnable(true)))
-              .withEncoderInitialConfigs(new CANcoderConfiguration())
+              .withEncoderInitialConfigs(encoderInitialConfigs)
               .withSteerInertia(UnitsParser.parseMomentOfInertia(constants.steerInertia))
               .withDriveInertia(UnitsParser.parseMomentOfInertia(constants.driveInertia))
               .withSteerFrictionVoltage(constants.steerMotorControl.feedForward.s)

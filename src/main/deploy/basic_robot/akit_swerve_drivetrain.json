@@ -1,5 +1,5 @@
 {
-  "type": "Spark",
+  "type": "TalonFX",
   "constants": {
     "trackWidth": {
       "val": 28,
