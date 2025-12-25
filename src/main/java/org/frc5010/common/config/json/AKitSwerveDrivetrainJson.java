@@ -101,7 +101,7 @@ public class AKitSwerveDrivetrainJson implements DrivetrainPropertiesJson {
               SwerveDriveFunctions.mapleSimConfig, new Pose2d(3, 3, new Rotation2d()));
       SimulatedArena.getInstance().addDriveTrainSimulation(SwerveDriveFunctions.driveSimulation);
       if ("TalonFX".equals(type)) {
-        PhoenixOdometryThread.createtInstance(config);
+        PhoenixOdometryThread.createInstance(config);
         driveFunctions =
             new AkitSwerveDrive(
                 config,
@@ -118,7 +118,7 @@ public class AKitSwerveDrivetrainJson implements DrivetrainPropertiesJson {
                     config, config.BackRight, SwerveDriveFunctions.driveSimulation.getModules()[3]),
                 SwerveDriveFunctions.driveSimulation::setSimulationWorldPose);
       } else {
-        PhoenixOdometryThread.createtInstance(config);
+        PhoenixOdometryThread.createInstance(config);
         driveFunctions =
             new AkitSwerveDrive(
                 config,
@@ -154,7 +154,7 @@ public class AKitSwerveDrivetrainJson implements DrivetrainPropertiesJson {
                 new ModuleIOSpark(3),
                 (pose) -> {});
       } else if ("TalonFX".equals(type)) {
-        PhoenixOdometryThread.createtInstance(config);
+        PhoenixOdometryThread.createInstance(config);
         driveFunctions =
             new AkitSwerveDrive(
                 config,

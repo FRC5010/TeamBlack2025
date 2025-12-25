@@ -100,7 +100,7 @@ public class AkitSwerveDrive extends SwerveDriveFunctions {
     HAL.report(tResourceType.kResourceType_RobotDrive, tInstances.kRobotDriveSwerve_AdvantageKit);
 
     // Start odometry thread
-    OdometryThread.getInstance().start();
+    PhoenixOdometryThread.getInstance().start();
 
     // Should we keep this?
     // Pathfinding.setPathfinder(new LocalADStarAK());
