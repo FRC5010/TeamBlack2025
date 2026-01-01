@@ -646,6 +646,13 @@ public class YAGSLSwerveDrivetrain extends SwerveDriveFunctions {
    */
   @Override
   public Supplier<Optional<AbstractDriveTrainSimulation>> getDriveTrainSimulationSupplier() {
-    return () -> Optional.ofNullable(swerveDrive.getMapleSimDrive().get());
+    return () ->
+        swerveDrive
+            .getMapleSimDrive()
+            .map(Object::toString)
+            .map(
+                obj ->
+                    (AbstractDriveTrainSimulation)
+                        (Object) swerveDrive.getMapleSimDrive().orElse(null));
   }
 }

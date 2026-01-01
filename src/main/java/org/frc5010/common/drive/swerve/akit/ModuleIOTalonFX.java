@@ -74,9 +74,9 @@ public abstract class ModuleIOTalonFX implements ModuleIO {
           constants) {
     this.constants = constants;
 
-    driveTalon = new TalonFX(constants.DriveMotorId, config.getCanbus());
-    turnTalon = new TalonFX(constants.SteerMotorId, config.getCanbus());
-    cancoder = new CANcoder(constants.EncoderId, config.getCanbus());
+    driveTalon = new TalonFX(constants.DriveMotorId, config.getCANBus());
+    turnTalon = new TalonFX(constants.SteerMotorId, config.getCANBus());
+    cancoder = new CANcoder(constants.EncoderId, config.getCANBus());
 
     // Configure drive motor
     var driveConfig = constants.DriveMotorInitialConfigs;

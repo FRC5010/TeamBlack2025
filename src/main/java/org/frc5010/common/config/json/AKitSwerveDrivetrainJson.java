@@ -9,7 +9,6 @@ import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
-import com.ctre.phoenix6.CANBus;
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.RobotConfig;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -130,7 +129,7 @@ public class AKitSwerveDrivetrainJson implements DrivetrainPropertiesJson {
                 SwerveDriveFunctions.driveSimulation::setSimulationWorldPose);
       }
     } else {
-      config.ODOMETRY_FREQUENCY = new CANBus(config.getCanbus()).isNetworkFD() ? 250.0 : 100.0;
+      config.ODOMETRY_FREQUENCY = config.getCANBus().isNetworkFD() ? 250.0 : 100.0;
       if ("SparkTalon".equals(type)) {
         SparkOdometryThread.createInstance();
         driveFunctions =

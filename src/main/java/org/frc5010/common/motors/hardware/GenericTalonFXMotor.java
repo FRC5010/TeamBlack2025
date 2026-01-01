@@ -7,6 +7,7 @@ package org.frc5010.common.motors.hardware;
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Volts;
 
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
@@ -15,6 +16,7 @@ import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -69,7 +71,7 @@ public class GenericTalonFXMotor implements GenericMotorController {
   protected Motor config;
 
   public GenericTalonFXMotor(int id, String canbus) {
-    motor = new TalonFX(id, canbus);
+    motor = new TalonFX(id, new CANBus(canbus));
   }
   /**
    * Construct the TalonFX swerve motor given the ID and CANBus.
@@ -79,7 +81,7 @@ public class GenericTalonFXMotor implements GenericMotorController {
    * @param canbus CANBus on which the TalonFX is on.
    */
   public GenericTalonFXMotor(int id, Motor config, String canbus) {
-    motor = new TalonFX(id, canbus);
+    motor = new TalonFX(id, new CANBus(canbus));
     this.cfg = motor.getConfigurator();
 
     factoryDefaults();
@@ -178,7 +180,8 @@ public class GenericTalonFXMotor implements GenericMotorController {
    */
   @Override
   public GenericMotorController setFollow(GenericMotorController motor) {
-    this.motor.setControl(new Follower(((TalonFX) motor.getMotor()).getDeviceID(), false));
+    this.motor.setControl(
+        new Follower(((TalonFX) motor.getMotor()).getDeviceID(), MotorAlignmentValue.Aligned));
     return this;
   }
 
@@ -191,7 +194,10 @@ public class GenericTalonFXMotor implements GenericMotorController {
    */
   @Override
   public GenericMotorController setFollow(GenericMotorController motor, boolean inverted) {
-    this.motor.setControl(new Follower(((TalonFX) motor.getMotor()).getDeviceID(), inverted));
+    this.motor.setControl(
+        new Follower(
+            ((TalonFX) motor.getMotor()).getDeviceID(),
+            inverted ? MotorAlignmentValue.Opposed : MotorAlignmentValue.Aligned));
     return this;
   }
 

@@ -28,7 +28,7 @@ public class GyroIOPigeon2 implements GyroIO {
   private final StatusSignal<AngularVelocity> yawVelocity;
 
   public GyroIOPigeon2(AkitSwerveConfig config) {
-    pigeon = new Pigeon2(config.DrivetrainConstants.Pigeon2Id, config.getCanbus());
+    pigeon = new Pigeon2(config.DrivetrainConstants.Pigeon2Id, config.getCANBus());
     yaw = pigeon.getYaw();
     yawVelocity = pigeon.getAngularVelocityZWorld();
     pigeon.getConfigurator().apply(new Pigeon2Configuration());

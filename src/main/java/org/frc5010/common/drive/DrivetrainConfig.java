@@ -223,7 +223,7 @@ public class DrivetrainConfig {
    *
    * @return the canbus string associated with this drivetrain configuration
    */
-  public String getCanbus() {
+  public String getCanBusName() {
     return canbus;
   }
 

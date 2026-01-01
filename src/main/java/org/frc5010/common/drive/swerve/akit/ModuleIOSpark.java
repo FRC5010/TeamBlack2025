@@ -7,12 +7,43 @@
 
 package org.frc5010.common.drive.swerve.akit;
 
-import static org.frc5010.common.drive.swerve.akit.DriveConstants.*;
-import static org.frc5010.common.drive.swerve.akit.util.SparkUtil.*;
+import static org.frc5010.common.drive.swerve.akit.DriveConstants.backLeftDriveCanId;
+import static org.frc5010.common.drive.swerve.akit.DriveConstants.backLeftTurnCanId;
+import static org.frc5010.common.drive.swerve.akit.DriveConstants.backLeftZeroRotation;
+import static org.frc5010.common.drive.swerve.akit.DriveConstants.backRightDriveCanId;
+import static org.frc5010.common.drive.swerve.akit.DriveConstants.backRightTurnCanId;
+import static org.frc5010.common.drive.swerve.akit.DriveConstants.backRightZeroRotation;
+import static org.frc5010.common.drive.swerve.akit.DriveConstants.driveEncoderPositionFactor;
+import static org.frc5010.common.drive.swerve.akit.DriveConstants.driveEncoderVelocityFactor;
+import static org.frc5010.common.drive.swerve.akit.DriveConstants.driveKd;
+import static org.frc5010.common.drive.swerve.akit.DriveConstants.driveKp;
+import static org.frc5010.common.drive.swerve.akit.DriveConstants.driveKs;
+import static org.frc5010.common.drive.swerve.akit.DriveConstants.driveKv;
+import static org.frc5010.common.drive.swerve.akit.DriveConstants.driveMotorCurrentLimit;
+import static org.frc5010.common.drive.swerve.akit.DriveConstants.frontLeftDriveCanId;
+import static org.frc5010.common.drive.swerve.akit.DriveConstants.frontLeftTurnCanId;
+import static org.frc5010.common.drive.swerve.akit.DriveConstants.frontLeftZeroRotation;
+import static org.frc5010.common.drive.swerve.akit.DriveConstants.frontRightDriveCanId;
+import static org.frc5010.common.drive.swerve.akit.DriveConstants.frontRightTurnCanId;
+import static org.frc5010.common.drive.swerve.akit.DriveConstants.frontRightZeroRotation;
+import static org.frc5010.common.drive.swerve.akit.DriveConstants.odometryFrequency;
+import static org.frc5010.common.drive.swerve.akit.DriveConstants.turnEncoderInverted;
+import static org.frc5010.common.drive.swerve.akit.DriveConstants.turnEncoderPositionFactor;
+import static org.frc5010.common.drive.swerve.akit.DriveConstants.turnEncoderVelocityFactor;
+import static org.frc5010.common.drive.swerve.akit.DriveConstants.turnInverted;
+import static org.frc5010.common.drive.swerve.akit.DriveConstants.turnKd;
+import static org.frc5010.common.drive.swerve.akit.DriveConstants.turnKp;
+import static org.frc5010.common.drive.swerve.akit.DriveConstants.turnMotorCurrentLimit;
+import static org.frc5010.common.drive.swerve.akit.DriveConstants.turnPIDMaxInput;
+import static org.frc5010.common.drive.swerve.akit.DriveConstants.turnPIDMinInput;
+import static org.frc5010.common.drive.swerve.akit.util.SparkUtil.ifOk;
+import static org.frc5010.common.drive.swerve.akit.util.SparkUtil.sparkStickyFault;
+import static org.frc5010.common.drive.swerve.akit.util.SparkUtil.tryUntilOk;
 
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.ClosedLoopSlot;
+import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -22,7 +53,6 @@ import com.revrobotics.spark.SparkClosedLoopController.ArbFFUnits;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
@@ -104,12 +134,7 @@ public class ModuleIOSpark implements ModuleIO {
         .velocityConversionFactor(driveEncoderVelocityFactor)
         .uvwMeasurementPeriod(10)
         .uvwAverageDepth(2);
-    driveConfig
-        .closedLoop
-        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-        .pidf(
-            driveKp, 0.0,
-            driveKd, 0.0);
+    driveConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).p(driveKp).d(driveKd);
     driveConfig
         .signals
         .primaryEncoderPositionAlwaysOn(true)
@@ -145,7 +170,8 @@ public class ModuleIOSpark implements ModuleIO {
         .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
         .positionWrappingEnabled(true)
         .positionWrappingInputRange(turnPIDMinInput, turnPIDMaxInput)
-        .pidf(turnKp, 0.0, turnKd, 0.0);
+        .p(turnKp)
+        .d(turnKd);
     turnConfig
         .signals
         .absoluteEncoderPositionAlwaysOn(true)
@@ -224,7 +250,7 @@ public class ModuleIOSpark implements ModuleIO {
   @Override
   public void setDriveVelocity(double velocityRadPerSec) {
     double ffVolts = driveKs * Math.signum(velocityRadPerSec) + driveKv * velocityRadPerSec;
-    driveController.setReference(
+    driveController.setSetpoint(
         velocityRadPerSec,
         ControlType.kVelocity,
         ClosedLoopSlot.kSlot0,
@@ -237,6 +263,6 @@ public class ModuleIOSpark implements ModuleIO {
     double setpoint =
         MathUtil.inputModulus(
             rotation.plus(zeroRotation).getRadians(), turnPIDMinInput, turnPIDMaxInput);
-    turnController.setReference(setpoint, ControlType.kPosition);
+    turnController.setSetpoint(setpoint, ControlType.kPosition);
   }
 }

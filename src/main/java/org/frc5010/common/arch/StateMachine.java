@@ -1,10 +1,11 @@
-// Original source: https://github.com/tom131313/AdvancedCommandBasedExamples/tree/main
+// Original source: https://github.com/tom131313/AdvancedCommanddExamples/tree/main
 package org.frc5010.common.arch;
 
 import static edu.wpi.first.util.ErrorMessages.requireNonNullParam;
 
 import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.WrapperCommand;
@@ -208,7 +209,8 @@ public class StateMachine extends Command {
     events.clear(); // make sure clear in case there would be a race between the execute poll and
     // the next command clear (maybe used if FSM can start/stop which it can't right
     // now)
-    new ScheduleCommand(initialState.stateCommandAugmented).schedule();
+    CommandScheduler.getInstance()
+        .schedule(new ScheduleCommand(initialState.stateCommandAugmented));
   }
 
   /** Called repeatedly while the StateMachine is running to check for triggering events. */
