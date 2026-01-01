@@ -106,7 +106,6 @@ Temporary Items
 ### VisualStudioCode ###
 .vscode/*
 !.vscode/settings.json
-!.vscode/settings.prefs
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
@@ -169,11 +168,13 @@ out/
 # Fleet
 .fleet
 
+# Simulation GUI and other tools window save file
+networktables.json
+simgui.json
+*-window.json
+
 # Simulation data log directory
 logs/
-
-simgui-window.json
-simgui-ds.json
 
 # Folder that has CTRE Phoenix Sim device config storage
 ctre_sim/
@@ -182,3 +183,6 @@ ctre_sim/
 /.cache
 compile_commands.json
 networktables.json.bck
+
+# Eclipse generated file for annotation processors
+.factorypath
