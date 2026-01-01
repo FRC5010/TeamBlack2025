@@ -123,7 +123,6 @@ public class SimulatedDrivetrain extends GenericDrivetrain {
 
   @Override
   public Field2d getField2d() {
-    // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Unimplemented method 'getField2d'");
   }
 }

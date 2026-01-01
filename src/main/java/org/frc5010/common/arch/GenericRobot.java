@@ -206,7 +206,6 @@ public abstract class GenericRobot extends GenericMechanism implements GenericDe
   public void buildAutoCommands() {
     initAutoCommands();
 
-    // TODO: Figure out Pathplanner Warmup Command
     if (AutoBuilder.isConfigured()) {
       selectableCommand =
           new LoggedDashboardChooser<>("Auto Modes", AutoBuilder.buildAutoChooser());

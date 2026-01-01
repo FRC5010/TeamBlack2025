@@ -315,6 +315,9 @@ public abstract class GenericDrivetrain extends GenericSubsystem {
               .map(it -> it.getPose3d())
               .collect(Collectors.toList())) {
         getField2d()
+            .getObject("CARPET" + count)
+            .setPose(new Pose2d(gpb.getX(), gpb.getY(), new Rotation2d()));
+        getField2d()
             .getObject("GPB" + count)
             .setPose(new Pose2d(gpb.getX(), gpb.getY(), gpb.getRotation().toRotation2d()));
         count++;

@@ -649,7 +649,6 @@ public class YAGSLSwerveDrivetrain extends SwerveDriveFunctions {
     return () ->
         swerveDrive
             .getMapleSimDrive()
-            .map(Object::toString)
             .map(
                 obj ->
                     (AbstractDriveTrainSimulation)
