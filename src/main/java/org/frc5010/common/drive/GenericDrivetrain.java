@@ -44,13 +44,13 @@ import org.frc5010.common.constants.GenericDrivetrainConstants;
 import org.frc5010.common.drive.pose.DrivePoseEstimator;
 import org.frc5010.common.sensors.Controller;
 import org.frc5010.common.telemetry.DisplayBoolean;
-import org.ironmaple.simulation.SimulatedArena;
-import org.ironmaple.simulation.drivesims.AbstractDriveTrainSimulation;
-import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
 import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
 import org.littletonrobotics.junction.mechanism.LoggedMechanismRoot2d;
+import swervelib.simulation.ironmaple.simulation.SimulatedArena;
+import swervelib.simulation.ironmaple.simulation.drivesims.AbstractDriveTrainSimulation;
+import swervelib.simulation.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 
 /** Generic class for defining drivetrain behavior */
 public abstract class GenericDrivetrain extends GenericSubsystem {

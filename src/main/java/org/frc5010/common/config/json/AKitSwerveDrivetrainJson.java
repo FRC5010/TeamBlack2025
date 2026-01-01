@@ -36,12 +36,12 @@ import org.frc5010.common.drive.swerve.akit.ModuleIOTalonFXReal;
 import org.frc5010.common.drive.swerve.akit.ModuleIOTalonFXSim;
 import org.frc5010.common.drive.swerve.akit.PhoenixOdometryThread;
 import org.frc5010.common.drive.swerve.akit.SparkOdometryThread;
-import org.ironmaple.simulation.SimulatedArena;
-import org.ironmaple.simulation.drivesims.COTS;
-import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
-import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
-import org.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig;
 import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
+import swervelib.simulation.ironmaple.simulation.SimulatedArena;
+import swervelib.simulation.ironmaple.simulation.drivesims.COTS;
+import swervelib.simulation.ironmaple.simulation.drivesims.SwerveDriveSimulation;
+import swervelib.simulation.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
+import swervelib.simulation.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig;
 
 /** Add your docs here. */
 public class AKitSwerveDrivetrainJson implements DrivetrainPropertiesJson {

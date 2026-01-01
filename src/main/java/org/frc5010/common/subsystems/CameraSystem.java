@@ -13,9 +13,9 @@ import org.frc5010.common.constants.Constants;
 import org.frc5010.common.sensors.camera.GenericCamera;
 import org.frc5010.common.sensors.camera.SimulatedCamera;
 import org.frc5010.common.telemetry.DisplayBoolean;
-import org.ironmaple.simulation.SimulatedArena;
 import org.photonvision.estimation.TargetModel;
 import org.photonvision.simulation.VisionTargetSim;
+import swervelib.simulation.ironmaple.simulation.SimulatedArena;
 
 /**
  * This class is an abstract class that needs to be implemented by any subclass of CameraSystem. It

@@ -14,8 +14,8 @@ import java.util.HashMap;
 import java.util.Map;
 import org.frc5010.common.arch.GenericRobot;
 import org.frc5010.common.vision.AprilTags;
-import org.ironmaple.simulation.SimulatedArena;
-import org.ironmaple.simulation.gamepieces.GamePieceOnFieldSimulation;
+import swervelib.simulation.ironmaple.simulation.SimulatedArena;
+import swervelib.simulation.ironmaple.simulation.gamepieces.GamePieceOnFieldSimulation;
 
 /** JSON class with an array of cameras to configure */
 public class VisionPropertiesJson {

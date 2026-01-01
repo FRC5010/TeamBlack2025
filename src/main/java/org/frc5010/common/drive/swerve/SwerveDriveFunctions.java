@@ -27,10 +27,10 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Supplier;
 import org.frc5010.common.drive.pose.DrivePoseEstimator;
-import org.ironmaple.simulation.drivesims.AbstractDriveTrainSimulation;
-import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
-import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
 import swervelib.SwerveDrive;
+import swervelib.simulation.ironmaple.simulation.drivesims.AbstractDriveTrainSimulation;
+import swervelib.simulation.ironmaple.simulation.drivesims.SwerveDriveSimulation;
+import swervelib.simulation.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
 
 /** Add your docs here. */
 public abstract class SwerveDriveFunctions {

@@ -44,7 +44,6 @@ import java.util.function.Supplier;
 import org.frc5010.common.constants.GenericDrivetrainConstants;
 import org.frc5010.common.drive.pose.DrivePoseEstimator;
 import org.frc5010.common.drive.pose.SwerveFunctionsPose;
-import org.ironmaple.simulation.drivesims.AbstractDriveTrainSimulation;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
 import swervelib.SwerveDriveTest;
@@ -52,6 +51,7 @@ import swervelib.SwerveModule;
 import swervelib.math.SwerveMath;
 import swervelib.parser.SwerveDriveConfiguration;
 import swervelib.parser.SwerveParser;
+import swervelib.simulation.ironmaple.simulation.drivesims.AbstractDriveTrainSimulation;
 import swervelib.telemetry.SwerveDriveTelemetry;
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
