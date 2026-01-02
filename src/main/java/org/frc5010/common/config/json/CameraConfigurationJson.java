@@ -31,54 +31,109 @@ import org.frc5010.common.subsystems.VisibleTargetSystem;
 import org.frc5010.common.vision.AprilTags;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
-/** Add your docs here. */
+/**
+ * Configuration data class for camera systems in an FRC robot.
+ *
+ * <p>This class represents the JSON configuration for a single camera, including its type
+ * (Limelight, PhotonVision, AprilTag), physical pose relative to the robot center, and calibration
+ * parameters. The configuration supports both real hardware and simulation modes.
+ *
+ * <p>Configuration is typically loaded from JSON files and used to instantiate the appropriate
+ * camera implementation ({@link LimeLightCamera}, {@link PhotonVisionCamera}, etc.) via the {@link
+ * #configureCamera(GenericRobot)} method.
+ */
 public class CameraConfigurationJson {
-  /** Limelight constant */
+  /** Constant identifier for Limelight camera type */
   public static String LIMELIGHT = "limelight";
-  /** PhotonVision constant */
+  /** Constant identifier for PhotonVision camera type */
   public static String PHOTON_VISION = "photonvision";
-  /** AprilTag constant */
+  /** Constant identifier for AprilTag detection mode */
   public static String APRIL_TAG = "apriltag";
-  /** Target camera constant */
+  /** Constant identifier for target tracking mode */
   public static String TARGET = "target";
 
-  /** Name of the camera */
+  /** Unique name of the camera used as a subsystem identifier */
   public String name;
-  /** Use of the camera */
+  /**
+   * The use case for this camera. Valid values include:
+   *
+   * <ul>
+   *   <li>"target" - for target tracking systems
+   *   <li>"apriltag" - for AprilTag-based pose estimation
+   *   <li>"quest" - for QuestNav visual odometry
+   * </ul>
+   */
   public String use;
-  /** Type of the camera */
+  /**
+   * The camera vendor/type. Valid values include:
+   *
+   * <ul>
+   *   <li>"limelight" - Limelight camera
+   *   <li>"photonvision" - PhotonVision camera
+   * </ul>
+   *
+   * Defaults to "none" if not specified.
+   */
   public String type = "none";
-  /** Optional strategy of the camera pose */
+  /**
+   * The pose estimation strategy for PhotonVision cameras (e.g., "AVERAGE_BEST_TARGETS",
+   * "LOWEST_AMBIGUITY"). Defaults to "none" if not using multi-target pose estimation.
+   */
   public String strategy = "none";
-  /** Column in SmartDashboard */
+  /** The SmartDashboard column index for this camera's telemetry display */
   public int column = 0;
-  /** Camera X position from center in meters, in the robot's reference frame */
+  /** Camera X position offset from robot center in meters (forward/backward in robot frame) */
   public double x = 0;
-  /** Camera Y position from center in meters, in the robot's reference frame */
+  /** Camera Y position offset from robot center in meters (left/right in robot frame) */
   public double y = 0;
-  /** Camera Z position from center in meters, in the robot's reference frame */
+  /** Camera Z position offset from robot center in meters (up/down in robot frame) */
   public double z = 0;
-  /** Camera roll angle in degrees, in the robot's reference frame */
+  /** Camera roll rotation in degrees around the X-axis in the robot's reference frame */
   public double roll = 0;
-  /** Camera pitch angle in degrees, in the robot's reference frame */
+  /** Camera pitch rotation in degrees around the Y-axis in the robot's reference frame */
   public double pitch = 0;
-  /** Camera yaw angle in degrees, in the robot's reference frame */
+  /** Camera yaw rotation in degrees around the Z-axis in the robot's reference frame */
   public double yaw = 0;
-  /** Camera width in pixels */
+  /** Horizontal resolution of the camera in pixels */
   public int width = 800;
-  /** Camera height in pixels */
+  /** Vertical resolution of the camera in pixels */
   public int height = 600;
-  /* Camera FOV in degrees */
+  /** Camera field of view (FOV) in degrees */
   public double fov = 70;
-  /** optional target height in meters */
+  /** Optional height of the target in meters (used for target tracking mode) */
   public double targetHeight = 0;
-  /** optional target fiducial id */
+  /**
+   * Optional array of AprilTag fiducial IDs to track. If empty, all AprilTags may be detected
+   * depending on the configuration strategy.
+   */
   public int[] targetFiducialIds = new int[0];
 
   /**
-   * Configures the camera system based on the provided robot.
+   * Configures the camera system based on the provided robot and current configuration.
    *
-   * @param robot the GenericRobot instance to configure the camera for
+   * <p>This method performs the following operations:
+   *
+   * <ol>
+   *   <li>Creates the appropriate camera instance based on the {@link #type} field (real hardware
+   *       or simulation)
+   *   <li>Initializes camera parameters (resolution, FOV, pose relative to robot)
+   *   <li>Sets up the camera according to its configured {@link #use} case:
+   *       <ul>
+   *         <li>"target" - Creates a target tracking system
+   *         <li>"apriltag" - Registers camera with pose estimator for localization
+   *         <li>"quest" - Initializes QuestNav visual odometry system
+   *       </ul>
+   *   <li>Registers the camera/vision system with the robot
+   * </ol>
+   *
+   * <p>The method handles both real and simulated robot modes ({@link RobotBase#isReal()}). In
+   * simulation, cameras are created with physics-based simulation capabilities.
+   *
+   * @param robot the {@link GenericRobot} instance to configure the camera for. The robot must have
+   *     a drivetrain subsystem with a pose estimator if using pose-based vision modes
+   * @throws IllegalArgumentException if the camera type or use case is not recognized
+   * @throws NullPointerException if required subsystems (e.g., drivetrain) are not available for
+   *     the specified use case
    */
   public void configureCamera(GenericRobot robot) {
     GenericCamera camera = null;

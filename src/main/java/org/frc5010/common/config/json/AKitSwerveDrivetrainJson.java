@@ -43,7 +43,7 @@ import swervelib.simulation.ironmaple.simulation.drivesims.SwerveDriveSimulation
 import swervelib.simulation.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
 import swervelib.simulation.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig;
 
-/** Add your docs here. */
+/** Configuration for AKit Swerve Drivetrain */
 public class AKitSwerveDrivetrainJson implements DrivetrainPropertiesJson {
   public String type = "SparkTalon";
   public DrivetrainConstantsJson constants;
