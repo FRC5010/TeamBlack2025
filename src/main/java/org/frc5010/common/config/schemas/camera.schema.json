@@ -1,0 +1,87 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Camera Configuration",
+  "description": "Configuration for a single camera (matches CameraConfigurationJson.java)",
+  "type": "object",
+  "required": [
+    "name"
+  ],
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Unique name of the camera used as subsystem identifier"
+    },
+    "use": {
+      "type": "string",
+      "description": "Use case for this camera",
+      "enum": [
+        "target",
+        "apriltag",
+        "quest"
+      ]
+    },
+    "type": {
+      "type": "string",
+      "description": "Camera vendor/type",
+      "enum": [
+        "limelight",
+        "photonvision",
+        "none"
+      ],
+      "default": "none"
+    },
+    "strategy": {
+      "type": "string",
+      "description": "Pose estimation strategy for PhotonVision cameras",
+      "default": "none"
+    },
+    "column": {
+      "type": "integer",
+      "description": "SmartDashboard column index for telemetry display",
+      "default": 0,
+      "minimum": 0
+    },
+    "x": {
+      "type": "number",
+      "description": "Camera X position offset from robot center in meters (forward/backward)",
+      "default": 0
+    },
+    "y": {
+      "type": "number",
+      "description": "Camera Y position offset from robot center in meters (left/right)",
+      "default": 0
+    },
+    "z": {
+      "type": "number",
+      "description": "Camera Z position offset from robot center in meters (up/down)",
+      "default": 0
+    },
+    "roll": {
+      "type": "number",
+      "description": "Camera roll rotation in degrees around X-axis",
+      "default": 0
+    },
+    "pitch": {
+      "type": "number",
+      "description": "Camera pitch rotation in degrees around Y-axis",
+      "default": 0
+    },
+    "yaw": {
+      "type": "number",
+      "description": "Camera yaw rotation in degrees around Z-axis",
+      "default": 0
+    },
+    "width": {
+      "type": "integer",
+      "description": "Horizontal resolution of the camera in pixels",
+      "default": 800,
+      "minimum": 1
+    },
+    "height": {
+      "type": "integer",
+      "description": "Vertical resolution of the camera in pixels",
+      "default": 600,
+      "minimum": 1
+    }
+  }
+}

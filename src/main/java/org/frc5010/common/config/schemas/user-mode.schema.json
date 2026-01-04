@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "User Mode Configuration",
+  "description": "User mode settings for robot operation (competition_mode.json, demo_mode.json, etc. - matches UserModeJson.java)",
+  "type": "object",
+  "properties": {
+    "maxSpeed": {
+      "type": "number",
+      "description": "Maximum teleop speed of the robot in m/s",
+      "default": 0.0,
+      "minimum": 0
+    },
+    "maxAngularSpeed": {
+      "type": "number",
+      "description": "Maximum angular speed of the robot in rad/s",
+      "default": 0.0,
+      "minimum": 0
+    },
+    "maxAccelleration": {
+      "type": "number",
+      "description": "Maximum linear acceleration in m/s²",
+      "default": 0.0,
+      "minimum": 0
+    },
+    "maxAngularAccelleration": {
+      "type": "number",
+      "description": "Maximum angular acceleration in rad/s²",
+      "default": 0.0,
+      "minimum": 0
+    }
+  }
+}

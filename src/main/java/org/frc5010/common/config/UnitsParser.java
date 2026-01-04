@@ -46,45 +46,62 @@ import edu.wpi.first.units.measure.MomentOfInertia;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.units.measure.Voltage;
 import org.frc5010.common.config.json.UnitValueJson;
+import org.frc5010.common.config.units.AngleUnit;
+import org.frc5010.common.config.units.AngularAccelerationUnit;
+import org.frc5010.common.config.units.AngularVelocityUnit;
+import org.frc5010.common.config.units.CurrentUnit;
+import org.frc5010.common.config.units.DistanceUnit;
+import org.frc5010.common.config.units.LinearAccelerationUnit;
+import org.frc5010.common.config.units.LinearVelocityUnit;
+import org.frc5010.common.config.units.MassUnit;
+import org.frc5010.common.config.units.MomentOfInertiaUnit;
+import org.frc5010.common.config.units.TimeUnit;
+import org.frc5010.common.config.units.VoltageUnit;
 
 /** A class that converts a magnitude and a unit into a {@link Measurement} object. */
 public class UnitsParser {
-  public static final String M = "m";
-  public static final String CM = "cm";
-  public static final String MM = "mm";
-  public static final String IN = "in";
-  public static final String FT = "ft";
-  public static final String YD = "yd";
-  public static final String MPS = "m/s";
-  public static final String CMPS = "cm/s";
-  public static final String MPS2 = "m/s^2";
-  public static final String CMPS2 = "cm/s^2";
-  public static final String DEG = "deg";
-  public static final String RAD = "rad";
-  public static final String DEGPS = "deg/s";
-  public static final String RADPS = "rad/s";
-  public static final String rpm = "rpm";
-  public static final String rps = "rps";
-  public static final String DEGPS2 = "deg/s^2";
-  public static final String RADPS2 = "rad/s^2";
-  public static final String RPMPS = "rpmps";
-  public static final String RPS2 = "rps^2";
-  public static final String AMPS = "amps";
-  public static final String VOLTS = "volts";
-  public static final String SEC = "sec";
-  public static final String MS = "ms";
-  public static final String US = "us";
-  public static final String NS = "ns";
-  public static final String KG = "kg";
-  public static final String G = "g";
-  public static final String MG = "mg";
-  public static final String OZ = "oz";
-  public static final String LBS = "lbs";
-  public static final String STONE = "stone";
-  public static final String TONS = "tons";
-  private static final String FPS = "ft/s";
-  private static final String FPS2 = "ft/s^2";
 
+  /**
+   * Deprecated: Use the specific unit enum classes instead. These constants are provided for
+   * backwards compatibility with existing code.
+   *
+   * @deprecated Use {@link DistanceUnit#METERS}, {@link LinearVelocityUnit#METERS_PER_SECOND}, etc.
+   */
+  @Deprecated public static final String CM = "cm";
+
+  @Deprecated public static final String MM = "mm";
+  @Deprecated public static final String IN = "in";
+  @Deprecated public static final String FT = "ft";
+  @Deprecated public static final String YD = "yd";
+  @Deprecated public static final String MPS = "m/s";
+  @Deprecated public static final String CMPS = "cm/s";
+  @Deprecated public static final String MPS2 = "m/s^2";
+  @Deprecated public static final String CMPS2 = "cm/s^2";
+  @Deprecated public static final String DEG = "deg";
+  @Deprecated public static final String RAD = "rad";
+  @Deprecated public static final String DEGPS = "deg/s";
+  @Deprecated public static final String RADPS = "rad/s";
+  @Deprecated public static final String rpm = "rpm";
+  @Deprecated public static final String rps = "rps";
+  @Deprecated public static final String DEGPS2 = "deg/s^2";
+  @Deprecated public static final String RADPS2 = "rad/s^2";
+  @Deprecated public static final String RPMPS = "rpmps";
+  @Deprecated public static final String RPS2 = "rps^2";
+  @Deprecated public static final String AMPS = "amps";
+  @Deprecated public static final String VOLTS = "volts";
+  @Deprecated public static final String SEC = "sec";
+  @Deprecated public static final String MS = "ms";
+  @Deprecated public static final String US = "us";
+  @Deprecated public static final String NS = "ns";
+  @Deprecated public static final String KG = "kg";
+  @Deprecated public static final String G = "g";
+  @Deprecated public static final String MG = "mg";
+  @Deprecated public static final String OZ = "oz";
+  @Deprecated public static final String LBS = "lbs";
+  @Deprecated public static final String STONE = "stone";
+  @Deprecated public static final String TONS = "tons";
+  @Deprecated private static final String FPS = "ft/s";
+  @Deprecated private static final String FPS2 = "ft/s^2";
   /**
    * Converts a magnitude and a unit into a {@link Distance} object.
    *
@@ -104,35 +121,23 @@ public class UnitsParser {
    * @return The {@link Distance} object.
    */
   public static Distance parseDistance(double magnitude, String unit) {
-    switch (unit.trim().toLowerCase()) {
-      case M:
-      case "meter":
-      case "meters":
+    DistanceUnit distanceUnit = DistanceUnit.fromString(unit);
+    switch (distanceUnit) {
+      case METERS:
         return Meters.of(magnitude);
-      case IN:
-      case "inch":
-      case "inches":
+      case INCHES:
         return Inches.of(magnitude);
-      case FT:
-      case "foot":
-      case "feet":
+      case FEET:
         return Feet.of(magnitude);
-      case "mm":
-      case "millimeter":
-      case "millimeters":
+      case MILLIMETERS:
         return Millimeters.of(magnitude);
-      case CM:
-      case "centimeter":
-      case "centimeters":
+      case CENTIMETERS:
         return Centimeters.of(magnitude);
-      case YD:
-      case "yard":
-      case "yards":
+      case YARDS:
         return Feet.of(magnitude * 3);
       default:
-        System.err.println(
-            "Unknown unit: " + unit + " for " + magnitude + ". Defaulting to bananas");
-        return Meters.of(magnitude * (0.254 - Math.random() * 0.05));
+        System.err.println("Unexpected distance unit: " + distanceUnit);
+        return Meters.of(magnitude);
     }
   }
 
@@ -155,46 +160,20 @@ public class UnitsParser {
    * @return The {@link LinearVelocity} object.
    */
   public static LinearVelocity parseVelocity(double magnitude, String unit) {
-    switch (unit.trim().toLowerCase()) {
-      case MPS:
-      case "m/sec":
-      case "mps":
-      case "meter/sec":
-      case "meters/sec":
-      case "meter/second":
-      case "meters/second":
+    LinearVelocityUnit velocityUnit = LinearVelocityUnit.fromString(unit);
+    switch (velocityUnit) {
+      case METERS_PER_SECOND:
         return MetersPerSecond.of(magnitude);
-      case "in/s":
-      case "in/sec":
-      case "inch/sec":
-      case "inches/sec":
-      case "inch/second":
-      case "inches/second":
+      case INCHES_PER_SECOND:
         return InchesPerSecond.of(magnitude);
-      case FPS:
-      case "ft/sec":
-      case "foot/sec":
-      case "feet/sec":
-      case "foot/second":
-      case "feet/second":
+      case FEET_PER_SECOND:
         return FeetPerSecond.of(magnitude);
-      case "mm/s":
-      case "mm/sec":
-      case "millimeter/sec":
-      case "millimeters/sec":
-      case "millimeter/second":
-      case "millimeters/second":
-        return MetersPerSecond.of(magnitude * 1000);
-      case "cm/s":
-      case "cm/sec":
-      case "centimeter/sec":
-      case "centimeters/sec":
-      case "centimeter/second":
-      case "centimeters/second":
-        return MetersPerSecond.of(magnitude * 100);
+      case MILLIMETERS_PER_SECOND:
+        return MetersPerSecond.of(magnitude / 1000);
+      case CENTIMETERS_PER_SECOND:
+        return MetersPerSecond.of(magnitude / 100);
       default:
-        System.err.println(
-            "Unknown unit: " + unit + " for " + magnitude + ". Defaulting to meters/second.");
+        System.err.println("Unexpected linear velocity unit: " + velocityUnit);
         break;
     }
     return MetersPerSecond.of(magnitude);
@@ -231,78 +210,20 @@ public class UnitsParser {
    * @return The {@link LinearAcceleration} object.
    */
   public static LinearAcceleration parseAccelleration(double magnitude, String unit) {
-    switch (unit.trim().toLowerCase()) {
-      case MPS2:
-      case "m/s/s":
-      case "m/s2":
-      case "m/sec/sec":
-      case "m/sec2":
-      case "m/sec^2":
-      case "meters/sec/sec":
-      case "meters/sec2":
-      case "meters/sec^2":
-      case "meters/second/second":
-      case "meters/second2":
-      case "meters/second^2":
+    LinearAccelerationUnit accelUnit = LinearAccelerationUnit.fromString(unit);
+    switch (accelUnit) {
+      case METERS_PER_SECOND_SQUARED:
         return MetersPerSecondPerSecond.of(magnitude);
-      case "in/s^2":
-      case "in/s/s":
-      case "in/s2":
-      case "in/sec/sec":
-      case "in/sec2":
-      case "in/sec^2":
-      case "inches/sec/sec":
-      case "inches/sec2":
-      case "inches/sec^2":
-      case "inches/second/second":
-      case "inches/second2":
-      case "inches/second^2":
+      case INCHES_PER_SECOND_SQUARED:
         return InchesPerSecond.of(magnitude).per(Second);
-      case FPS2:
-      case "ft/s/s":
-      case "ft/s2":
-      case "ft/sec/sec":
-      case "ft/sec2":
-      case "ft/sec^2":
-      case "feet/sec/sec":
-      case "feet/sec2":
-      case "feet/sec^2":
-      case "feet/second/second":
-      case "feet/second2":
-      case "feet/second^2":
+      case FEET_PER_SECOND_SQUARED:
         return FeetPerSecondPerSecond.of(magnitude);
-      case "mm/s^2":
-      case "mm/s/s":
-      case "mm/s2":
-      case "millimeter/sec/sec":
-      case "millimeter/sec2":
-      case "millimeter/sec^2":
-      case "millimeters/sec/sec":
-      case "millimeters/sec2":
-      case "millimeters/sec^2":
-      case "millimeters/second/second":
-      case "millimeters/second2":
-      case "millimeters/second^2":
-        return MetersPerSecondPerSecond.of(magnitude * 1000);
-      case "cm/s^2":
-      case "cm/sec^2":
-      case "cm/second^2":
-      case "centimeter/sec^2":
-      case "centimeter/second^2":
-      case "centimeters/sec^2":
-      case "centimeters/second^2":
-      case "cms/s^2":
-      case "cms/sec^2":
-      case "cms/second^2":
-      case "cm/s/s":
-      case "cm/sec/sec":
-      case "cm/second/second":
-      case "centimeters/sec/sec":
-      case "centimeters/second/second":
-        return MetersPerSecondPerSecond.of(magnitude * 100);
+      case MILLIMETERS_PER_SECOND_SQUARED:
+        return MetersPerSecondPerSecond.of(magnitude / 1000);
+      case CENTIMETERS_PER_SECOND_SQUARED:
+        return MetersPerSecondPerSecond.of(magnitude / 100);
       default:
-        System.err.println(
-            "Unknown unit: " + unit + " for " + magnitude + ". Defaulting to meters/second.");
+        System.err.println("Unexpected linear acceleration unit: " + accelUnit);
         break;
     }
     return MetersPerSecondPerSecond.of(magnitude);
@@ -328,27 +249,16 @@ public class UnitsParser {
    * @return The {@link Current} object.
    */
   public static Current parseAmps(double magnitude, String unit) {
-    switch (unit.trim().toLowerCase()) {
+    CurrentUnit currentUnit = CurrentUnit.fromString(unit);
+    switch (currentUnit) {
       case AMPS:
-      case "a":
-      case "amp":
-      case "ampere":
-      case "amperes":
         return Amps.of(magnitude);
-      case "ma":
-      case "milliamp":
-      case "milliamps":
-      case "milliampere":
-      case "milliamperes":
+      case MILLIAMPS:
         return Amps.of(magnitude * 0.001);
-      case "ua":
-      case "microamp":
-      case "microamps":
-      case "microampere":
-      case "microamperes":
+      case MICROAMPS:
         return Amps.of(magnitude * 0.000001);
       default:
-        System.err.println("Unknown unit: " + unit + " for " + magnitude + ". Defaulting to amps.");
+        System.err.println("Unexpected current unit: " + currentUnit);
         break;
     }
     return Amps.of(magnitude);
@@ -374,27 +284,18 @@ public class UnitsParser {
    * @return The {@link Voltage} object.
    */
   public static Voltage parseVolts(double magnitude, String unit) {
-    switch (unit.trim().toLowerCase()) {
+    VoltageUnit voltageUnit = VoltageUnit.fromString(unit);
+    switch (voltageUnit) {
       case VOLTS:
-      case "v":
-      case "volt":
-      case "voltage":
         return Volts.of(magnitude);
-      case "mv":
-      case "millivolt":
-      case "millivolts":
+      case MILLIVOLTS:
         return Volts.of(magnitude * 0.001);
-      case "uv":
-      case "microvolt":
-      case "microvolts":
+      case MICROVOLTS:
         return Volts.of(magnitude * 0.000001);
-      case "kv":
-      case "kilovolt":
-      case "kilovolts":
+      case KILOVOLTS:
         return Volts.of(magnitude * 1000);
       default:
-        System.err.println(
-            "Unknown unit: " + unit + " for " + magnitude + ". Defaulting to volts.");
+        System.err.println("Unexpected voltage unit: " + voltageUnit);
         break;
     }
     return Volts.of(magnitude);
@@ -420,39 +321,24 @@ public class UnitsParser {
    * @return The {@link Time} object.
    */
   public static Time parseTime(double magnitude, String unit) {
-    switch (unit.trim().toLowerCase()) {
-      case "s":
-      case SEC:
-      case "second":
-      case "seconds":
+    TimeUnit timeUnit = TimeUnit.fromString(unit);
+    switch (timeUnit) {
+      case SECONDS:
         return Seconds.of(magnitude);
-      case MS:
-      case "millisecond":
-      case "milliseconds":
+      case MILLISECONDS:
         return Seconds.of(magnitude * 0.001);
-      case "us":
-      case "microsecond":
-      case "microseconds":
+      case MICROSECONDS:
         return Seconds.of(magnitude * 0.000001);
-      case NS:
-      case "nanosecond":
-      case "nanoseconds":
+      case NANOSECONDS:
         return Seconds.of(magnitude * 0.000000001);
-      case "min":
-      case "minute":
-      case "minutes":
+      case MINUTES:
         return Seconds.of(magnitude * 60);
-      case "h":
-      case "hour":
-      case "hours":
+      case HOURS:
         return Seconds.of(magnitude * 3600);
-      case "d":
-      case "day":
-      case "days":
+      case DAYS:
         return Seconds.of(magnitude * 86400);
       default:
-        System.err.println(
-            "Unknown unit: " + unit + " for " + magnitude + ". Defaulting to seconds.");
+        System.err.println("Unexpected time unit: " + timeUnit);
         break;
     }
     return Seconds.of(magnitude);
@@ -478,40 +364,24 @@ public class UnitsParser {
    * @return The {@link Mass} object.
    */
   public static Mass parseMass(double magnitude, String unit) {
-    switch (unit.trim().toLowerCase()) {
-      case KG:
-      case "kgs":
-      case "kilogram":
-      case "kilograms":
+    MassUnit massUnit = MassUnit.fromString(unit);
+    switch (massUnit) {
+      case KILOGRAMS:
         return Kilograms.of(magnitude);
-      case G:
-      case "gram":
-      case "grams":
+      case GRAMS:
         return Kilograms.of(magnitude * 0.001);
-      case MG:
-      case "milligram":
-      case "milligrams":
+      case MILLIGRAMS:
         return Kilograms.of(magnitude * 0.000001);
       case TONS:
-      case "t":
-      case "ton":
         return Kilograms.of(magnitude * 1000);
-      case OZ:
-      case "ounce":
-      case "ounces":
+      case OUNCES:
         return Ounces.of(magnitude);
-      case LBS:
-      case "lb":
-      case "pound":
-      case "pounds":
+      case POUNDS:
         return Pounds.of(magnitude);
-      case "st":
       case STONE:
-      case "stones":
         return Kilograms.of(magnitude * 6.35029);
       default:
-        System.err.println(
-            "Unknown unit: " + unit + " for " + magnitude + ". Defaulting to kilograms.");
+        System.err.println("Unexpected mass unit: " + massUnit);
         break;
     }
     return Kilograms.of(magnitude);
@@ -536,20 +406,16 @@ public class UnitsParser {
    * @return The {@link Angle} object.
    */
   public static Angle parseAngle(double magnitude, String unit) {
-    switch (unit.trim().toLowerCase()) {
-      case DEG:
-      case "degrees":
+    AngleUnit angleUnit = AngleUnit.fromString(unit);
+    switch (angleUnit) {
+      case DEGREES:
         return Degrees.of(magnitude);
-      case RAD:
-      case "radians":
+      case RADIANS:
         return Radians.of(magnitude);
-      case "rot":
-      case "rotation":
-      case "rotations":
+      case ROTATIONS:
         return Rotations.of(magnitude);
       default:
-        System.err.println(
-            "Unknown unit: " + unit + " for " + magnitude + ". Defaulting to degrees.");
+        System.err.println("Unexpected angle unit: " + angleUnit);
         return Degrees.of(magnitude);
     }
   }
@@ -576,34 +442,18 @@ public class UnitsParser {
    * @return The {@link AngularVelocity} object.
    */
   public static AngularVelocity parseAngularVelocity(double magnitude, String unit) {
-    switch (unit.trim().toLowerCase()) {
-      case DEGPS:
-      case "deg/sec":
-      case "deg/second":
-      case "degrees/s":
-      case "degrees/sec":
-      case "degrees/second":
+    AngularVelocityUnit angVelUnit = AngularVelocityUnit.fromString(unit);
+    switch (angVelUnit) {
+      case DEGREES_PER_SECOND:
         return DegreesPerSecond.of(magnitude);
-      case rpm:
-      case "RPM":
+      case REVOLUTIONS_PER_MINUTE:
         return RPM.of(magnitude);
-      case rps:
-      case "RPS":
+      case ROTATIONS_PER_SECOND:
         return RotationsPerSecond.of(magnitude);
-      case RADPS:
-      case "rad/sec":
-      case "rad/second":
-      case "rads/s":
-      case "rads/sec":
-      case "rads/second":
-      case "radians":
-      case "radians/s":
-      case "radians/sec":
-      case "radians/second":
+      case RADIANS_PER_SECOND:
         return RadiansPerSecond.of(magnitude);
       default:
-        System.err.println(
-            "Unknown unit: " + unit + " for " + magnitude + ". Defaulting to degrees/sec.");
+        System.err.println("Unexpected angular velocity unit: " + angVelUnit);
         return DegreesPerSecond.of(magnitude);
     }
   }
@@ -628,40 +478,18 @@ public class UnitsParser {
    * @return The {@link AngularAcceleration} object.
    */
   public static AngularAcceleration parseAngularAcceleration(double magnitude, String unit) {
-    switch (unit.trim().toLowerCase()) {
-      case DEGPS2:
-      case "deg/s/s":
-      case "deg/s2":
-      case "degrees/s/s":
-      case "degrees/s^2":
-      case "degrees/s2":
+    AngularAccelerationUnit angAccelUnit = AngularAccelerationUnit.fromString(unit);
+    switch (angAccelUnit) {
+      case DEGREES_PER_SECOND_SQUARED:
         return DegreesPerSecondPerSecond.of(magnitude);
-      case RPMPS:
-      case "RPM/s":
-      case "RPM/sec":
-      case "rpm/s":
-      case "rpm/sec":
+      case REVOLUTIONS_PER_MINUTE_PER_SECOND:
         return RPM.of(magnitude).per(Second);
-      case RPS2:
-      case "RPS2":
-      case "RPS/s":
-      case "RPS/sec":
-      case "RPS^2":
-      case "rps2":
-      case "rps/s":
-      case "rps/sec":
+      case ROTATIONS_PER_SECOND_SQUARED:
         return RotationsPerSecondPerSecond.of(magnitude);
-      case RADPS2:
-      case "rads/s/s":
-      case "rads/s2":
-      case "radians":
-      case "radians/s/s":
-      case "radians/s^2":
-      case "radians/s2":
+      case RADIANS_PER_SECOND_SQUARED:
         return RadiansPerSecondPerSecond.of(magnitude);
       default:
-        System.err.println(
-            "Unknown unit: " + unit + " for " + magnitude + ". Defaulting to degrees/sec^2.");
+        System.err.println("Unexpected angular acceleration unit: " + angAccelUnit);
         return DegreesPerSecondPerSecond.of(magnitude);
     }
   }
@@ -683,13 +511,12 @@ public class UnitsParser {
    * @param unit The unit of the moment moment @return The {@link MomentOfInertia} object
    */
   public static MomentOfInertia parseMomentOfInertia(double magnitude, String unit) {
-    switch (unit.trim().toLowerCase()) {
-      case "kg*m^2":
-      case "kg*m2":
-      case "kg*sqm":
+    MomentOfInertiaUnit moiUnit = MomentOfInertiaUnit.fromString(unit);
+    switch (moiUnit) {
+      case KILOGRAM_SQUARE_METERS:
         return KilogramSquareMeters.of(magnitude);
       default:
-        System.err.println("Unknown unit: " + unit + ". Defaulting to kg*m^2.");
+        System.err.println("Unexpected moment of inertia unit: " + moiUnit);
         return KilogramSquareMeters.of(magnitude);
     }
   }

@@ -5,9 +5,9 @@
 package org.frc5010.common.config.json.devices;
 
 import edu.wpi.first.math.Pair;
-import org.frc5010.common.config.UnitsParser;
 import org.frc5010.common.config.json.Translation3dJson;
 import org.frc5010.common.config.json.UnitValueJson;
+import org.frc5010.common.config.units.CurrentUnit;
 import org.frc5010.common.motors.GenericMotorController;
 import yams.mechanisms.config.MechanismPositionConfig;
 import yams.motorcontrollers.SmartMotorControllerConfig;
@@ -29,7 +29,7 @@ public class MotorSetupJson {
 
   public FollowerMotorJson[] followers = new FollowerMotorJson[0];
   public String idleMode = "BRAKE";
-  public UnitValueJson currentLimit = new UnitValueJson(40, UnitsParser.AMPS);
+  public UnitValueJson currentLimit = new UnitValueJson(40, CurrentUnit.AMPS.toString());
   public boolean inverted = false;
   public int numberOfMotors = 1;
   public Translation3dJson robotToMotor = new Translation3dJson();

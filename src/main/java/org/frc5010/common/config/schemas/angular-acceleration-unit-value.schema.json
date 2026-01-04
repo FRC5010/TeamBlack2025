@@ -1,0 +1,48 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Angular Acceleration Unit Value",
+  "description": "A numeric angular acceleration value with unit of measure",
+  "type": "object",
+  "required": [
+    "val",
+    "uom"
+  ],
+  "properties": {
+    "val": {
+      "type": "number",
+      "description": "The numeric angular acceleration value"
+    },
+    "uom": {
+      "type": "string",
+      "enum": [
+        "deg/s^2",
+        "deg/s/s",
+        "deg/s2",
+        "degrees/s/s",
+        "degrees/s2",
+        "degrees/s^2",
+        "rad/s^2",
+        "rads/s/s",
+        "rads/s2",
+        "rads/s^2",
+        "radians",
+        "radians/s/s",
+        "radians/s2",
+        "radians/s^2",
+        "rpm/s",
+        "RPM/s",
+        "rpm/sec",
+        "RPM/sec",
+        "rps^2",
+        "RPS^2",
+        "RPS2",
+        "RPS/s",
+        "RPS/sec",
+        "rps2",
+        "rps/s",
+        "rps/sec"
+      ],
+      "description": "Angular acceleration unit (deg/s^2, rad/s^2, rpm/s, or rps^2)"
+    }
+  }
+}

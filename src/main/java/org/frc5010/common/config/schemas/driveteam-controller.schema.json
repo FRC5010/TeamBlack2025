@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Driveteam Controller Configuration",
+  "description": "Configuration for a single driveteam controller (matches DriveteamControllerJson.java)",
+  "type": "object",
+  "required": [
+    "name",
+    "port",
+    "axis"
+  ],
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Name of the driveteam controller (e.g., 'driver', 'operator')"
+    },
+    "port": {
+      "type": "integer",
+      "description": "USB port number of the controller (0-5 typically)",
+      "minimum": 0,
+      "maximum": 5
+    },
+    "axis": {
+      "type": "array",
+      "description": "Array of axis configuration file names in the controllers/axis/ subdirectory",
+      "items": {
+        "type": "string",
+        "description": "Axis configuration file name"
+      },
+      "minItems": 1
+    }
+  }
+}

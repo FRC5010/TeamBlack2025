@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Time Unit Value",
+  "description": "A numeric time value with unit of measure",
+  "type": "object",
+  "required": [
+    "val",
+    "uom"
+  ],
+  "properties": {
+    "val": {
+      "type": "number",
+      "description": "The numeric time value"
+    },
+    "uom": {
+      "type": "string",
+      "enum": [
+        "s",
+        "sec",
+        "second",
+        "seconds",
+        "ms",
+        "millisecond",
+        "milliseconds",
+        "us",
+        "microsecond",
+        "microseconds",
+        "ns",
+        "nanosecond",
+        "nanoseconds",
+        "min",
+        "minute",
+        "minutes",
+        "h",
+        "hour",
+        "hours",
+        "d",
+        "day",
+        "days"
+      ],
+      "description": "Time unit (seconds, milliseconds, microseconds, nanoseconds, minutes, hours, or days)"
+    }
+  }
+}

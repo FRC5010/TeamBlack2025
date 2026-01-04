@@ -17,6 +17,14 @@
       "val": 4.69,
       "uom": "m/sec"
     },
+    "bumperFrameLength": {
+      "val": 38,
+      "uom": "inches"
+    },
+    "bumperFrameWidth": {
+      "val": 38,
+      "uom": "inches"
+    },
     "gyro": {
       "type": "pigeon2",
       "id": 13,

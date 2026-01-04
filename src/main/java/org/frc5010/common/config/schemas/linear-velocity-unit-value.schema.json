@@ -1,0 +1,53 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Linear Velocity Unit Value",
+  "description": "A numeric linear velocity value with unit of measure",
+  "type": "object",
+  "required": [
+    "val",
+    "uom"
+  ],
+  "properties": {
+    "val": {
+      "type": "number",
+      "description": "The numeric linear velocity value"
+    },
+    "uom": {
+      "type": "string",
+      "enum": [
+        "m/s",
+        "m/sec",
+        "mps",
+        "meter/sec",
+        "meters/sec",
+        "meter/second",
+        "meters/second",
+        "in/s",
+        "in/sec",
+        "inch/sec",
+        "inches/sec",
+        "inch/second",
+        "inches/second",
+        "ft/s",
+        "ft/sec",
+        "foot/sec",
+        "feet/sec",
+        "foot/second",
+        "feet/second",
+        "mm/s",
+        "mm/sec",
+        "millimeter/sec",
+        "millimeters/sec",
+        "millimeter/second",
+        "millimeters/second",
+        "cm/s",
+        "cm/sec",
+        "centimeter/sec",
+        "centimeters/sec",
+        "centimeter/second",
+        "centimeters/second"
+      ],
+      "description": "Linear velocity unit (m/s, in/s, ft/s, mm/s, or cm/s)"
+    }
+  }
+}
