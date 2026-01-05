@@ -4,8 +4,10 @@
 
 package org.frc5010.common.config.json.devices;
 
-import org.frc5010.common.config.UnitsParser;
 import org.frc5010.common.config.json.UnitValueJson;
+import org.frc5010.common.config.units.LinearAccelerationUnit;
+import org.frc5010.common.config.units.LinearVelocityUnit;
+import org.frc5010.common.config.units.TimeUnit;
 
 /** System identification parameters for a motor. */
 public class MotorSystemIdJson {
@@ -22,11 +24,13 @@ public class MotorSystemIdJson {
     public double a = 0;
   }
 
-  public UnitValueJson closedLoopRamp = new UnitValueJson(0.25, UnitsParser.SEC);
-  public UnitValueJson openLoopRamp = new UnitValueJson(0.25, UnitsParser.SEC);
+  public UnitValueJson closedLoopRamp = new UnitValueJson(0.25, TimeUnit.SECONDS.toString());
+  public UnitValueJson openLoopRamp = new UnitValueJson(0.25, TimeUnit.SECONDS.toString());
   public FeedBack feedBack;
-  public UnitValueJson maxVelocity = new UnitValueJson(0, UnitsParser.MPS);
-  public UnitValueJson maxAcceleration = new UnitValueJson(0, UnitsParser.MPS2);
+  public UnitValueJson maxVelocity =
+      new UnitValueJson(0, LinearVelocityUnit.METERS_PER_SECOND.toString());
+  public UnitValueJson maxAcceleration =
+      new UnitValueJson(0, LinearAccelerationUnit.METERS_PER_SECOND_SQUARED.toString());
   public FeedForward feedForward = new FeedForward();
   public String controlMode = "CLOSED_LOOP";
 }

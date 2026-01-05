@@ -193,7 +193,11 @@ public abstract class GenericRobot extends GenericMechanism implements GenericDe
     configureButtonBindings(driver.orElse(null), operator.orElse(null));
   }
 
-  /** Setup default commands depending on the robot mode */
+  /**
+   * Sets up the default commands for the robot. If the robot is in teleoperated or autonomous mode,
+   * it will call {@link #setupDefaultCommands(Optional, Optional)}. If the robot is in test mode,
+   * it will call {@link #setupTestDefaultCommands(Optional, Optional)}
+   */
   public void setupDefaultCommands() {
     if (DriverStation.isTeleop() || DriverStation.isAutonomous()) {
       setupDefaultCommands(driver.orElse(null), operator.orElse(null));
@@ -202,11 +206,14 @@ public abstract class GenericRobot extends GenericMechanism implements GenericDe
     }
   }
 
-  /** Build the auto commands and command chooser */
+  /**
+   * Builds the auto commands and adds them to the auto selector
+   *
+   * <p>This should be called during robot initialization
+   */
   public void buildAutoCommands() {
     initAutoCommands();
 
-    // TODO: Figure out Pathplanner Warmup Command
     if (AutoBuilder.isConfigured()) {
       selectableCommand =
           new LoggedDashboardChooser<>("Auto Modes", AutoBuilder.buildAutoChooser());

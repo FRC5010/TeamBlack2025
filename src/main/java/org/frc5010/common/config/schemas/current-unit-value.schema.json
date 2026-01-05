@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Current Unit Value",
+  "description": "A numeric current value with unit of measure",
+  "type": "object",
+  "required": [
+    "val",
+    "uom"
+  ],
+  "properties": {
+    "val": {
+      "type": "number",
+      "description": "The numeric current value"
+    },
+    "uom": {
+      "type": "string",
+      "enum": [
+        "a",
+        "amp",
+        "amps",
+        "ampere",
+        "amperes",
+        "ma",
+        "milliamp",
+        "milliamps",
+        "milliampere",
+        "milliamperes",
+        "ua",
+        "microamp",
+        "microamps",
+        "microampere",
+        "microamperes"
+      ],
+      "description": "Current unit (amps, milliamps, or microamps)"
+    }
+  }
+}

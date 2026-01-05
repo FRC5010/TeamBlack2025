@@ -4,8 +4,8 @@
 
 package org.frc5010.common.motors.control;
 
-import com.thethriftybot.ThriftyNova;
-import com.thethriftybot.ThriftyNova.EncoderType;
+import com.thethriftybot.devices.ThriftyNova;
+import com.thethriftybot.devices.ThriftyNova.EncoderType;
 import edu.wpi.first.math.controller.PIDController;
 import org.frc5010.common.constants.GenericPID;
 import org.frc5010.common.constants.MotorFeedFwdConstants;

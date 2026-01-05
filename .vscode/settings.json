@@ -29,5 +29,138 @@
     null
   ],
   "java.test.defaultConfig": "WPIlibUnitTests",
-  "java.debug.settings.onBuildFailureProceed": true
+  "java.import.gradle.annotationProcessing.enabled": false,
+  "java.completion.favoriteStaticMembers": [
+    "org.junit.Assert.*",
+    "org.junit.Assume.*",
+    "org.junit.jupiter.api.Assertions.*",
+    "org.junit.jupiter.api.Assumptions.*",
+    "org.junit.jupiter.api.DynamicContainer.*",
+    "org.junit.jupiter.api.DynamicTest.*",
+    "org.mockito.Mockito.*",
+    "org.mockito.ArgumentMatchers.*",
+    "org.mockito.Answers.*",
+    "edu.wpi.first.units.Units.*"
+  ],
+  "java.completion.filteredTypes": [
+    "java.awt.*",
+    "com.sun.*",
+    "sun.*",
+    "jdk.*",
+    "org.graalvm.*",
+    "io.micrometer.shaded.*",
+    "java.beans.*",
+    "java.util.Base64.*",
+    "java.util.Timer",
+    "java.sql.*",
+    "javax.swing.*",
+    "javax.management.*",
+    "javax.smartcardio.*",
+    "edu.wpi.first.math.proto.*",
+    "edu.wpi.first.math.**.proto.*",
+    "edu.wpi.first.math.**.struct.*",
+    null
+  ],
+  "java.dependency.enableDependencyCheckup": false,
+  "json.schemas": [
+    {
+      "fileMatch": [
+        "**/akit_swerve_drivetrain.json"
+      ],
+      "url": "./src/main/java/org/frc5010/common/config/schemas/akit_swerve_drivetrain.schema.json"
+    },
+    {
+      "fileMatch": [
+        "**/robots.json"
+      ],
+      "url": "./src/main/java/org/frc5010/common/config/schemas/robots.schema.json"
+    },
+    {
+      "fileMatch": [
+        "**/robot.json"
+      ],
+      "url": "./src/main/java/org/frc5010/common/config/schemas/robot.schema.json"
+    },
+    {
+      "fileMatch": [
+        "**/competition_mode.json",
+        "**/demo_mode.json"
+      ],
+      "url": "./src/main/java/org/frc5010/common/config/schemas/user-mode.schema.json"
+    },
+    {
+      "fileMatch": [
+        "**/cameras.json"
+      ],
+      "url": "./src/main/java/org/frc5010/common/config/schemas/cameras.schema.json"
+    },
+    {
+      "fileMatch": [
+        "**/cameras/**/*.json",
+        "!**/cameras.json"
+      ],
+      "url": "./src/main/java/org/frc5010/common/config/schemas/camera.schema.json"
+    },
+    {
+      "fileMatch": [
+        "**/controllers.json"
+      ],
+      "url": "./src/main/java/org/frc5010/common/config/schemas/controllers.schema.json"
+    },
+    {
+      "fileMatch": [
+        "**/controllers/*.json",
+        "!**/controllers/axis/**/*.json"
+      ],
+      "url": "./src/main/java/org/frc5010/common/config/schemas/driveteam-controller.schema.json"
+    },
+    {
+      "fileMatch": [
+        "**/controllers/axis/*.json"
+      ],
+      "url": "./src/main/java/org/frc5010/common/config/schemas/driveteam-controller-axis.schema.json"
+    },
+    {
+      "fileMatch": [
+        "**/led_strip.json"
+      ],
+      "url": "./src/main/java/org/frc5010/common/config/schemas/led-strip.schema.json"
+    },
+    {
+      "fileMatch": [
+        "**/subsystems/example/percent_motor.json"
+      ],
+      "url": "./src/main/java/org/frc5010/common/config/schemas/percent-motor.schema.json"
+    },
+    {
+      "fileMatch": [
+        "**/subsystems/example/velocity_motor.json"
+      ],
+      "url": "./src/main/java/org/frc5010/common/config/schemas/velocity-motor.schema.json"
+    },
+    {
+      "fileMatch": [
+        "**/subsystems/example/yams_arm.json"
+      ],
+      "url": "./src/main/java/org/frc5010/common/config/schemas/yams-arm.schema.json"
+    },
+    {
+      "fileMatch": [
+        "**/subsystems/example/yams_elevator.json"
+      ],
+      "url": "./src/main/java/org/frc5010/common/config/schemas/yams-elevator.schema.json"
+    },
+    {
+      "fileMatch": [
+        "**/subsystems/example/yams_pivot.json"
+      ],
+      "url": "./src/main/java/org/frc5010/common/config/schemas/yams-pivot.schema.json"
+    },
+    {
+      "fileMatch": [
+        "**/subsystems/example/yams_shooter.json"
+      ],
+      "url": "./src/main/java/org/frc5010/common/config/schemas/yams-shooter.schema.json"
+    }
+  ]
 }

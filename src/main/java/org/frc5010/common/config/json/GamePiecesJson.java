@@ -6,8 +6,8 @@ package org.frc5010.common.config.json;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import org.frc5010.common.drive.swerve.GenericSwerveDrivetrain;
-import org.ironmaple.simulation.SimulatedArena;
-import org.ironmaple.simulation.seasonspecific.crescendo2024.CrescendoNoteOnField;
+import swervelib.simulation.ironmaple.simulation.SimulatedArena;
+import swervelib.simulation.ironmaple.simulation.seasonspecific.crescendo2024.CrescendoNoteOnField;
 
 /** Json class for game piece configurations */
 public class GamePiecesJson {

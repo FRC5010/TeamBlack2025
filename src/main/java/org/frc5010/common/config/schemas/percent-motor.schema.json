@@ -1,0 +1,75 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Percent Motor Configuration",
+  "description": "Configuration for a simple percent-output motor (matches PercentMotorConfigurationJson.java)",
+  "type": "object",
+  "required": [
+    "name",
+    "controller",
+    "type",
+    "id"
+  ],
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Name of the motor subsystem"
+    },
+    "controller": {
+      "type": "string",
+      "description": "Type of motor controller",
+      "enum": [
+        "spark",
+        "talonfx",
+        "talonsrx",
+        "sparkmax"
+      ]
+    },
+    "type": {
+      "type": "string",
+      "description": "Type of motor (e.g., Neo, KrakenX60, Falcon500)"
+    },
+    "id": {
+      "type": "integer",
+      "description": "CAN ID of the motor",
+      "minimum": 0,
+      "maximum": 62
+    },
+    "gearing": {
+      "type": "number",
+      "description": "Motor gearing/reduction ratio",
+      "default": 1.0,
+      "minimum": 0
+    },
+    "momentOfInertiaKgMSq": {
+      "type": "number",
+      "description": "Moment of inertia for simulation in kg⋅m²",
+      "default": 1.0,
+      "minimum": 0
+    },
+    "x": {
+      "type": "number",
+      "description": "X position of motor for visualization (meters)",
+      "default": 0
+    },
+    "y": {
+      "type": "number",
+      "description": "Y position of motor for visualization (meters)",
+      "default": 0
+    },
+    "z": {
+      "type": "number",
+      "description": "Z position of motor for visualization (meters)",
+      "default": 0
+    },
+    "logLevel": {
+      "type": "string",
+      "description": "Logging level for telemetry",
+      "enum": [
+        "COMPETITION",
+        "TESTING",
+        "DEBUG"
+      ],
+      "default": "COMPETITION"
+    }
+  }
+}

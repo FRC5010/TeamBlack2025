@@ -1,0 +1,64 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "LED Strip Configuration",
+  "description": "Configuration for addressable LED strips (matches LEDStripConfigJson.java)",
+  "type": "object",
+  "required": [
+    "length",
+    "dataPin"
+  ],
+  "properties": {
+    "length": {
+      "type": "integer",
+      "description": "Total number of LEDs in the strip",
+      "minimum": 1
+    },
+    "dataPin": {
+      "type": "integer",
+      "description": "PWM pin number for the LED data line",
+      "minimum": 0
+    },
+    "segments": {
+      "type": "array",
+      "description": "Array of LED segments with names and ranges",
+      "items": {
+        "$ref": "#/definitions/ledSegment"
+      },
+      "minItems": 0
+    }
+  },
+  "definitions": {
+    "ledSegment": {
+      "type": "object",
+      "title": "LED Segment",
+      "description": "A named segment of LEDs for control purposes",
+      "required": [
+        "name",
+        "start",
+        "end"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Name of the LED segment (e.g., 'status_indicator', 'team_colors')"
+        },
+        "start": {
+          "type": "integer",
+          "description": "Index of the first LED in this segment",
+          "minimum": 0
+        },
+        "end": {
+          "type": "integer",
+          "description": "Index of the last LED in this segment (inclusive)",
+          "minimum": 0
+        },
+        "order": {
+          "type": "integer",
+          "description": "Display order of this segment",
+          "default": 1,
+          "minimum": 1
+        }
+      }
+    }
+  }
+}

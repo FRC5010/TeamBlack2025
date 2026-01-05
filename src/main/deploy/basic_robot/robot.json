@@ -10,7 +10,7 @@
   "physicalMaxSpeed": 5.93,
   "physicalMaxSpeedUom": "m/s",
   "driveMotorGearRatio": 1.0,
-  "loadSimulatedField": false,
-  "gamePieceA": "FRC5010Ball",
-  "gamePieceB": "FRC5010Ball"
+  "loadSimulatedField": true,
+  "gamePieceA": "Coral",
+  "gamePieceB": "Algae"
 }

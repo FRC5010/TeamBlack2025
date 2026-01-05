@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Distance Unit Value",
+  "description": "A numeric distance value with unit of measure",
+  "type": "object",
+  "required": [
+    "val",
+    "uom"
+  ],
+  "properties": {
+    "val": {
+      "type": "number",
+      "description": "The numeric distance value"
+    },
+    "uom": {
+      "type": "string",
+      "enum": [
+        "m",
+        "meter",
+        "meters",
+        "in",
+        "inch",
+        "inches",
+        "ft",
+        "foot",
+        "feet",
+        "mm",
+        "millimeter",
+        "millimeters",
+        "cm",
+        "centimeter",
+        "centimeters",
+        "yd",
+        "yard",
+        "yards"
+      ],
+      "description": "Distance unit (meters, inches, feet, mm, cm, or yards)"
+    }
+  }
+}

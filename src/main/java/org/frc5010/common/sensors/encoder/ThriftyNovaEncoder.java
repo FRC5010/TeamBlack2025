@@ -4,11 +4,11 @@
 
 package org.frc5010.common.sensors.encoder;
 
-import com.thethriftybot.Conversion;
-import com.thethriftybot.Conversion.PositionUnit;
-import com.thethriftybot.Conversion.VelocityUnit;
-import com.thethriftybot.ThriftyNova;
-import com.thethriftybot.ThriftyNova.EncoderType;
+import com.thethriftybot.devices.ThriftyNova;
+import com.thethriftybot.devices.ThriftyNova.EncoderType;
+import com.thethriftybot.util.Conversion;
+import com.thethriftybot.util.Conversion.PositionUnit;
+import com.thethriftybot.util.Conversion.VelocityUnit;
 import java.util.Optional;
 
 /** Add your docs here. */

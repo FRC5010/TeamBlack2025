@@ -32,13 +32,13 @@ import org.frc5010.common.motors.function.VelocityControlMotor;
 import org.frc5010.common.motors.function.VerticalPositionControlMotor;
 import org.frc5010.common.sensors.absolute_encoder.RevAbsoluteEncoder;
 import org.frc5010.lobbinloco.FRC5010BallOnTheFly;
-import org.ironmaple.simulation.IntakeSimulation;
-import org.ironmaple.simulation.IntakeSimulation.IntakeSide;
-import org.ironmaple.simulation.SimulatedArena;
-import org.ironmaple.simulation.gamepieces.GamePieceProjectile;
-import org.ironmaple.simulation.seasonspecific.crescendo2024.NoteOnFly;
-import org.ironmaple.simulation.seasonspecific.reefscape2025.ReefscapeAlgaeOnFly;
 import org.littletonrobotics.junction.Logger;
+import swervelib.simulation.ironmaple.simulation.IntakeSimulation;
+import swervelib.simulation.ironmaple.simulation.IntakeSimulation.IntakeSide;
+import swervelib.simulation.ironmaple.simulation.SimulatedArena;
+import swervelib.simulation.ironmaple.simulation.gamepieces.GamePieceProjectile;
+import swervelib.simulation.ironmaple.simulation.seasonspecific.crescendo2024.NoteOnFly;
+import swervelib.simulation.ironmaple.simulation.seasonspecific.reefscape2025.ReefscapeAlgaeOnFly;
 import yams.mechanisms.velocity.FlyWheel;
 
 public class ExampleSubsystem extends GenericSubsystem {

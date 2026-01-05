@@ -4,7 +4,7 @@
 
 package org.frc5010.common.sensors;
 
-import com.thethriftybot.ThriftyNova;
+import com.thethriftybot.devices.ThriftyNova;
 import java.util.function.BooleanSupplier;
 
 /** Add your docs here. */

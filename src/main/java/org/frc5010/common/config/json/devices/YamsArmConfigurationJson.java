@@ -9,6 +9,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.frc5010.common.config.DeviceConfiguration;
 import org.frc5010.common.config.UnitsParser;
 import org.frc5010.common.config.json.UnitValueJson;
+import org.frc5010.common.config.units.AngleUnit;
+import org.frc5010.common.config.units.DistanceUnit;
+import org.frc5010.common.config.units.MassUnit;
+import org.frc5010.common.config.units.VoltageUnit;
 import org.frc5010.common.motors.GenericMotorController;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
@@ -23,16 +27,16 @@ import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 public class YamsArmConfigurationJson implements DeviceConfiguration {
   public MotorSetupJson motorSetup = new MotorSetupJson();
   public MotorSystemIdJson motorSystemId = new MotorSystemIdJson();
-  public UnitValueJson length = new UnitValueJson(0, UnitsParser.IN);
-  public UnitValueJson lowerHardLimit = new UnitValueJson(0, UnitsParser.DEG);
-  public UnitValueJson upperHardLimit = new UnitValueJson(0, UnitsParser.DEG);
-  public UnitValueJson startingAngle = new UnitValueJson(0, UnitsParser.DEG);
-  public UnitValueJson lowerSoftLimit = new UnitValueJson(0, UnitsParser.DEG);
-  public UnitValueJson upperSoftLimit = new UnitValueJson(0, UnitsParser.DEG);
+  public UnitValueJson length = new UnitValueJson(0, DistanceUnit.INCHES.toString());
+  public UnitValueJson lowerHardLimit = new UnitValueJson(0, AngleUnit.DEGREES.toString());
+  public UnitValueJson upperHardLimit = new UnitValueJson(0, AngleUnit.DEGREES.toString());
+  public UnitValueJson startingAngle = new UnitValueJson(0, AngleUnit.DEGREES.toString());
+  public UnitValueJson lowerSoftLimit = new UnitValueJson(0, AngleUnit.DEGREES.toString());
+  public UnitValueJson upperSoftLimit = new UnitValueJson(0, AngleUnit.DEGREES.toString());
   public double[] gearing;
-  public UnitValueJson mass = new UnitValueJson(0, UnitsParser.LBS);
-  public UnitValueJson voltageCompensation = new UnitValueJson(12, UnitsParser.VOLTS);
-  public UnitValueJson horizontalZero = new UnitValueJson(0, UnitsParser.DEG);
+  public UnitValueJson mass = new UnitValueJson(0, MassUnit.POUNDS.toString());
+  public UnitValueJson voltageCompensation = new UnitValueJson(12, VoltageUnit.VOLTS.toString());
+  public UnitValueJson horizontalZero = new UnitValueJson(0, AngleUnit.DEGREES.toString());
 
   /**
    * Configure the given GenericSubsystem with an arm using the given json configuration.

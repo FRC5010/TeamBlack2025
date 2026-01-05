@@ -46,6 +46,7 @@ public class AkitSwerveConfig extends SwerveDriveConfig {
       BackRight;
   public double ODOMETRY_FREQUENCY;
   public final double DRIVE_BASE_RADIUS;
+  private final CANBus kCANBus;
 
   public AkitSwerveConfig(AkitTalonFXSwerveConfigBuilder builder) {
     super(builder);
@@ -54,6 +55,7 @@ public class AkitSwerveConfig extends SwerveDriveConfig {
     this.FrontRight = builder.FrontRight;
     this.BackLeft = builder.BackLeft;
     this.BackRight = builder.BackRight;
+    this.kCANBus = builder.kCANBus;
     DRIVE_BASE_RADIUS =
         Math.max(
             Math.max(
@@ -67,6 +69,10 @@ public class AkitSwerveConfig extends SwerveDriveConfig {
   public static AkitSwerveConfig builder(
       DrivetrainConstantsJson constants, SubsystemBase subsystem) {
     return new AkitSwerveConfig(new AkitTalonFXSwerveConfigBuilder(constants, subsystem));
+  }
+
+  public CANBus getCANBus() {
+    return kCANBus;
   }
 
   public static class AkitTalonFXSwerveConfigBuilder
@@ -89,11 +95,12 @@ public class AkitSwerveConfig extends SwerveDriveConfig {
     public final SwerveModuleConstants<
             TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>
         BackRight;
+    public final CANBus kCANBus;
 
     public AkitTalonFXSwerveConfigBuilder(
         DrivetrainConstantsJson constants, SubsystemBase subsystem) {
       super();
-      CANBus kCANBus = new CANBus(constants.canbus, "./logs/example.hoot");
+      kCANBus = new CANBus(constants.canbus, "./logs/example.hoot");
       bumperFrameLength = UnitsParser.parseDistance(constants.bumperFrameLength);
       bumperFrameWidth = UnitsParser.parseDistance(constants.bumperFrameWidth);
       maxDriveSpeed = UnitsParser.parseVelocity(constants.maxDriveSpeed);

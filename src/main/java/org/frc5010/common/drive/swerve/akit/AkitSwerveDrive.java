@@ -47,9 +47,9 @@ import org.frc5010.common.drive.pose.SwerveFunctionsPose;
 import org.frc5010.common.drive.swerve.AkitSwerveConfig;
 import org.frc5010.common.drive.swerve.GenericSwerveModuleInfo;
 import org.frc5010.common.drive.swerve.SwerveDriveFunctions;
-import org.ironmaple.simulation.SimulatedArena;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
+import swervelib.simulation.ironmaple.simulation.SimulatedArena;
 
 public class AkitSwerveDrive extends SwerveDriveFunctions {
   final AkitSwerveConfig config;

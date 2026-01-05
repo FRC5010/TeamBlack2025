@@ -36,6 +36,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -43,7 +44,6 @@ import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.MathUtil;
@@ -110,7 +110,7 @@ public class ModuleIOSparkTalon implements ModuleIO {
 
     this.constants = constants;
     zeroRotation = new Rotation2d();
-    driveTalon = new TalonFX(constants.DriveMotorId, config.getCanbus());
+    driveTalon = new TalonFX(constants.DriveMotorId, config.getCANBus());
     turnSpark = new SparkMax(constants.SteerMotorId, MotorType.kBrushless);
 
     turnEncoder = turnSpark.getAbsoluteEncoder();
@@ -152,7 +152,8 @@ public class ModuleIOSparkTalon implements ModuleIO {
         .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
         .positionWrappingEnabled(true)
         .positionWrappingInputRange(turnPIDMinInput, turnPIDMaxInput)
-        .pidf(turnKp, 0.0, turnKd, 0.0);
+        .p(turnKp)
+        .d(turnKd);
     turnConfig
         .signals
         .absoluteEncoderPositionAlwaysOn(true)
@@ -253,6 +254,6 @@ public class ModuleIOSparkTalon implements ModuleIO {
     double setpoint =
         MathUtil.inputModulus(
             rotation.plus(zeroRotation).getRadians(), turnPIDMinInput, turnPIDMaxInput);
-    turnController.setReference(setpoint, ControlType.kPosition);
+    turnController.setSetpoint(setpoint, ControlType.kPosition);
   }
 }

@@ -10,6 +10,10 @@ import java.util.Optional;
 import org.frc5010.common.config.DeviceConfiguration;
 import org.frc5010.common.config.UnitsParser;
 import org.frc5010.common.config.json.UnitValueJson;
+import org.frc5010.common.config.units.AngularVelocityUnit;
+import org.frc5010.common.config.units.DistanceUnit;
+import org.frc5010.common.config.units.MassUnit;
+import org.frc5010.common.config.units.VoltageUnit;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
 import yams.mechanisms.config.FlyWheelConfig;
@@ -24,12 +28,14 @@ import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 public class YamsShooterConfigurationJson implements DeviceConfiguration {
   public MotorSetupJson motorSetup = new MotorSetupJson();
   public MotorSystemIdJson motorSystemId = new MotorSystemIdJson();
-  public UnitValueJson lowerSoftLimit = new UnitValueJson(0, UnitsParser.DEGPS);
-  public UnitValueJson upperSoftLimit = new UnitValueJson(0, UnitsParser.DEGPS);
+  public UnitValueJson lowerSoftLimit =
+      new UnitValueJson(0, AngularVelocityUnit.DEGREES_PER_SECOND.toString());
+  public UnitValueJson upperSoftLimit =
+      new UnitValueJson(0, AngularVelocityUnit.DEGREES_PER_SECOND.toString());
   public double[] gearing;
-  public UnitValueJson voltageCompensation = new UnitValueJson(12, UnitsParser.VOLTS);
-  public UnitValueJson mass = new UnitValueJson(0, UnitsParser.LBS);
-  public UnitValueJson diameter = new UnitValueJson(0, UnitsParser.IN);
+  public UnitValueJson voltageCompensation = new UnitValueJson(12, VoltageUnit.VOLTS.toString());
+  public UnitValueJson mass = new UnitValueJson(0, MassUnit.POUNDS.toString());
+  public UnitValueJson diameter = new UnitValueJson(0, DistanceUnit.INCHES.toString());
   public double moi = 0;
 
   /**

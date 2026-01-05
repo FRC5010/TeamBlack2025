@@ -20,7 +20,34 @@ import org.frc5010.common.config.json.VisionPropertiesJson;
 import org.frc5010.common.config.json.YAGSLDrivetrainJson;
 import org.frc5010.common.config.json.devices.LEDStripParser;
 
-/** RobotParser is used to parse JSON configuration files to build a robot. */
+/**
+ * Parses JSON configuration files to initialize and build a robot's subsystems.
+ *
+ * <p>This class is responsible for reading and processing JSON configuration files from the robot's
+ * deploy directory. It orchestrates the loading and configuration of:
+ *
+ * <ul>
+ *   <li>Robot base configuration (basic properties)
+ *   <li>Driveteam controller bindings
+ *   <li>Vision system cameras
+ *   <li>Drivetrain (swerve or other type)
+ *   <li>LED strips
+ * </ul>
+ *
+ * <p>The typical usage pattern is:
+ *
+ * <pre>
+ *   RobotParser parser = new RobotParser("myRobotDir", robot);
+ *   parser.createRobot(robot);
+ * </pre>
+ *
+ * <p>Configuration files are expected to be located in the robot's deploy directory and must follow
+ * the standard FRC5010 JSON schema.
+ *
+ * @see GenericRobot
+ * @see DriveteamControllerConfiguration
+ * @see CameraConfigurationJson
+ */
 public class RobotParser {
   /** JSON classes for the Driveteam controllers */
   private static DriveteamControllersJson controllersJson;
@@ -34,11 +61,28 @@ public class RobotParser {
   private static Optional<DrivetrainPropertiesJson> driveTrainJson = Optional.empty();
 
   /**
-   * Creates a new RobotParser.
+   * Creates a new RobotParser and initializes robot configuration from JSON files.
    *
-   * @param robotDirectory the directory to read from
-   * @param robot the robot being configured
-   * @throws IOException
+   * <p>This constructor performs the following steps:
+   *
+   * <ol>
+   *   <li>Locates the robot configuration directory
+   *   <li>Loads and parses robot.json for base robot configuration
+   *   <li>Loads and parses controllers.json for driveteam controller configuration
+   *   <li>Loads and parses cameras.json for vision system configuration
+   *   <li>Parses LED strip configurations
+   *   <li>Loads drivetrain configuration (YAGSL swerve or AdvantageKit swerve)
+   * </ol>
+   *
+   * <p>The configuration is not fully applied to the robot until {@link #createRobot(GenericRobot)}
+   * is called.
+   *
+   * @param robotDirectory the name of the directory (relative to the deploy directory) containing
+   *     the robot configuration JSON files
+   * @param robot the {@link GenericRobot} instance that will be configured with the loaded
+   *     configuration
+   * @throws IOException if any configuration file cannot be read or parsed
+   * @throws AssertionError if required configuration files (robot.json) are missing
    */
   public RobotParser(String robotDirectory, GenericRobot robot) throws IOException {
     File directory = new File(Filesystem.getDeployDirectory(), robotDirectory);
@@ -93,18 +137,36 @@ public class RobotParser {
   }
 
   /**
-   * Method to check the existence of specific JSON configuration files in the provided directory.
+   * Verifies that required JSON configuration files exist in the directory.
+   *
+   * <p>This method ensures that critical configuration files (at minimum, robot.json) are present
+   * in the configuration directory before proceeding with parsing.
    *
    * @param directory the directory to check for JSON configuration files
+   * @throws AssertionError if required configuration files do not exist
    */
   private void checkDirectory(File directory) {
     assert new File(directory, "robot.json").exists();
   }
 
   /**
-   * Method to create the robot.
+   * Applies all loaded configurations to create and initialize the robot's subsystems.
    *
-   * @param robot description of parameter
+   * <p>This method instantiates and configures all robot subsystems based on the JSON configuration
+   * files that were loaded during construction. It performs:
+   *
+   * <ul>
+   *   <li>Creation of driveteam controller bindings
+   *   <li>Creation of the drivetrain subsystem (if configured)
+   *   <li>Creation of vision/camera subsystems
+   * </ul>
+   *
+   * <p>This method should be called after the robot instance is fully initialized and ready to
+   * receive subsystems.
+   *
+   * @param robot the {@link GenericRobot} instance to apply configurations to
+   * @throws NullPointerException if required configuration data was not loaded successfully
+   * @see #RobotParser(String, GenericRobot) for the loading phase
    */
   public void createRobot(GenericRobot robot) {
     controllersJson.createControllers(robot, controllersMap);

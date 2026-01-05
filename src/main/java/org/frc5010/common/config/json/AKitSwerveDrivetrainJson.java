@@ -9,7 +9,6 @@ import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
-import com.ctre.phoenix6.CANBus;
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.RobotConfig;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -37,14 +36,14 @@ import org.frc5010.common.drive.swerve.akit.ModuleIOTalonFXReal;
 import org.frc5010.common.drive.swerve.akit.ModuleIOTalonFXSim;
 import org.frc5010.common.drive.swerve.akit.PhoenixOdometryThread;
 import org.frc5010.common.drive.swerve.akit.SparkOdometryThread;
-import org.ironmaple.simulation.SimulatedArena;
-import org.ironmaple.simulation.drivesims.COTS;
-import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
-import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
-import org.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig;
 import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
+import swervelib.simulation.ironmaple.simulation.SimulatedArena;
+import swervelib.simulation.ironmaple.simulation.drivesims.COTS;
+import swervelib.simulation.ironmaple.simulation.drivesims.SwerveDriveSimulation;
+import swervelib.simulation.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
+import swervelib.simulation.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig;
 
-/** Add your docs here. */
+/** Configuration for AKit Swerve Drivetrain */
 public class AKitSwerveDrivetrainJson implements DrivetrainPropertiesJson {
   public String type = "SparkTalon";
   public DrivetrainConstantsJson constants;
@@ -130,7 +129,7 @@ public class AKitSwerveDrivetrainJson implements DrivetrainPropertiesJson {
                 SwerveDriveFunctions.driveSimulation::setSimulationWorldPose);
       }
     } else {
-      config.ODOMETRY_FREQUENCY = new CANBus(config.getCanbus()).isNetworkFD() ? 250.0 : 100.0;
+      config.ODOMETRY_FREQUENCY = config.getCANBus().isNetworkFD() ? 250.0 : 100.0;
       if ("SparkTalon".equals(type)) {
         SparkOdometryThread.createInstance();
         driveFunctions =

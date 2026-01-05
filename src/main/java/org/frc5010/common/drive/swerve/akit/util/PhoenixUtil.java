@@ -13,8 +13,9 @@
 
 package org.frc5010.common.drive.swerve.akit.util;
 
-import static edu.wpi.first.units.Units.*;
+import static edu.wpi.first.units.Units.KilogramSquareMeters;
 import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -30,9 +31,9 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import java.util.function.Supplier;
-import org.ironmaple.simulation.SimulatedArena;
-import org.ironmaple.simulation.motorsims.SimulatedBattery;
-import org.ironmaple.simulation.motorsims.SimulatedMotorController;
+import swervelib.simulation.ironmaple.simulation.SimulatedArena;
+import swervelib.simulation.ironmaple.simulation.motorsims.SimulatedBattery;
+import swervelib.simulation.ironmaple.simulation.motorsims.SimulatedMotorController;
 
 public final class PhoenixUtil {
   /** Attempts to run the command until no error is produced. */

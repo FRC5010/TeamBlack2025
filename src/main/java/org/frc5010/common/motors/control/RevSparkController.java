@@ -5,10 +5,10 @@
 package org.frc5010.common.motors.control;
 
 import com.revrobotics.spark.ClosedLoopSlot;
+import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import org.frc5010.common.constants.GenericPID;
 import org.frc5010.common.constants.MotorFeedFwdConstants;
@@ -67,7 +67,7 @@ public class RevSparkController extends GenericPIDControllerAbsract {
   @Override
   public void setF(double f) {
     pidfConfig.setkF(f);
-    cfg.closedLoop.velocityFF(f);
+    cfg.closedLoop.feedForward.kV(f);
     motor.updateConfig(cfg);
   }
 
@@ -95,14 +95,14 @@ public class RevSparkController extends GenericPIDControllerAbsract {
   @Override
   public void setReference(double reference) {
     this.reference = reference;
-    controller.setReference(reference, sparkControlType);
+    controller.setSetpoint(reference, sparkControlType);
   }
 
   @Override
   public void setReference(double reference, PIDControlType controlType, double feedforward) {
     setControlType(controlType);
     this.reference = reference;
-    controller.setReference(feedforward, sparkControlType, ClosedLoopSlot.kSlot0, feedforward);
+    controller.setSetpoint(feedforward, sparkControlType, ClosedLoopSlot.kSlot0, feedforward);
   }
 
   @Override
@@ -239,7 +239,7 @@ public class RevSparkController extends GenericPIDControllerAbsract {
 
   @Override
   public void setProfiledMaxVelocity(double maxVelocity) {
-    cfg.closedLoop.maxMotion.maxVelocity(maxVelocity);
+    cfg.closedLoop.maxMotion.cruiseVelocity(maxVelocity);
   }
 
   @Override

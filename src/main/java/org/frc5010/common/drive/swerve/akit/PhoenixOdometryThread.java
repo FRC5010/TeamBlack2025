@@ -8,7 +8,6 @@
 package org.frc5010.common.drive.swerve.akit;
 
 import com.ctre.phoenix6.BaseStatusSignal;
-import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.StatusSignal;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -56,7 +55,7 @@ public class PhoenixOdometryThread extends Thread {
 
   private PhoenixOdometryThread(AkitSwerveConfig config) {
     this.config = config;
-    isCANFD = new CANBus(config.getCanbus()).isNetworkFD();
+    isCANFD = config.getCANBus().isNetworkFD();
     setName("PhoenixOdometryThread");
     setDaemon(true);
   }

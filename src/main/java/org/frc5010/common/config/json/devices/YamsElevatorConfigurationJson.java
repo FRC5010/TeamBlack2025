@@ -8,6 +8,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.frc5010.common.config.DeviceConfiguration;
 import org.frc5010.common.config.UnitsParser;
 import org.frc5010.common.config.json.UnitValueJson;
+import org.frc5010.common.config.units.DistanceUnit;
+import org.frc5010.common.config.units.MassUnit;
+import org.frc5010.common.config.units.VoltageUnit;
 import org.frc5010.common.motors.GenericMotorController;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
@@ -23,15 +26,15 @@ public class YamsElevatorConfigurationJson implements DeviceConfiguration {
   public MotorSetupJson motorSetup = new MotorSetupJson();
   public MotorSystemIdJson motorSystemId = new MotorSystemIdJson();
   public int sprocketTeeth = 0;
-  public UnitValueJson drumRadius = new UnitValueJson(0, UnitsParser.IN);
-  public UnitValueJson lowerSoftLimit = new UnitValueJson(0, UnitsParser.M);
-  public UnitValueJson upperSoftLimit = new UnitValueJson(0, UnitsParser.M);
-  public UnitValueJson lowerHardLimit = new UnitValueJson(0, UnitsParser.M);
-  public UnitValueJson upperHardLimit = new UnitValueJson(0, UnitsParser.M);
+  public UnitValueJson drumRadius = new UnitValueJson(0, DistanceUnit.INCHES.toString());
+  public UnitValueJson lowerSoftLimit = new UnitValueJson(0, DistanceUnit.METERS.toString());
+  public UnitValueJson upperSoftLimit = new UnitValueJson(0, DistanceUnit.METERS.toString());
+  public UnitValueJson lowerHardLimit = new UnitValueJson(0, DistanceUnit.METERS.toString());
+  public UnitValueJson upperHardLimit = new UnitValueJson(0, DistanceUnit.METERS.toString());
   public double[] gearing;
-  public UnitValueJson startingPosition = new UnitValueJson(0, UnitsParser.M);
-  public UnitValueJson mass = new UnitValueJson(0, UnitsParser.LBS);
-  public UnitValueJson voltageCompensation = new UnitValueJson(12, UnitsParser.VOLTS);
+  public UnitValueJson startingPosition = new UnitValueJson(0, DistanceUnit.METERS.toString());
+  public UnitValueJson mass = new UnitValueJson(0, MassUnit.POUNDS.toString());
+  public UnitValueJson voltageCompensation = new UnitValueJson(12, VoltageUnit.VOLTS.toString());
 
   /**
    * Configure the given GenericSubsystem with an elevator using the given json configuration.

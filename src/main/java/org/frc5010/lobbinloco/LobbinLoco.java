@@ -13,8 +13,9 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.Units;
 import org.dyn4j.geometry.Circle;
-import org.ironmaple.simulation.SimulatedArena;
-import org.ironmaple.simulation.gamepieces.GamePieceOnFieldSimulation.GamePieceInfo;
+import swervelib.simulation.ironmaple.simulation.SimulatedArena;
+import swervelib.simulation.ironmaple.simulation.SimulatedArena.FieldMap;
+import swervelib.simulation.ironmaple.simulation.gamepieces.GamePieceOnFieldSimulation.GamePieceInfo;
 
 /** Add your docs here. */
 public class LobbinLoco extends SimulatedArena {
