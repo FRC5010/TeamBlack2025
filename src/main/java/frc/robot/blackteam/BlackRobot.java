@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.frc5010.common.arch.GenericRobot;
 import org.frc5010.common.arch.StateMachine;
@@ -127,7 +126,22 @@ public class BlackRobot extends GenericRobot {
                         LEDStrip.changeSegmentPattern(
                             FEEDER_LED, LEDStrip.getSolidPattern(Color.kRed))));
 
-    JoystickButton rightBumper = driver.createRightBumper();
+    driver
+        .createRightBumper()
+        .whileTrue(
+            feeder
+                .setSpeed(0.5)
+                .beforeStarting(
+                    () -> {
+                      LEDStrip.setSegmentActive(FEEDER_LED, true);
+                      LEDStrip.changeSegmentPattern(
+                          FEEDER_LED,
+                          LEDStrip.getSolidPattern(Color.kGreen).blink(Seconds.of(.25)));
+                    })
+                .finallyDo(
+                    () ->
+                        LEDStrip.changeSegmentPattern(
+                            FEEDER_LED, LEDStrip.getSolidPattern(Color.kRed))));
 
     State prep =
         flyWheelStateMachine.addState(
@@ -142,18 +156,19 @@ public class BlackRobot extends GenericRobot {
 
     flyWheelStateMachine.setInitialState(prep);
     prep.switchTo(fire).when(lowerFlyWheel.isNearTarget(RPM.of(200)));
-    rightBumper.whileTrue(flyWheelStateMachine);
-    rightBumper.onFalse(
-        lowerFlyWheel
-            .setVelocity(RPM.of(0))
-            .andThen(lowerFlyWheel.set(0))
-            .alongWith(feeder.setSpeed(0)));
+    //   rightBumper.whileTrue(flyWheelStateMachine);
+    // rightBumper.onFalse(
+    //   lowerFlyWheel
+    //     .setVelocity(RPM.of(0))
+    //   .andThen(lowerFlyWheel.set(0))
+    //  .alongWith(feeder.setSpeed(0)));
   }
 
   @Override
   public void setupDefaultCommands(Controller driver, Controller operator) {
     lowerFlyWheel.setDefaultCommand(lowerFlyWheel.joyStickControl(() -> driver.getRightTrigger()));
     upperFlyWheel.setDefaultCommand(upperFlyWheel.joyStickControl(() -> driver.getLeftTrigger()));
+
     drivetrain.setDefaultCommand(drivetrain.createDefaultCommand(driver));
   }
 
