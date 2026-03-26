@@ -38,6 +38,7 @@ public class YamsPivotConfigurationJson implements DeviceConfiguration {
   public UnitValueJson voltageCompensation = new UnitValueJson(12, VoltageUnit.VOLTS.toString());
   public UnitValueJson radius = new UnitValueJson(1, DistanceUnit.INCHES.toString());
   public UnitValueJson mass = new UnitValueJson(1, MassUnit.POUNDS.toString());
+  public UnitValueJson startingPosition = new UnitValueJson(0, DistanceUnit.METERS.toString());
 
   /**
    * Configure the given GenericSubsystem with a pivot using the given json configuration.

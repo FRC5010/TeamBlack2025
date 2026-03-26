@@ -55,6 +55,7 @@ import org.frc5010.common.commands.JoystickToSwerve;
 import org.frc5010.common.constants.GenericDrivetrainConstants;
 import org.frc5010.common.constants.RobotConstantsDef;
 import org.frc5010.common.drive.GenericDrivetrain;
+import org.frc5010.common.drive.swerve.akit.AkitSwerveDrive;
 import org.frc5010.common.drive.swerve_utils.PathConstraints5010;
 import org.frc5010.common.drive.swerve_utils.SwerveSetpointGenerator5010;
 import org.frc5010.common.sensors.Controller;
@@ -266,6 +267,20 @@ public class GenericSwerveDrivetrain extends GenericDrivetrain {
    */
   public ChassisSpeeds getFieldVelocity() {
     return swerveDrive.getFieldVelocity();
+  }
+
+  /**
+   * Gets the current field-relative chassis acceleration derived from drive motor acceleration
+   * signals. Returns zero if the underlying drive implementation does not support acceleration
+   * signals.
+   *
+   * @return A ChassisSpeeds object representing field-relative acceleration (m/s² components)
+   */
+  public ChassisSpeeds getFieldAcceleration() {
+    if (swerveDrive instanceof AkitSwerveDrive) {
+      return ((AkitSwerveDrive) swerveDrive).getFieldAcceleration();
+    }
+    return new ChassisSpeeds();
   }
 
   /**

@@ -43,7 +43,7 @@ import org.frc5010.common.drive.pose.PoseProvider;
 import org.frc5010.common.drive.swerve.GenericSwerveDrivetrain;
 
 /** Add your docs here. */
-public class QuestNav implements PoseProvider {
+public class QuestNavOld implements PoseProvider {
   private boolean initializedPosition = false;
   public static boolean isActive = false;
   private String networkTableRoot = "questnav";
@@ -100,14 +100,14 @@ public class QuestNav implements PoseProvider {
     }
   }
 
-  public QuestNav(Transform3d robotToQuest) {
+  public QuestNavOld(Transform3d robotToQuest) {
     super();
     this.robotToQuest = robotToQuest;
     setupNetworkTables(networkTableRoot);
     setupInitialTimestamp();
   }
 
-  public QuestNav(Transform3d robotToQuest, String networkTableRoot) {
+  public QuestNavOld(Transform3d robotToQuest, String networkTableRoot) {
     super();
     this.robotToQuest = robotToQuest;
     this.networkTableRoot = networkTableRoot;

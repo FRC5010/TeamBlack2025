@@ -165,6 +165,16 @@ public abstract class GenericDrivetrain extends GenericSubsystem {
   public ChassisSpeeds getFieldVelocity() {
     return ChassisSpeeds.fromRobotRelativeSpeeds(robotVelocity, getHeading());
   }
+
+  /**
+   * Returns the field-relative chassis acceleration. The base implementation returns zero; swerve
+   * drivetrains with motor acceleration signals override this.
+   *
+   * @return A ChassisSpeeds object with acceleration components in m/s²
+   */
+  public ChassisSpeeds getFieldAcceleration() {
+    return new ChassisSpeeds();
+  }
   /**
    * Drive with ChassisSpeeds
    *

@@ -9,6 +9,7 @@ import edu.wpi.first.math.trajectory.ExponentialProfile;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Mass;
 import edu.wpi.first.units.measure.Voltage;
+import frc.robot.Robot;
 import java.util.Optional;
 import org.frc5010.common.config.ConfigConstants.ControlAlgorithm;
 import org.frc5010.common.config.UnitsParser;
@@ -64,6 +65,9 @@ public class YamsConfigCommon {
             motorSetup.controllerType, motorSetup.canId, motorSetup.canBus);
     DCMotor motorSim = DeviceConfigReader.getSimulatedMotor(motorSetup.motorType, numberOfMotors);
 
+    if (Robot.isSimulation() && !ControlAlgorithm.SIMPLE.equals(controlAlgorithm)) {
+      controlAlgorithm = ControlAlgorithm.SIMPLE;
+    }
     switch (controlAlgorithm) {
       case PROFILED:
         {
