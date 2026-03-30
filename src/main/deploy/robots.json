@@ -5,17 +5,7 @@
       "id": "00:80:2F:33:04:33",
       "robotClass": "frc.robot.blackteam.BlackRobot",
       "simulate": true,
-      "competition": true
-    },
-    "basic_robot": {
-      "id": "basic_robot",
-      "robotClass": "frc.robot.example.ExampleRobot",
-      "simulate": false
-    },
-    "baby_swerve": {
-      "id": "baby_swerve",
-      "robotClass": "frc.robot.baby_swerve.BabySwerve",
-      "simulate": false
+      "competition": false
     },
     "buttercup_swerve": {
       "id": "00:80:2F:34:B2:C5",

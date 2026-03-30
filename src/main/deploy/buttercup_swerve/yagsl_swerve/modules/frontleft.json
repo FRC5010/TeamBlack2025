@@ -1,12 +1,12 @@
 {
   "drive": {
     "type": "neo",
-    "id": 1,
+    "id": 4,
     "canbus": null
   },
   "angle": {
     "type": "neo",
-    "id": 2,
+    "id": 3,
     "canbus": null
   },
   "encoder": {
@@ -16,10 +16,10 @@
   },
   "inverted": {
     "drive": false,
-    "angle": true
+    "angle": false
   },
   "absoluteEncoderInverted": true,
-  "absoluteEncoderOffset": 117.773,
+  "absoluteEncoderOffset": 0,
   "location": {
     "front": 9.2813,
     "left": 9.2813
