@@ -17,7 +17,7 @@
       "a": 0.098446
     }
   },
-  "simMotorSystemId": {
+  "simSystemId": {
     "feedBack": {
       "p": 0,
       "i": 0.0,
@@ -37,13 +37,13 @@
     "val": 10000,
     "uom": "rpm"
   },
-  "stages": "52:24",
+  "gearStages": "52:24",
   "mass": {
     "val": 2,
     "uom": "kg"
   },
-  "diameter": {
-    "val": 4,
+  "radius": {
+    "val": 2,
     "uom": "in"
   }
 }
