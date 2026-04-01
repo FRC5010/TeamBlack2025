@@ -7,7 +7,7 @@
       "simulate": true
     },
     "baby_swerve": {
-      "id": "baby_swerve",
+      "id": "00:80:2F:24:6D:74",
       "robotClass": "frc.robot.baby_swerve.BabySwerve",
       "simulate": true,
       "competition": true

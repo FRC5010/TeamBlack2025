@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Unit Value",
+  "description": "A numeric value with a unit of measure (matches UnitValueJson.java)",
+  "type": "object",
+  "required": [
+    "val",
+    "uom"
+  ],
+  "properties": {
+    "val": {
+      "type": "number",
+      "description": "The numeric value"
+    },
+    "uom": {
+      "type": "string",
+      "description": "Unit of measure (e.g., 'inches', 'm', 'deg', 'rpm', 'rad/s', 'kg', 'lbs', 'amps', 'volts')"
+    }
+  }
+}

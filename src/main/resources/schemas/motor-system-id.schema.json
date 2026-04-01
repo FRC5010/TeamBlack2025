@@ -1,0 +1,80 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Motor System ID",
+  "description": "PID and feedforward control parameters for a motor (matches MotorSystemIdJson.java)",
+  "type": "object",
+  "properties": {
+    "closedLoopRamp": {
+      "$ref": "./unit-value.schema.json",
+      "description": "Closed loop ramp time"
+    },
+    "openLoopRamp": {
+      "$ref": "./unit-value.schema.json",
+      "description": "Open loop ramp time"
+    },
+    "feedBack": {
+      "type": "object",
+      "description": "PID feedback constants",
+      "properties": {
+        "p": {
+          "type": "number",
+          "description": "Proportional gain",
+          "default": 0
+        },
+        "i": {
+          "type": "number",
+          "description": "Integral gain",
+          "default": 0
+        },
+        "d": {
+          "type": "number",
+          "description": "Derivative gain",
+          "default": 0
+        }
+      }
+    },
+    "maxVelocity": {
+      "$ref": "./unit-value.schema.json",
+      "description": "Maximum velocity setpoint"
+    },
+    "maxAcceleration": {
+      "$ref": "./unit-value.schema.json",
+      "description": "Maximum acceleration setpoint"
+    },
+    "feedForward": {
+      "type": "object",
+      "description": "Feedforward constants (s, g, v, a)",
+      "properties": {
+        "s": {
+          "type": "number",
+          "description": "Static feedforward constant",
+          "default": 0
+        },
+        "g": {
+          "type": "number",
+          "description": "Gravity feedforward constant (for arms/pivots)",
+          "default": 0
+        },
+        "v": {
+          "type": "number",
+          "description": "Velocity feedforward constant",
+          "default": 0
+        },
+        "a": {
+          "type": "number",
+          "description": "Acceleration feedforward constant",
+          "default": 0
+        }
+      }
+    },
+    "controlMode": {
+      "type": "string",
+      "description": "Control mode for the motor",
+      "enum": [
+        "CLOSED_LOOP",
+        "OPEN_LOOP"
+      ],
+      "default": "CLOSED_LOOP"
+    }
+  }
+}

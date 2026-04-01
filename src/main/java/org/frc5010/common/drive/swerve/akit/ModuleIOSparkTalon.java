@@ -19,7 +19,6 @@ import static org.frc5010.common.drive.swerve.akit.DriveConstants.turnPIDMaxInpu
 import static org.frc5010.common.drive.swerve.akit.DriveConstants.turnPIDMinInput;
 import static org.frc5010.common.drive.swerve.akit.util.SparkUtil.ifOk;
 import static org.frc5010.common.drive.swerve.akit.util.SparkUtil.sparkStickyFault;
-import static org.frc5010.common.drive.swerve.akit.util.SparkUtil.tryUntilOk;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
@@ -36,14 +35,12 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkBase.ControlType;
-import com.revrobotics.spark.SparkBase.PersistMode;
-import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.MathUtil;
@@ -54,9 +51,9 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
-import frc.robot.generated.TunerConstants;
 import java.util.Queue;
 import java.util.function.DoubleSupplier;
+import org.frc5010.common.drive.swerve.AkitSwerveConfig;
 import org.frc5010.common.drive.swerve.akit.util.PhoenixUtil;
 
 /**
@@ -104,12 +101,13 @@ public class ModuleIOSparkTalon implements ModuleIO {
   private final Debouncer turnConnectedDebounce = new Debouncer(0.5);
 
   public ModuleIOSparkTalon(
+      AkitSwerveConfig config,
       SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>
           constants) {
 
     this.constants = constants;
     zeroRotation = new Rotation2d();
-    driveTalon = new TalonFX(constants.DriveMotorId, TunerConstants.DrivetrainConstants.CANBusName);
+    driveTalon = new TalonFX(constants.DriveMotorId, config.getCANBus());
     turnSpark = new SparkMax(constants.SteerMotorId, MotorType.kBrushless);
 
     turnEncoder = turnSpark.getAbsoluteEncoder();
@@ -151,7 +149,8 @@ public class ModuleIOSparkTalon implements ModuleIO {
         .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
         .positionWrappingEnabled(true)
         .positionWrappingInputRange(turnPIDMinInput, turnPIDMaxInput)
-        .pidf(turnKp, 0.0, turnKd, 0.0);
+        .p(turnKp)
+        .d(turnKd);
     turnConfig
         .signals
         .absoluteEncoderPositionAlwaysOn(true)
@@ -161,16 +160,10 @@ public class ModuleIOSparkTalon implements ModuleIO {
         .appliedOutputPeriodMs(20)
         .busVoltagePeriodMs(20)
         .outputCurrentPeriodMs(20);
-    tryUntilOk(
-        turnSpark,
-        5,
-        () ->
-            turnSpark.configure(
-                turnConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters));
 
     // Create drive status signals
     drivePosition = driveTalon.getPosition();
-    drivePositionQueue = PhoenixOdometryThread.getInstance().registerSignal(drivePosition.clone());
+    drivePositionQueue = TalonFXOdometryThread.getInstance().registerSignal(drivePosition.clone());
     driveVelocity = driveTalon.getVelocity();
     driveAppliedVolts = driveTalon.getMotorVoltage();
     driveCurrent = driveTalon.getStatorCurrent();
@@ -252,6 +245,6 @@ public class ModuleIOSparkTalon implements ModuleIO {
     double setpoint =
         MathUtil.inputModulus(
             rotation.plus(zeroRotation).getRadians(), turnPIDMinInput, turnPIDMaxInput);
-    turnController.setReference(setpoint, ControlType.kPosition);
+    turnController.setSetpoint(setpoint, ControlType.kPosition);
   }
 }

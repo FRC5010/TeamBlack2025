@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Angular Velocity Unit Value",
+  "description": "A numeric angular velocity value with unit of measure",
+  "type": "object",
+  "required": [
+    "val",
+    "uom"
+  ],
+  "properties": {
+    "val": {
+      "type": "number",
+      "description": "The numeric angular velocity value"
+    },
+    "uom": {
+      "type": "string",
+      "enum": [
+        "deg/s",
+        "deg/sec",
+        "deg/second",
+        "degrees/s",
+        "degrees/sec",
+        "degrees/second",
+        "rad/s",
+        "rad/sec",
+        "rad/second",
+        "rads/s",
+        "rads/sec",
+        "rads/second",
+        "radians",
+        "radians/s",
+        "radians/sec",
+        "radians/second",
+        "rpm",
+        "RPM",
+        "rps",
+        "RPS"
+      ],
+      "description": "Angular velocity unit (deg/s, rad/s, rpm, or rps)"
+    }
+  }
+}

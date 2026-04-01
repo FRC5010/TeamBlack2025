@@ -4,7 +4,7 @@ import static edu.wpi.first.units.Units.RadiansPerSecond;
 
 import edu.wpi.first.math.util.Units;
 import org.frc5010.common.drive.swerve.akit.util.PhoenixUtil;
-import org.ironmaple.simulation.drivesims.GyroSimulation;
+import swervelib.simulation.ironmaple.simulation.drivesims.GyroSimulation;
 
 public class GyroIOSim implements GyroIO {
   private final GyroSimulation gyroSimulation;

@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Mass Unit Value",
+  "description": "A numeric mass value with unit of measure",
+  "type": "object",
+  "required": [
+    "val",
+    "uom"
+  ],
+  "properties": {
+    "val": {
+      "type": "number",
+      "description": "The numeric mass value"
+    },
+    "uom": {
+      "type": "string",
+      "enum": [
+        "kg",
+        "kgs",
+        "kilogram",
+        "kilograms",
+        "g",
+        "gram",
+        "grams",
+        "mg",
+        "milligram",
+        "milligrams",
+        "oz",
+        "ounce",
+        "ounces",
+        "lbs",
+        "lb",
+        "pound",
+        "pounds",
+        "st",
+        "stone",
+        "stones",
+        "t",
+        "tons",
+        "ton"
+      ],
+      "description": "Mass unit (kg, g, mg, oz, lbs, stone, or tons)"
+    }
+  }
+}

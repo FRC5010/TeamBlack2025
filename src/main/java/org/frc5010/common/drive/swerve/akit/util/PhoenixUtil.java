@@ -13,8 +13,9 @@
 
 package org.frc5010.common.drive.swerve.akit.util;
 
-import static edu.wpi.first.units.Units.*;
+import static edu.wpi.first.units.Units.KilogramSquareMeters;
 import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -30,9 +31,9 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import java.util.function.Supplier;
-import org.ironmaple.simulation.SimulatedArena;
-import org.ironmaple.simulation.motorsims.SimulatedBattery;
-import org.ironmaple.simulation.motorsims.SimulatedMotorController;
+import swervelib.simulation.ironmaple.simulation.SimulatedArena;
+import swervelib.simulation.ironmaple.simulation.motorsims.SimulatedBattery;
+import swervelib.simulation.ironmaple.simulation.motorsims.SimulatedMotorController;
 
 public final class PhoenixUtil {
   /** Attempts to run the command until no error is produced. */
@@ -102,25 +103,14 @@ public final class PhoenixUtil {
   }
 
   /**
+   * Regulates a {@link SwerveModuleConstants} object for simulation. If running on a real robot,
+   * the input object is returned unchanged. Otherwise, simulation-specific adjustments are made to
+   * the module constants. The following adjustments are made: - Disable encoder offsets - Disable
+   * motor inversions for drive and steer motors - Disable CanCoder inversion - Adjust steer motor
+   * PID gains for simulation - Adjust friction voltages - Adjust steer inertia
    *
-   *
-   * <h2>Regulates the {@link SwerveModuleConstants} for a single module.</h2>
-   *
-   * <p>This method applies specific adjustments to the {@link SwerveModuleConstants} for simulation
-   * purposes. These changes have no effect on real robot operations and address known simulation
-   * bugs:
-   *
-   * <ul>
-   *   <li><strong>Inverted Drive Motors:</strong> Prevents drive PID issues caused by inverted
-   *       configurations.
-   *   <li><strong>Non-zero CanCoder Offsets:</strong> Fixes potential module state optimization
-   *       issues.
-   *   <li><strong>Steer Motor PID:</strong> Adjusts PID values tuned for real robots to improve
-   *       simulation performance.
-   * </ul>
-   *
-   * <h4>Note:This function is skipped when running on a real robot, ensuring no impact on constants
-   * used on real robot hardware.</h4>
+   * @param moduleConstants module constants to regulate
+   * @return regulated module constants
    */
   public static SwerveModuleConstants regulateModuleConstantForSimulation(
       SwerveModuleConstants<?, ?, ?> moduleConstants) {

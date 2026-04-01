@@ -132,7 +132,7 @@ public class Robot extends LoggedRobot {
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {
-    m_robotContainer.disabledBehavior();
+    m_robotContainer.disabledInit();
     disabledTimer.reset();
     disabledTimer.start();
   }
@@ -140,7 +140,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void disabledPeriodic() {
     if (disabledTimer.hasElapsed(Constants.DrivebaseConstants.WHEEL_LOCK_TIME)) {
-      m_robotContainer.disabledBehavior();
+      m_robotContainer.disabledPeriodic();
       disabledTimer.stop();
     }
   }
@@ -149,10 +149,11 @@ public class Robot extends LoggedRobot {
   @Override
   public void autonomousInit() {
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    m_robotContainer.setupDefaults();
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
-      m_autonomousCommand.schedule();
+      CommandScheduler.getInstance().schedule(m_autonomousCommand);
     }
   }
 
@@ -171,6 +172,7 @@ public class Robot extends LoggedRobot {
     } else {
       CommandScheduler.getInstance().cancelAll();
     }
+    m_robotContainer.configureButtonBindings();
     m_robotContainer.setupDefaults();
   }
 
@@ -182,7 +184,8 @@ public class Robot extends LoggedRobot {
   public void testInit() {
     // Cancels all running commands at the start of test mode.
     CommandScheduler.getInstance().cancelAll();
-    m_robotContainer.setupDefaults();
+    m_robotContainer.configureAltButtonBindings();
+    m_robotContainer.setupAltDefaultCommands();
   }
 
   /** This function is called periodically during test mode. */

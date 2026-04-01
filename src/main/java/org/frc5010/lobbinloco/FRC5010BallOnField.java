@@ -7,7 +7,7 @@ package org.frc5010.lobbinloco;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import org.ironmaple.simulation.gamepieces.GamePieceOnFieldSimulation;
+import swervelib.simulation.ironmaple.simulation.gamepieces.GamePieceOnFieldSimulation;
 
 /** Add your docs here. */
 public class FRC5010BallOnField extends GamePieceOnFieldSimulation {

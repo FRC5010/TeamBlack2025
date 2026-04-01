@@ -1,0 +1,56 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Controller Axis Configuration",
+  "description": "Configuration for a single controller axis (matches DriveteamControllerAxisJson.java)",
+  "type": "object",
+  "required": [
+    "channel"
+  ],
+  "properties": {
+    "channel": {
+      "type": "integer",
+      "description": "Channel number of the axis on the controller (0-5 for analog, 0-11 for buttons)",
+      "minimum": 0,
+      "maximum": 11
+    },
+    "deadband": {
+      "type": "number",
+      "description": "Minimum value threshold for the axis to register motion (0.0-1.0)",
+      "default": 0.0,
+      "minimum": 0.0,
+      "maximum": 1.0
+    },
+    "invert": {
+      "type": "boolean",
+      "description": "Whether the axis should be inverted",
+      "default": false
+    },
+    "scale": {
+      "type": "number",
+      "description": "Scaling factor for the axis output",
+      "default": 1.0,
+      "minimum": -10,
+      "maximum": 10
+    },
+    "curvePower": {
+      "type": "number",
+      "description": "Mathematical power to apply for curved axis response (1.0 = linear)",
+      "default": 1.0,
+      "minimum": 0.1,
+      "maximum": 10.0
+    },
+    "limit": {
+      "type": "number",
+      "description": "Absolute maximum limit value for the axis (0.0-1.0)",
+      "default": 1.0,
+      "minimum": 0.0,
+      "maximum": 1.0
+    },
+    "rate": {
+      "type": "number",
+      "description": "Slew rate limiting for the axis (0.0 = no limit)",
+      "default": 0.0,
+      "minimum": 0.0
+    }
+  }
+}

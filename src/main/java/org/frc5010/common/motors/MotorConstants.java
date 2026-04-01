@@ -21,10 +21,25 @@ public class MotorConstants {
         RPM.of(11000),
         (Integer numberOfMotors) -> DCMotor.getNeo550(numberOfMotors),
         42),
+    NeoVortex(
+        Amps.of(40),
+        RPM.of(6000),
+        (Integer numberOfMotors) -> DCMotor.getNeoVortex(numberOfMotors),
+        42),
     KrakenX60(
         Amps.of(40),
         RPM.of(6000),
         (Integer numberOfMotors) -> DCMotor.getKrakenX60(numberOfMotors),
+        1023),
+    KrakenX60Foc(
+        Amps.of(40),
+        RPM.of(6000),
+        (Integer numberOfMotors) -> DCMotor.getKrakenX60Foc(numberOfMotors),
+        1023),
+    KrakenX44(
+        Amps.of(40),
+        RPM.of(6000),
+        (Integer numberOfMotors) -> DCMotor.getKrakenX44(numberOfMotors),
         1023);
 
     public Current currentLimit = Amps.of(20);

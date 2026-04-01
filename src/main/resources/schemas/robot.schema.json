@@ -1,0 +1,112 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Robot Configuration",
+  "description": "Main robot configuration file (matches RobotJson.java)",
+  "type": "object",
+  "properties": {
+    "userConfig": {
+      "type": "string",
+      "description": "User configuration file for the power/operation mode (e.g., competition_mode.json, demo_mode.json)",
+      "default": "competition_mode.json"
+    },
+    "driveType": {
+      "type": "string",
+      "description": "Type of drivetrain configuration",
+      "enum": [
+        "YAGSL_SWERVE_DRIVE",
+        "AKIT_SWERVE_DRIVE"
+      ]
+    },
+    "trackWidth": {
+      "type": "number",
+      "description": "Drivetrain width between wheel centers",
+      "default": 0.0,
+      "minimum": 0
+    },
+    "trackWidthUom": {
+      "type": "string",
+      "description": "Unit of measure for trackWidth",
+      "default": "m",
+      "enum": [
+        "m",
+        "cm",
+        "mm",
+        "in",
+        "ft"
+      ]
+    },
+    "wheelBase": {
+      "type": "number",
+      "description": "Drivetrain length between wheel centers",
+      "default": 0.0,
+      "minimum": 0
+    },
+    "wheelBaseUom": {
+      "type": "string",
+      "description": "Unit of measure for wheelBase",
+      "default": "m",
+      "enum": [
+        "m",
+        "cm",
+        "mm",
+        "in",
+        "ft"
+      ]
+    },
+    "wheelDiameter": {
+      "type": "number",
+      "description": "Drivetrain wheel diameter",
+      "default": 0.0,
+      "minimum": 0
+    },
+    "wheelDiameterUom": {
+      "type": "string",
+      "description": "Unit of measure for wheelDiameter",
+      "default": "m",
+      "enum": [
+        "m",
+        "cm",
+        "mm",
+        "in",
+        "ft"
+      ]
+    },
+    "physicalMaxSpeed": {
+      "type": "number",
+      "description": "Drivetrain physical maximum speed capability",
+      "default": 0.0,
+      "minimum": 0
+    },
+    "physicalMaxSpeedUom": {
+      "type": "string",
+      "description": "Unit of measure for physicalMaxSpeed",
+      "default": "m/s",
+      "enum": [
+        "m/s",
+        "ft/s",
+        "in/s"
+      ]
+    },
+    "driveMotorGearRatio": {
+      "type": "number",
+      "description": "Gear ratio between drive motor and wheels",
+      "default": 1.0,
+      "minimum": 0
+    },
+    "loadSimulatedField": {
+      "type": "boolean",
+      "description": "Whether to load the simulated field in simulation mode",
+      "default": true
+    },
+    "gamePieceA": {
+      "type": "string",
+      "description": "Name of the first game piece type",
+      "default": "GPA"
+    },
+    "gamePieceB": {
+      "type": "string",
+      "description": "Name of the second game piece type",
+      "default": "GPB"
+    }
+  }
+}

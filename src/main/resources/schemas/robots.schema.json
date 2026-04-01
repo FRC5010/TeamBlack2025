@@ -1,0 +1,69 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Robots Configuration",
+  "description": "Configuration schema for robots.json. This schema enforces the structure required by RobotsJson.java",
+  "type": "object",
+  "required": [
+    "robots"
+  ],
+  "properties": {
+    "competitionPin": {
+      "type": "integer",
+      "description": "DIO pin number for competition robot selector switch. Use -1 to disable. Negative value disables competition mode.",
+      "default": -1
+    },
+    "robots": {
+      "type": "object",
+      "description": "Map of robot configurations, keyed by robot directory name (e.g., 'basic_robot', 'baby_swerve')",
+      "minProperties": 1,
+      "additionalProperties": {
+        "$ref": "#/definitions/robotIdentity"
+      }
+    }
+  },
+  "definitions": {
+    "robotIdentity": {
+      "type": "object",
+      "title": "Robot Identity Configuration",
+      "description": "Configuration for a single robot identity (matches RobotIdentity.java)",
+      "required": [
+        "id",
+        "robotClass"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the robot. Can be a MAC address (format: XX:XX:XX:XX:XX:XX) or any unique string identifier"
+        },
+        "robotClass": {
+          "type": "string",
+          "description": "Fully qualified Java class name for the robot (must extend GenericRobot). Example: 'frc.robot.example.ExampleRobot'"
+        },
+        "simulate": {
+          "type": "boolean",
+          "description": "Whether this robot should be used in simulation mode",
+          "default": false
+        },
+        "competition": {
+          "type": "boolean",
+          "description": "Whether this robot should be used when competition pin is active",
+          "default": false
+        }
+      },
+      "examples": [
+        {
+          "id": "basic_robot",
+          "robotClass": "frc.robot.example.ExampleRobot",
+          "simulate": true,
+          "competition": false
+        },
+        {
+          "id": "00:80:2F:24:6D:74",
+          "robotClass": "frc.robot.baby_swerve.BabySwerve",
+          "simulate": true,
+          "competition": true
+        }
+      ]
+    }
+  }
+}

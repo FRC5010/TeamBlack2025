@@ -4,13 +4,19 @@ import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.databind.DatabindException;
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
+import java.util.List;
 import org.frc5010.common.arch.GenericSubsystem;
 
 /** The base JSON class for subsystem configurations */
 public class SubsystemJson {
+  public static class DeviceEntry {
+    public String device;
+    public String file;
+
+    public DeviceEntry() {}
+  }
   /** A map of device names and device configuration file names */
-  public Map<String, String> devices;
+  public List<DeviceEntry> devices;
   /** Whether to display the subsystem in the dashboard */
   public boolean display = false;
   /** The logging level for the robot */
@@ -28,10 +34,10 @@ public class SubsystemJson {
    */
   public void configureSubsystem(GenericSubsystem system, File directory)
       throws StreamReadException, DatabindException, IOException {
-    for (String key : devices.keySet()) {
-      File deviceFile = new File(directory, devices.get(key));
+    for (DeviceEntry key : devices) {
+      File deviceFile = new File(directory, key.file);
       assert deviceFile.exists();
-      DeviceConfigReader.readDeviceConfig(system, deviceFile, key);
+      DeviceConfigReader.readDeviceConfig(system, deviceFile, key.device);
     }
   }
 }

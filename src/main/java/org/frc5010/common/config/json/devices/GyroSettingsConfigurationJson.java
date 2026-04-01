@@ -13,13 +13,16 @@ public class GyroSettingsConfigurationJson implements DeviceConfiguration {
   public String type;
   /** The ID of the gyro sensor, if needed */
   public int id;
+  /** Whether the gyro sensor is inverted */
+  public boolean inverted = false;
+  /** The CAN bus the gyro is connected to */
+  public String canbus = "";
 
   /**
-   * Configures and returns an appropriate gyro sensor based on the specified type.
+   * Configures a gyro sensor based on the specified type.
    *
-   * @param mechanismSimulation The LoggedMechanism2d instance for visualization, if needed.
-   * @return An instance of a gyro sensor (NavXGyro or PigeonGyro) based on the type, or null if the
-   *     type is unrecognized.
+   * @param deviceHandler the GenericSubsystem to configure
+   * @return the configured gyro sensor, or null if the type is not recognized
    */
   @Override
   public Object configure(GenericSubsystem deviceHandler) {

@@ -7,12 +7,11 @@
 
 package org.frc5010.common.drive.swerve.akit;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
-import static org.frc5010.common.drive.swerve.akit.DriveConstants.driveBaseRadius;
-import static org.frc5010.common.drive.swerve.akit.DriveConstants.maxSpeedMetersPerSec;
-import static org.frc5010.common.drive.swerve.akit.DriveConstants.moduleTranslations;
 
-import com.ctre.phoenix6.CANBus;
+import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.util.DriveFeedforwards;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import edu.wpi.first.hal.FRCNetComm.tInstances;
@@ -22,6 +21,7 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -32,46 +32,44 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Force;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
-import frc.robot.generated.TunerConstants;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
-import org.frc5010.common.drive.pose.AkitSwervePose;
+import java.util.function.Supplier;
+import org.frc5010.common.commands.AkitDriveCommands;
 import org.frc5010.common.drive.pose.DrivePoseEstimator;
+import org.frc5010.common.drive.pose.SwerveFunctionsPose;
+import org.frc5010.common.drive.swerve.AkitSwerveConfig;
+import org.frc5010.common.drive.swerve.GenericSwerveDrivetrain;
 import org.frc5010.common.drive.swerve.GenericSwerveModuleInfo;
 import org.frc5010.common.drive.swerve.SwerveDriveFunctions;
-import org.ironmaple.simulation.SimulatedArena;
-import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
-import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+import swervelib.simulation.ironmaple.simulation.SimulatedArena;
 
 public class AkitSwerveDrive extends SwerveDriveFunctions {
-  static final double ODOMETRY_FREQUENCY =
-      new CANBus(TunerConstants.DrivetrainConstants.CANBusName).isNetworkFD() ? 250.0 : 100.0;
-
-  public static DriveTrainSimulationConfig mapleSimConfig = DriveTrainSimulationConfig.Default();
-  static final Lock odometryLock = new ReentrantLock();
+  private final AkitSwerveConfig config;
   private final GyroIO gyroIO;
   private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
   private final Module[] modules = new Module[4]; // FL, FR, BL, BR
   private SysIdRoutine sysId;
   private Field2d field = new Field2d(); // For visualization in SmartDashboard
-  public static SwerveDriveSimulation driveSimulation = null;
+  private Supplier<RobotConfig> robotConfigSupplier = () -> null;
 
   private final Alert gyroDisconnectedAlert =
       new Alert("Disconnected gyro, using kinematics as fallback.", AlertType.kError);
 
-  private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(moduleTranslations);
+  private SwerveDriveKinematics kinematics;
   private Rotation2d rawGyroRotation = new Rotation2d();
   private SwerveModulePosition[] lastModulePositions = // For delta tracking
       new SwerveModulePosition[] {
@@ -80,30 +78,35 @@ public class AkitSwerveDrive extends SwerveDriveFunctions {
         new SwerveModulePosition(),
         new SwerveModulePosition()
       };
-  private SwerveDrivePoseEstimator poseEstimator =
-      new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
-
+  private SwerveDrivePoseEstimator poseEstimator;
   private final Consumer<Pose2d> resetSimulationPoseCallBack;
 
   public AkitSwerveDrive(
+      AkitSwerveConfig config,
       GyroIO gyroIO,
       ModuleIO flModuleIO,
       ModuleIO frModuleIO,
       ModuleIO blModuleIO,
       ModuleIO brModuleIO,
       Consumer<Pose2d> resetSimulationPoseCallBack) {
+    this.config = config;
+    kinematics = new SwerveDriveKinematics(getModuleTranslations());
+    poseEstimator =
+        new SwerveDrivePoseEstimator(
+            kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
+
     this.gyroIO = gyroIO;
     this.resetSimulationPoseCallBack = resetSimulationPoseCallBack;
-    modules[0] = new Module(flModuleIO, 0);
-    modules[1] = new Module(frModuleIO, 1);
-    modules[2] = new Module(blModuleIO, 2);
-    modules[3] = new Module(brModuleIO, 3);
+    modules[0] = new Module(flModuleIO, 0, config.FrontLeft);
+    modules[1] = new Module(frModuleIO, 1, config.FrontRight);
+    modules[2] = new Module(blModuleIO, 2, config.BackLeft);
+    modules[3] = new Module(brModuleIO, 3, config.BackRight);
 
     // Usage reporting for swerve template
     HAL.report(tResourceType.kResourceType_RobotDrive, tInstances.kRobotDriveSwerve_AdvantageKit);
 
     // Start odometry thread
-    SparkOdometryThread.getInstance().start();
+    OdometryThread.getInstance().start();
 
     // Should we keep this?
     // Pathfinding.setPathfinder(new LocalADStarAK());
@@ -117,6 +120,10 @@ public class AkitSwerveDrive extends SwerveDriveFunctions {
         (targetPose) -> {
           Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
         });
+  }
+
+  public AkitSwerveConfig getConfig() {
+    return config;
   }
 
   @Override
@@ -141,6 +148,8 @@ public class AkitSwerveDrive extends SwerveDriveFunctions {
       Logger.recordOutput("SwerveStates/Setpoints", new SwerveModuleState[] {});
       Logger.recordOutput("SwerveStates/SetpointsOptimized", new SwerveModuleState[] {});
     }
+
+    getChassisSpeeds();
 
     // Update odometry
     double[] sampleTimestamps =
@@ -187,7 +196,7 @@ public class AkitSwerveDrive extends SwerveDriveFunctions {
     // Calculate module setpoints
     ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
     SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(discreteSpeeds);
-    SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, maxSpeedMetersPerSec);
+    SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, config.getMaxDriveSpeed());
 
     // Log unoptimized setpoints
     Logger.recordOutput("SwerveStates/Setpoints", setpointStates);
@@ -205,7 +214,19 @@ public class AkitSwerveDrive extends SwerveDriveFunctions {
   /** Runs the drive in a straight line with the specified drive output. */
   public void runCharacterization(double output) {
     for (int i = 0; i < 4; i++) {
-      modules[i].runCharacterization(output);
+      modules[i].runCharacterization(output, config);
+    }
+  }
+
+  /**
+   * Runs the steer characterization routine on all modules. This command is used to measure the
+   * feedforward constants of the steer motors.
+   *
+   * @param output The output to send to the modules in volts.
+   */
+  public void runSteerCharacterization(double output) {
+    for (int i = 0; i < 4; i++) {
+      modules[i].runSteerCharacterization(output);
     }
   }
 
@@ -220,6 +241,7 @@ public class AkitSwerveDrive extends SwerveDriveFunctions {
    */
   public void stopWithX() {
     Rotation2d[] headings = new Rotation2d[4];
+    Translation2d[] moduleTranslations = getModuleTranslations();
     for (int i = 0; i < 4; i++) {
       headings[i] = moduleTranslations[i].getAngle();
     }
@@ -246,6 +268,7 @@ public class AkitSwerveDrive extends SwerveDriveFunctions {
     for (int i = 0; i < 4; i++) {
       states[i] = modules[i].getState();
     }
+    Logger.recordOutput("SwerveStates/Measured", states);
     return states;
   }
 
@@ -262,7 +285,9 @@ public class AkitSwerveDrive extends SwerveDriveFunctions {
   /** Returns the measured chassis speeds of the robot. */
   @AutoLogOutput(key = "SwerveChassisSpeeds/Measured")
   private ChassisSpeeds getChassisSpeeds() {
-    return kinematics.toChassisSpeeds(getModuleStates());
+    ChassisSpeeds speeds = kinematics.toChassisSpeeds(getModuleStates());
+    Logger.recordOutput("SwerveChassisSpeeds/Measured", speeds);
+    return speeds;
   }
 
   /** Returns the position of each module in radians. */
@@ -275,10 +300,19 @@ public class AkitSwerveDrive extends SwerveDriveFunctions {
   }
 
   /** Returns the average velocity of the modules in rad/sec. */
-  public double getFFCharacterizationVelocity() {
+  public double getDriveFFCharacterizationVelocity() {
     double output = 0.0;
     for (int i = 0; i < 4; i++) {
-      output += modules[i].getFFCharacterizationVelocity() / 4.0;
+      output += modules[i].getDriveFFCharacterizationVelocity() / 4.0;
+    }
+    return output;
+  }
+
+  /** Returns the average velocity of the modules in rad/sec. */
+  public double getSteerFFCharacterizationVelocity() {
+    double output = 0.0;
+    for (int i = 0; i < 4; i++) {
+      output += modules[i].getSteerFFCharacterizationVelocity() / 4.0;
     }
     return output;
   }
@@ -311,12 +345,12 @@ public class AkitSwerveDrive extends SwerveDriveFunctions {
 
   /** Returns the maximum linear speed in meters per sec. */
   public double getMaxLinearSpeedMetersPerSec() {
-    return maxSpeedMetersPerSec;
+    return config.getMaxDriveSpeed().in(MetersPerSecond);
   }
 
   /** Returns the maximum angular speed in radians per sec. */
   public double getMaxAngularSpeedRadPerSec() {
-    return maxSpeedMetersPerSec / driveBaseRadius;
+    return getMaxLinearSpeedMetersPerSec() / config.DRIVE_BASE_RADIUS;
   }
 
   @Override
@@ -326,7 +360,7 @@ public class AkitSwerveDrive extends SwerveDriveFunctions {
 
   @Override
   public DrivePoseEstimator initializePoseEstimator() {
-    return new DrivePoseEstimator(new AkitSwervePose(this));
+    return new DrivePoseEstimator(new SwerveFunctionsPose(this));
   }
 
   @Override
@@ -336,7 +370,27 @@ public class AkitSwerveDrive extends SwerveDriveFunctions {
 
   @Override
   public ChassisSpeeds getFieldVelocity() {
-    return ChassisSpeeds.fromFieldRelativeSpeeds(getChassisSpeeds(), gyroInputs.yawPosition);
+    return ChassisSpeeds.fromRobotRelativeSpeeds(getChassisSpeeds(), getRotation());
+  }
+
+  /**
+   * Returns the robot-relative chassis acceleration derived from drive motor acceleration signals.
+   * Uses the same kinematics math as velocity, but with per-module acceleration instead of
+   * velocity.
+   */
+  public ChassisSpeeds getChassisAcceleration() {
+    SwerveModuleState[] accelStates = new SwerveModuleState[4];
+    for (int i = 0; i < 4; i++) {
+      accelStates[i] = modules[i].getAccelerationState();
+    }
+    return kinematics.toChassisSpeeds(accelStates);
+  }
+
+  /**
+   * Returns the field-relative chassis acceleration derived from drive motor acceleration signals.
+   */
+  public ChassisSpeeds getFieldAcceleration() {
+    return ChassisSpeeds.fromRobotRelativeSpeeds(getChassisAcceleration(), getRotation());
   }
 
   @Override
@@ -362,14 +416,24 @@ public class AkitSwerveDrive extends SwerveDriveFunctions {
     return Units.radiansToDegrees(gyroInputs.yawVelocityRadPerSec);
   }
 
+  /**
+   * Returns a SysIdRoutine instance configured for system identification of the drive.
+   *
+   * <p>If the instance variable sysId is null, a new SysIdRoutine instance is created with the
+   * provided SubsystemBase and a default configuration. The default configuration includes a no-op
+   * mechanism and a logger which records the state of the SysIdRoutine to the {@link Logger}.
+   *
+   * @param swerveSubsystem The subsystem to add to the requirements of the SysIdRoutine
+   * @return A SysIdRoutine instance configured for system identification of the drive
+   */
   protected SysIdRoutine getSysId(SubsystemBase swerveSubsystem) {
     if (null == sysId) {
       sysId =
           new SysIdRoutine(
               new SysIdRoutine.Config(
-                  null,
-                  null,
-                  null,
+                  Volts.of(0.5).per(Second),
+                  Volts.of(7),
+                  Second.of(30),
                   (state) -> Logger.recordOutput("Drive/SysIdState", state.toString())),
               new SysIdRoutine.Mechanism(
                   (voltage) -> runCharacterization(voltage.in(Volts)), null, swerveSubsystem));
@@ -381,9 +445,16 @@ public class AkitSwerveDrive extends SwerveDriveFunctions {
   public Command sysIdDriveMotorCommand(SubsystemBase swerveSubsystem) {
     // Configure SysId
     return sysIdQuasistatic(SysIdRoutine.Direction.kForward)
+        .withTimeout(10)
+        .andThen(Commands.waitSeconds(3))
         .andThen(sysIdQuasistatic(SysIdRoutine.Direction.kReverse))
+        .withTimeout(10)
+        .andThen(Commands.waitSeconds(3))
         .andThen(sysIdDynamic(SysIdRoutine.Direction.kForward))
-        .andThen(sysIdDynamic(SysIdRoutine.Direction.kReverse));
+        .withTimeout(4)
+        .andThen(Commands.waitSeconds(3))
+        .andThen(sysIdDynamic(SysIdRoutine.Direction.kReverse))
+        .withTimeout(4);
   }
 
   @Override
@@ -418,13 +489,34 @@ public class AkitSwerveDrive extends SwerveDriveFunctions {
     return moduleInfos;
   }
 
+  /** Returns an array of module translations. */
+  public Translation2d[] getModuleTranslations() {
+    return new Translation2d[] {
+      new Translation2d(config.FrontLeft.LocationX, config.FrontLeft.LocationY),
+      new Translation2d(config.FrontRight.LocationX, config.FrontRight.LocationY),
+      new Translation2d(config.BackLeft.LocationX, config.BackLeft.LocationY),
+      new Translation2d(config.BackRight.LocationX, config.BackRight.LocationY)
+    };
+  }
+
   /**
    * Retrieves the pose of the simulated drivetrain from the MapleSim system.
    *
    * @return The current pose of the simulated drivetrain as a {@link Pose2d}.
    */
-  public Pose2d getMapleSimPose() {
+  @Override
+  public Pose2d getSimPose() {
     return driveSimulation.getSimulatedDriveTrainPose();
+  }
+
+  @Override
+  public Supplier<RobotConfig> getPPRobotConfigSupplier() {
+    return robotConfigSupplier;
+  }
+
+  @Override
+  public void setPPRobotConfigSupplier(Supplier<RobotConfig> robotConfigSupplier) {
+    this.robotConfigSupplier = robotConfigSupplier;
   }
 
   public void updateSimulation() {
@@ -432,8 +524,31 @@ public class AkitSwerveDrive extends SwerveDriveFunctions {
     Logger.recordOutput(
         "FieldSimulation/RobotPosition", driveSimulation.getSimulatedDriveTrainPose());
     Logger.recordOutput(
-        "FieldSimulation/Coral", SimulatedArena.getInstance().getGamePiecesArrayByType("Coral"));
-    Logger.recordOutput(
-        "FieldSimulation/Algae", SimulatedArena.getInstance().getGamePiecesArrayByType("Algae"));
+        "FieldSimulation/Fuel", SimulatedArena.getInstance().getGamePiecesArrayByType("Fuel"));
+  }
+
+  @Override
+  public void addAutoCommands(
+      LoggedDashboardChooser<Command> selectableCommand, GenericSwerveDrivetrain drivetrain) {
+    selectableCommand.addOption(
+        "PRO: Swerve Wheel Radius Characterization",
+        AkitDriveCommands.wheelRadiusCharacterization(drivetrain, this));
+    selectableCommand.addOption(
+        "PRO: Swerve Drive Feedforward Characterization",
+        AkitDriveCommands.feedforwardCharacterization(
+            drivetrain,
+            (Voltage voltage) -> runCharacterization(voltage.in(Volts)),
+            () -> getDriveFFCharacterizationVelocity()));
+    selectableCommand.addOption(
+        "PRO: Swerve Steer Feedforward Characterization",
+        AkitDriveCommands.feedforwardCharacterization(
+            drivetrain,
+            (Voltage voltage) -> runSteerCharacterization(voltage.in(Volts)),
+            () -> getSteerFFCharacterizationVelocity()));
+
+    selectableCommand.addOption(
+        "PRO: Swerve Angle PID Tuning", AkitDriveCommands.steerPIDTuning(drivetrain, this));
+    selectableCommand.addOption(
+        "PRO: Swerve Drive PID Tuning", AkitDriveCommands.drivePIDTuning(drivetrain, this));
   }
 }

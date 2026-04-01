@@ -20,9 +20,6 @@ public class ArmParser {
    * @param filename the name of the configuration file to read
    * @param system the system to add the device to
    * @return the parsed Arm, or null if the file cannot be read or parsed
-   * @throws StreamReadException if the file cannot be read
-   * @throws DatabindException if the file cannot be parsed
-   * @throws IOException if there is an error reading the file
    */
   public static Arm parse(String subDirectory, String filename, SubsystemBase system) {
     try {

@@ -14,7 +14,8 @@ public class ReflectionsManager {
     PHOENIX5,
     PHOENIX6,
     /** ThriftyLib */
-    THRIFTYBOT
+    THRIFTYBOT,
+    YAMS
   }
 
   public enum SparkBaseType {
@@ -26,9 +27,10 @@ public class ReflectionsManager {
       new HashMap<VENDOR, String>() {
         {
           put(VENDOR.REV, "com.revrobotics.spark.SparkBase");
-          put(VENDOR.PHOENIX5, "com.ctre.phoenix.hardware.TalonSRX");
-          put(VENDOR.PHOENIX6, "com.ctre.phoenix6.hardware.TalonFX");
-          put(VENDOR.THRIFTYBOT, "com.thriftybot.hardware.ThriftyBot");
+          put(VENDOR.PHOENIX5, "com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX");
+          put(VENDOR.PHOENIX6, "com.ctre.phoenix6.hardware.TalonFXS");
+          put(VENDOR.THRIFTYBOT, "com.thethriftybot.ThriftyNova");
+          put(VENDOR.YAMS, "yams.motorcontrollers.SmartMotorController");
         }
       };
 
@@ -41,8 +43,14 @@ public class ReflectionsManager {
   public static boolean checkIfVendorLibExists(VENDOR vendor) {
     try {
       // If the class is found, the library exists
-      Class.forName(vendorLibs.get(vendor));
+      if (vendorLibs.containsKey(vendor)) {
+        Class.forName(vendorLibs.get(vendor));
+      } else {
+        System.err.println("Vendor " + vendor + " not recognized!");
+        return false;
+      }
     } catch (Exception e) {
+      System.err.println("Vendor " + vendor + " class not found: " + vendorLibs.get(vendor) + ". ");
       return false;
     }
     return true;

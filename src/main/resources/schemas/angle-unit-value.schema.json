@@ -1,0 +1,29 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Angle Unit Value",
+  "description": "A numeric angle value with unit of measure",
+  "type": "object",
+  "required": [
+    "val",
+    "uom"
+  ],
+  "properties": {
+    "val": {
+      "type": "number",
+      "description": "The numeric angle value"
+    },
+    "uom": {
+      "type": "string",
+      "enum": [
+        "deg",
+        "degrees",
+        "rad",
+        "radians",
+        "rot",
+        "rotation",
+        "rotations"
+      ],
+      "description": "Angle unit (degrees, radians, or rotations)"
+    }
+  }
+}

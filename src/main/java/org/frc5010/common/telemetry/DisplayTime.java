@@ -48,7 +48,7 @@ public class DisplayTime extends DisplayableValue {
    * @param unitTime - time in that unit
    * @param name - name of the time
    * @param table - name of the table
-   * @param debug - debug mode
+   * @param logLevel - the log level
    */
   public DisplayTime(
       final double unitTime,
@@ -69,7 +69,6 @@ public class DisplayTime extends DisplayableValue {
   /**
    * Add a time to the dashboard
    *
-   * @param unit - time unit
    * @param unitTime - time in that unit
    * @param name - name of the time
    * @param table - name of the table
@@ -81,11 +80,10 @@ public class DisplayTime extends DisplayableValue {
   /**
    * Add a time to the dashboard
    *
-   * @param unit - time unit
-   * @param unitTime - time in that unit
-   * @param name - name of the time
-   * @param table - name of the table
-   * @param debug - debug mode
+   * @param unitTime
+   * @param name
+   * @param table
+   * @param logLevel
    */
   public DisplayTime(
       final Time unitTime, final String name, final String table, final LogLevel logLevel) {

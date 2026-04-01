@@ -18,8 +18,8 @@ import org.frc5010.common.vision.VisionConstants;
 import org.littletonrobotics.junction.AutoLog;
 import org.littletonrobotics.junction.Logger;
 
-/** Add your docs here. */
 public interface PoseProvider {
+
   public VisionIOInputsAutoLogged input = new VisionIOInputsAutoLogged();
   public Alert disconnectedAlert = new Alert("PoseProvider", AlertType.kWarning);
   public int cameraIndex = 0;

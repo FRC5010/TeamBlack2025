@@ -1,5 +1,3 @@
 {
-  "cameras": [
-    "localization.json"
-  ]
+  "cameras": []
 }

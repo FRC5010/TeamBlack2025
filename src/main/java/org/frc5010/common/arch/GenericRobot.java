@@ -9,6 +9,8 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -20,6 +22,7 @@ import org.frc5010.common.constants.GenericDrivetrainConstants;
 import org.frc5010.common.drive.GenericDrivetrain;
 import org.frc5010.common.sensors.Controller;
 import org.frc5010.common.subsystems.Color;
+import org.frc5010.common.subsystems.LEDStrip;
 import org.frc5010.common.telemetry.DisplayString;
 import org.frc5010.common.telemetry.DisplayValuesHelper;
 import org.frc5010.common.telemetry.WpiDataLogging;
@@ -34,8 +37,14 @@ public abstract class GenericRobot extends GenericMechanism implements GenericDe
   protected Optional<Controller> driver;
   /** The operator controller */
   protected Optional<Controller> operator;
-  /** The current alliance color */
+  /** The static reference to the alliance of the team */
   protected static Alliance alliance;
+  /** The alliance of the team */
+  protected DisplayString allianceDisplay;
+  /** The alliance of the team as a 5010 color */
+  protected Color allianceColor5010;
+  /** The alliance of the team as a WPI color */
+  protected edu.wpi.first.wpilibj.util.Color allianceWpiColor;
   /** The map of subsystems created by the configuration system */
   protected Map<String, GenericSubsystem> subsystems = new HashMap<>();
   /** The map of sensors created by the configuration system */
@@ -46,18 +55,19 @@ public abstract class GenericRobot extends GenericMechanism implements GenericDe
   protected RobotParser parser;
   /** Constants that are used to configure the drivetrain */
   protected GenericDrivetrainConstants drivetrainConstants = new GenericDrivetrainConstants();
-  /** The internal pose supplier that is used by the drivetrain */
+  /** The internal pose supplier that is supplied by the drivetrain to avoid CAE issues */
   protected Supplier<Pose2d> internalPoseSupplier = () -> new Pose2d();
-  /** The pose supplier */
+  /** The pose supplier that is supplied to consumers with a redirection to the internal supplier */
   protected Supplier<Pose2d> poseSupplier = () -> internalPoseSupplier.get();
-  /** The internal pose supplier that is used by the drivetrain */
+  /** The internal pose supplier that is supplied by the drivetrain */
   protected Supplier<Pose2d> internalSimulatedPoseSupplier = () -> new Pose2d();
-  /** The pose supplier */
+  /**
+   * The pose supplier that is supplied to consumers with a redirection to the internal simulated
+   * supplier
+   */
   protected Supplier<Pose2d> simulatedPoseSupplier = () -> internalSimulatedPoseSupplier.get();
   /** The subsystem parser */
   public static SubsystemParser subsystemParser;
-  /** Values that can be displayed on the dashboard */
-  protected DisplayValuesHelper displayValues;
 
   public static boolean everEnabled = false;
 
@@ -110,7 +120,6 @@ public abstract class GenericRobot extends GenericMechanism implements GenericDe
   }
 
   protected void initializeDisplay() {
-    displayValues = new DisplayValuesHelper(logPrefix);
     operator.ifPresent(
         op -> {
           if (!op.isPluggedIn()) {
@@ -121,9 +130,21 @@ public abstract class GenericRobot extends GenericMechanism implements GenericDe
     SmartDashboard.putData("Robot Visual", mechVisual);
 
     DriverStation.silenceJoystickConnectionWarning(true);
-    alliance = determineAllianceColor();
-    DisplayString allianceDisplay = displayValues.makeDisplayString("Alliance");
-    allianceDisplay.setValue(alliance.toString());
+    allianceDisplay = DashBoard.makeDisplayString("Alliance");
+    CommandScheduler.getInstance()
+        .schedule(
+            Commands.run(
+                    () -> {
+                      determineAlliance();
+                      LEDStrip.changeSegmentPattern(
+                          ConfigConstants.ALL_LEDS, LEDStrip.getSolidPattern(allianceWpiColor));
+                    })
+                .ignoringDisable(true)
+                .until(
+                    () ->
+                        DriverStation.getAlliance().isPresent()
+                            && !allianceDisplay.getValue().equalsIgnoreCase("N/A")));
+    LEDStrip.setSegmentActive(ConfigConstants.ALL_LEDS, true);
   }
 
   /**
@@ -172,20 +193,43 @@ public abstract class GenericRobot extends GenericMechanism implements GenericDe
     configureButtonBindings(driver.orElse(null), operator.orElse(null));
   }
 
-  /** Setup default commands depending on the robot mode */
+  /**
+   * Use this method to define your button->command mappings. Buttons can be created by
+   * instantiating a {@link GenericHID} or one of its subclasses ({@link
+   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
+   * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
+   */
+  public void configureAltButtonBindings() {
+    configureAltButtonBindings(driver.orElse(null), operator.orElse(null));
+  }
+
+  /**
+   * Sets up the default commands for the robot. If the robot is in teleoperated or autonomous mode,
+   * it will call the setupDefaultCommands method. If the robot is in test mode, it will call the
+   * setupTestDefaultCommands method.
+   */
   public void setupDefaultCommands() {
     if (DriverStation.isTeleop() || DriverStation.isAutonomous()) {
       setupDefaultCommands(driver.orElse(null), operator.orElse(null));
     } else if (DriverStation.isTest()) {
-      setupTestDefaultCommmands(driver.orElse(null), operator.orElse(null));
+      setupAltDefaultCommmands(driver.orElse(null), operator.orElse(null));
     }
   }
 
-  /** Build the auto commands and command chooser */
+  public void setupAltDefaultCommands() {
+    if (DriverStation.isTest()) {
+      setupAltDefaultCommmands(driver.orElse(null), operator.orElse(null));
+    }
+  }
+
+  /**
+   * Builds the auto commands and adds them to the auto selector
+   *
+   * <p>This should be called during robot initialization
+   */
   public void buildAutoCommands() {
     initAutoCommands();
 
-    // TODO: Figure out Pathplanner Warmup Command
     if (AutoBuilder.isConfigured()) {
       selectableCommand =
           new LoggedDashboardChooser<>("Auto Modes", AutoBuilder.buildAutoChooser());
@@ -222,7 +266,7 @@ public abstract class GenericRobot extends GenericMechanism implements GenericDe
 
   /** Executes periodic behavior when the robot is disabled. */
   @Override
-  public void disabledBehavior() {
+  public void disabledPeriodic() {
     selectableCommand.periodic();
   }
 
@@ -237,6 +281,29 @@ public abstract class GenericRobot extends GenericMechanism implements GenericDe
   }
 
   /**
+   * Determine the alliance color, returning NA by default if undeterminable. Sets other alliance
+   * variables as well.
+   *
+   * @return the alliance color as a string, or "N/A" if undeterminable
+   */
+  public String determineAlliance() {
+    Optional<Alliance> color = DriverStation.getAlliance();
+    alliance = color.orElse(Alliance.Blue);
+    allianceDisplay.setValue(alliance.name());
+    allianceColor5010 =
+        color.map(it -> it == Alliance.Red ? Color.RED : Color.BLUE).orElse(Color.ORANGE);
+    allianceWpiColor =
+        color
+            .map(
+                it ->
+                    it == Alliance.Red
+                        ? edu.wpi.first.wpilibj.util.Color.kRed
+                        : edu.wpi.first.wpilibj.util.Color.kBlue)
+            .orElse(edu.wpi.first.wpilibj.util.Color.kOrange);
+    return color.map(it -> it.name()).orElse("N/A");
+  }
+
+  /**
    * Choose the alliance color, returning Orange by default if undeterminable
    *
    * @return the alliance color
@@ -247,6 +314,21 @@ public abstract class GenericRobot extends GenericMechanism implements GenericDe
       return allianceColor.get() == Alliance.Red ? Color.RED : Color.BLUE;
     }
     return Color.ORANGE;
+  }
+
+  /**
+   * Choose the alliance color, returning Orange by default if undeterminable
+   *
+   * @return the alliance color
+   */
+  public static edu.wpi.first.wpilibj.util.Color chooseAllianceWpiColor() {
+    Optional<Alliance> allianceColor = DriverStation.getAlliance();
+    if (allianceColor.isPresent()) {
+      return allianceColor.get() == Alliance.Red
+          ? edu.wpi.first.wpilibj.util.Color.kRed
+          : edu.wpi.first.wpilibj.util.Color.kBlue;
+    }
+    return edu.wpi.first.wpilibj.util.Color.kOrangeRed;
   }
 
   /**
@@ -381,6 +463,6 @@ public abstract class GenericRobot extends GenericMechanism implements GenericDe
    */
   @Override
   public DisplayValuesHelper getDisplayValuesHelper() {
-    return displayValues;
+    return DashBoard;
   }
 }
