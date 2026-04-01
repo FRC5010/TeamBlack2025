@@ -39,7 +39,7 @@ public class DisplayDouble extends DisplayableValue {
    * @param defaultValue the default value
    * @param name the name
    * @param table the table
-   * @param debug debug
+   * @param logLevel the log level
    */
   public DisplayDouble(
       final double defaultValue, final String name, final String table, final LogLevel logLevel) {

@@ -1,0 +1,99 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Motor Setup",
+  "description": "Motor controller and hardware configuration (matches MotorSetupJson.java)",
+  "type": "object",
+  "required": [
+    "name",
+    "controllerType",
+    "motorType",
+    "canId"
+  ],
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Name identifier for the motor"
+    },
+    "logLevel": {
+      "type": "string",
+      "description": "Logging/telemetry level",
+      "enum": [
+        "LOW",
+        "MEDIUM",
+        "HIGH"
+      ],
+      "default": "LOW"
+    },
+    "motorType": {
+      "type": "string",
+      "description": "Type of motor (e.g., KrakenX60, Neo, Falcon500)"
+    },
+    "controllerType": {
+      "type": "string",
+      "description": "Type of motor controller",
+      "enum": [
+        "talonfx",
+        "talonsrx",
+        "sparkmax",
+        "spark"
+      ]
+    },
+    "canId": {
+      "type": "integer",
+      "description": "CAN ID of the motor",
+      "minimum": 0,
+      "maximum": 62
+    },
+    "canBus": {
+      "type": "string",
+      "description": "CAN bus name for the motor",
+      "default": ""
+    },
+    "idleMode": {
+      "type": "string",
+      "description": "Idle mode for the motor",
+      "enum": [
+        "BRAKE",
+        "COAST"
+      ],
+      "default": "BRAKE"
+    },
+    "currentLimit": {
+      "$ref": "./unit-value.schema.json",
+      "description": "Current limit for the motor"
+    },
+    "inverted": {
+      "type": "boolean",
+      "description": "Whether the motor is inverted",
+      "default": false
+    },
+    "numberOfMotors": {
+      "type": "integer",
+      "description": "Number of motors (including followers)",
+      "default": 1,
+      "minimum": 1
+    },
+    "followers": {
+      "type": "array",
+      "description": "Follower motor configurations",
+      "items": {
+        "type": "object",
+        "properties": {
+          "canId": {
+            "type": "integer",
+            "description": "CAN ID of the follower motor",
+            "minimum": 0,
+            "maximum": 62
+          },
+          "inverted": {
+            "type": "boolean",
+            "description": "Whether the follower motor is inverted"
+          }
+        },
+        "required": [
+          "canId"
+        ]
+      }
+    }
+  }
+}

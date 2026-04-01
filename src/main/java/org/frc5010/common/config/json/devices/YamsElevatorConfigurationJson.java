@@ -5,33 +5,36 @@ import static edu.wpi.first.units.Units.Meters;
 
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import java.util.Optional;
+import org.frc5010.common.config.ConfigConstants.ControlAlgorithm;
 import org.frc5010.common.config.DeviceConfiguration;
 import org.frc5010.common.config.UnitsParser;
 import org.frc5010.common.config.json.UnitValueJson;
-import org.frc5010.common.motors.GenericMotorController;
-import yams.gearing.GearBox;
-import yams.gearing.MechanismGearing;
+import org.frc5010.common.config.units.DistanceUnit;
+import org.frc5010.common.config.units.MassUnit;
+import org.frc5010.common.config.units.VoltageUnit;
 import yams.mechanisms.config.ElevatorConfig;
 import yams.mechanisms.positional.Elevator;
 import yams.motorcontrollers.SmartMotorController;
 import yams.motorcontrollers.SmartMotorControllerConfig;
-import yams.motorcontrollers.SmartMotorControllerConfig.ControlMode;
-import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 
 public class YamsElevatorConfigurationJson implements DeviceConfiguration {
   public MotorSetupJson motorSetup = new MotorSetupJson();
+  public ControlAlgorithm controlAlgorithm = ControlAlgorithm.SIMPLE;
   public MotorSystemIdJson motorSystemId = new MotorSystemIdJson();
+  public MotorSystemIdJson simSystemId = new MotorSystemIdJson();
   public int sprocketTeeth = 0;
-  public UnitValueJson drumRadius = new UnitValueJson(0, UnitsParser.IN);
-  public UnitValueJson lowerSoftLimit = new UnitValueJson(0, UnitsParser.M);
-  public UnitValueJson upperSoftLimit = new UnitValueJson(0, UnitsParser.M);
-  public UnitValueJson lowerHardLimit = new UnitValueJson(0, UnitsParser.M);
-  public UnitValueJson upperHardLimit = new UnitValueJson(0, UnitsParser.M);
+  public UnitValueJson drumRadius = new UnitValueJson(0, DistanceUnit.INCHES.toString());
+  public UnitValueJson lowerSoftLimit = new UnitValueJson(0, DistanceUnit.METERS.toString());
+  public UnitValueJson upperSoftLimit = new UnitValueJson(0, DistanceUnit.METERS.toString());
+  public UnitValueJson lowerHardLimit = new UnitValueJson(0, DistanceUnit.METERS.toString());
+  public UnitValueJson upperHardLimit = new UnitValueJson(0, DistanceUnit.METERS.toString());
   public double[] gearing;
-  public UnitValueJson startingPosition = new UnitValueJson(0, UnitsParser.M);
-  public UnitValueJson mass = new UnitValueJson(0, UnitsParser.LBS);
-  public UnitValueJson voltageCompensation = new UnitValueJson(12, UnitsParser.VOLTS);
+  public String gearStages = "";
+  public UnitValueJson startingPosition = new UnitValueJson(0, DistanceUnit.METERS.toString());
+  public UnitValueJson mass = new UnitValueJson(0, MassUnit.POUNDS.toString());
+  public UnitValueJson voltageCompensation = new UnitValueJson(12, VoltageUnit.VOLTS.toString());
 
   /**
    * Configure the given GenericSubsystem with an elevator using the given json configuration.
@@ -41,9 +44,6 @@ public class YamsElevatorConfigurationJson implements DeviceConfiguration {
    */
   @Override
   public Elevator configure(SubsystemBase deviceHandler) {
-    GenericMotorController motor =
-        DeviceConfigReader.getMotor(
-            motorSetup.controllerType, motorSetup.motorType, motorSetup.canId);
     SmartMotorControllerConfig motorConfig = new SmartMotorControllerConfig(deviceHandler);
     if (sprocketTeeth > 0) {
       motorConfig.withMechanismCircumference(Meters.of(Inches.of(0.25).in(Meters) * sprocketTeeth));
@@ -54,40 +54,45 @@ public class YamsElevatorConfigurationJson implements DeviceConfiguration {
     }
 
     motorConfig
-        .withClosedLoopController(
-            motorSystemId.feedBack.p,
-            motorSystemId.feedBack.i,
-            motorSystemId.feedBack.d,
-            UnitsParser.parseVelocity(motorSystemId.maxVelocity),
-            UnitsParser.parseAccelleration(motorSystemId.maxAcceleration))
         .withSoftLimit(
             UnitsParser.parseDistance(lowerSoftLimit), UnitsParser.parseDistance(upperSoftLimit))
-        .withGearing(new MechanismGearing(GearBox.fromReductionStages(gearing)))
-        .withIdleMode(MotorMode.valueOf(motorSetup.idleMode))
-        .withTelemetry(motorSetup.name + "Motor", TelemetryVerbosity.valueOf(motorSetup.logLevel))
-        .withStatorCurrentLimit(UnitsParser.parseAmps(motorSetup.currentLimit))
-        .withMotorInverted(motorSetup.inverted)
-        .withClosedLoopRampRate(UnitsParser.parseTime(motorSystemId.closedLoopRamp))
-        .withOpenLoopRampRate(UnitsParser.parseTime(motorSystemId.openLoopRamp))
         .withFeedforward(
             new ElevatorFeedforward(
                 motorSystemId.feedForward.s,
                 motorSystemId.feedForward.g,
                 motorSystemId.feedForward.v,
                 motorSystemId.feedForward.a))
-        .withControlMode(ControlMode.valueOf(motorSystemId.controlMode));
-    MotorSetupJson.setupFollowers(motorConfig, motorSetup);
-    motor.setMotorSimulationType(
-        motor.getMotorConfig().getMotorSimulationType(motorSetup.numberOfMotors));
+        .withSimFeedforward(
+            new ElevatorFeedforward(
+                simSystemId.feedForward.s,
+                simSystemId.feedForward.g,
+                simSystemId.feedForward.v,
+                simSystemId.feedForward.a));
 
-    SmartMotorController smartMotor = motor.getSmartMotorController(motorConfig);
+    YamsConfigCommon.PhysicalParameters physicalParams =
+        new YamsConfigCommon.PhysicalParameters(
+            voltageCompensation, mass, drumRadius, gearing, gearStages);
+
+    Optional<SmartMotorController> smartMotor =
+        YamsConfigCommon.configureSmartMotorController(
+            motorSetup, motorConfig, controlAlgorithm, motorSystemId, simSystemId, physicalParams);
+    if (smartMotor.isEmpty()) {
+      throw new RuntimeException(
+          "Elevator Smart motor configuration issue. ID: "
+              + motorSetup.canId
+              + " Controller: "
+              + motorSetup.controllerType
+              + " Motor: "
+              + motorSetup.motorType);
+    }
     ElevatorConfig m_config =
-        new ElevatorConfig(smartMotor)
+        new ElevatorConfig(smartMotor.get())
             .withStartingHeight(UnitsParser.parseDistance(startingPosition))
             .withHardLimits(
                 UnitsParser.parseDistance(lowerHardLimit),
                 UnitsParser.parseDistance(upperHardLimit))
             .withTelemetry(motorSetup.name, TelemetryVerbosity.valueOf(motorSetup.logLevel))
+            .withMechanismPositionConfig(motorSetup.getMechanismPositionConfig())
             .withMass(UnitsParser.parseMass(mass));
     Elevator elevator = new Elevator(m_config);
     return elevator;

@@ -2,8 +2,26 @@
   "motorSetup": {
     "name": "Shooter",
     "controllerType": "spark",
-    "motorType": "Neo",
-    "canId": 12
+    "motorType": "KrakenX44",
+    "canId": 12,
+    "robotToMotor": {
+      "x": {
+        "val": -5.872,
+        "uom": "in"
+      },
+      "y": {
+        "val": 4.8,
+        "uom": "in"
+      },
+      "z": {
+        "val": 18.72,
+        "uom": "in"
+      },
+      "rotation": {
+        "val": 0.0,
+        "uom": "deg"
+      }
+    }
   },
   "motorSystemId": {
     "feedBack": {
@@ -15,14 +33,18 @@
       "s": 0.0,
       "v": 0.0,
       "a": 0.0
+    }
+  },
+  "simSystemId": {
+    "feedBack": {
+      "p": 4,
+      "i": 0.0,
+      "d": 0.0
     },
-    "maxVelocity": {
-      "val": 180,
-      "uom": "deg/s"
-    },
-    "maxAcceleration": {
-      "val": 90,
-      "uom": "deg/s^2"
+    "feedForward": {
+      "s": 0.0,
+      "v": 0.0,
+      "a": 0.0
     }
   },
   "lowerSoftLimit": {
@@ -41,7 +63,7 @@
     "val": 2,
     "uom": "kg"
   },
-  "diameter": {
+  "radius": {
     "val": 0.05,
     "uom": "m"
   }

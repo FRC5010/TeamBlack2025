@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Voltage Unit Value",
+  "description": "A numeric voltage value with unit of measure",
+  "type": "object",
+  "required": [
+    "val",
+    "uom"
+  ],
+  "properties": {
+    "val": {
+      "type": "number",
+      "description": "The numeric voltage value"
+    },
+    "uom": {
+      "type": "string",
+      "enum": [
+        "v",
+        "volt",
+        "volts",
+        "voltage",
+        "mv",
+        "millivolt",
+        "millivolts",
+        "uv",
+        "microvolt",
+        "microvolts",
+        "kv",
+        "kilovolt",
+        "kilovolts"
+      ],
+      "description": "Voltage unit (volts, millivolts, microvolts, or kilovolts)"
+    }
+  }
+}

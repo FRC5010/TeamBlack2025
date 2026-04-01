@@ -1,0 +1,111 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Velocity Motor Configuration",
+  "description": "Configuration for a velocity-controlled motor with PID and feedforward (matches VelocityMotorConfigurationJson.java)",
+  "type": "object",
+  "required": [
+    "name",
+    "controller",
+    "type",
+    "id"
+  ],
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Name of the motor subsystem"
+    },
+    "controller": {
+      "type": "string",
+      "description": "Type of motor controller",
+      "enum": [
+        "spark",
+        "talonfx",
+        "talonsrx",
+        "sparkmax"
+      ]
+    },
+    "type": {
+      "type": "string",
+      "description": "Type of motor (e.g., Neo, KrakenX60, Falcon500)"
+    },
+    "id": {
+      "type": "integer",
+      "description": "CAN ID of the motor",
+      "minimum": 0,
+      "maximum": 62
+    },
+    "gearing": {
+      "type": "number",
+      "description": "Motor gearing/reduction ratio",
+      "default": 1.0,
+      "minimum": 0
+    },
+    "momentOfInertiaKgMSq": {
+      "type": "number",
+      "description": "Moment of inertia for simulation in kg⋅m²",
+      "default": 1.0,
+      "minimum": 0
+    },
+    "x": {
+      "type": "number",
+      "description": "X position of motor for visualization (meters)",
+      "default": 0
+    },
+    "y": {
+      "type": "number",
+      "description": "Y position of motor for visualization (meters)",
+      "default": 0
+    },
+    "z": {
+      "type": "number",
+      "description": "Z position of motor for visualization (meters)",
+      "default": 0
+    },
+    "kP": {
+      "type": "number",
+      "description": "PID Proportional gain",
+      "default": 0.0
+    },
+    "kI": {
+      "type": "number",
+      "description": "PID Integral gain",
+      "default": 0.0
+    },
+    "kD": {
+      "type": "number",
+      "description": "PID Derivative gain",
+      "default": 0.0
+    },
+    "iZone": {
+      "type": "number",
+      "description": "PID I-Zone threshold",
+      "default": 0.0,
+      "minimum": 0
+    },
+    "kS": {
+      "type": "number",
+      "description": "Feedforward static gain",
+      "default": 0.0
+    },
+    "kV": {
+      "type": "number",
+      "description": "Feedforward velocity gain",
+      "default": 0.0
+    },
+    "kA": {
+      "type": "number",
+      "description": "Feedforward acceleration gain",
+      "default": 0.0
+    },
+    "logLevel": {
+      "type": "string",
+      "description": "Logging level for telemetry",
+      "enum": [
+        "COMPETITION",
+        "TESTING",
+        "DEBUG"
+      ],
+      "default": "COMPETITION"
+    }
+  }
+}

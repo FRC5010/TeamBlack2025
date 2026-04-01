@@ -135,7 +135,7 @@ public abstract class GenericRobot extends GenericMechanism implements GenericDe
         .schedule(
             Commands.run(
                     () -> {
-                      allianceDisplay.setValue(determineAlliance());
+                      determineAlliance();
                       LEDStrip.changeSegmentPattern(
                           ConfigConstants.ALL_LEDS, LEDStrip.getSolidPattern(allianceWpiColor));
                     })
@@ -193,20 +193,43 @@ public abstract class GenericRobot extends GenericMechanism implements GenericDe
     configureButtonBindings(driver.orElse(null), operator.orElse(null));
   }
 
-  /** Setup default commands depending on the robot mode */
+  /**
+   * Use this method to define your button->command mappings. Buttons can be created by
+   * instantiating a {@link GenericHID} or one of its subclasses ({@link
+   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
+   * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
+   */
+  public void configureAltButtonBindings() {
+    configureAltButtonBindings(driver.orElse(null), operator.orElse(null));
+  }
+
+  /**
+   * Sets up the default commands for the robot. If the robot is in teleoperated or autonomous mode,
+   * it will call the setupDefaultCommands method. If the robot is in test mode, it will call the
+   * setupTestDefaultCommands method.
+   */
   public void setupDefaultCommands() {
     if (DriverStation.isTeleop() || DriverStation.isAutonomous()) {
       setupDefaultCommands(driver.orElse(null), operator.orElse(null));
     } else if (DriverStation.isTest()) {
-      setupTestDefaultCommmands(driver.orElse(null), operator.orElse(null));
+      setupAltDefaultCommmands(driver.orElse(null), operator.orElse(null));
     }
   }
 
-  /** Build the auto commands and command chooser */
+  public void setupAltDefaultCommands() {
+    if (DriverStation.isTest()) {
+      setupAltDefaultCommmands(driver.orElse(null), operator.orElse(null));
+    }
+  }
+
+  /**
+   * Builds the auto commands and adds them to the auto selector
+   *
+   * <p>This should be called during robot initialization
+   */
   public void buildAutoCommands() {
     initAutoCommands();
 
-    // TODO: Figure out Pathplanner Warmup Command
     if (AutoBuilder.isConfigured()) {
       selectableCommand =
           new LoggedDashboardChooser<>("Auto Modes", AutoBuilder.buildAutoChooser());
@@ -243,7 +266,7 @@ public abstract class GenericRobot extends GenericMechanism implements GenericDe
 
   /** Executes periodic behavior when the robot is disabled. */
   @Override
-  public void disabledBehavior() {
+  public void disabledPeriodic() {
     selectableCommand.periodic();
   }
 
@@ -266,6 +289,7 @@ public abstract class GenericRobot extends GenericMechanism implements GenericDe
   public String determineAlliance() {
     Optional<Alliance> color = DriverStation.getAlliance();
     alliance = color.orElse(Alliance.Blue);
+    allianceDisplay.setValue(alliance.name());
     allianceColor5010 =
         color.map(it -> it == Alliance.Red ? Color.RED : Color.BLUE).orElse(Color.ORANGE);
     allianceWpiColor =

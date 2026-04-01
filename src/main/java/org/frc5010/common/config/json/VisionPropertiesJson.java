@@ -14,8 +14,8 @@ import java.util.HashMap;
 import java.util.Map;
 import org.frc5010.common.arch.GenericRobot;
 import org.frc5010.common.vision.AprilTags;
-import org.ironmaple.simulation.SimulatedArena;
-import org.ironmaple.simulation.gamepieces.GamePieceOnFieldSimulation;
+import swervelib.simulation.ironmaple.simulation.SimulatedArena;
+import swervelib.simulation.ironmaple.simulation.gamepieces.GamePieceOnFieldSimulation;
 
 /** JSON class with an array of cameras to configure */
 public class VisionPropertiesJson {
@@ -25,6 +25,7 @@ public class VisionPropertiesJson {
   public String aprilTagLayout = "default";
   public String simulatedField = "default";
   public Map<String, String[]> gamePieces = new HashMap<>();
+  public boolean viewGamePieces = true;
 
   /**
    * Creates cameras for a given robot using the provided map of camera configurations.
@@ -103,6 +104,7 @@ public class VisionPropertiesJson {
       assert cameraFile.exists();
       CameraConfigurationJson camera =
           new ObjectMapper().readValue(cameraFile, CameraConfigurationJson.class);
+      camera.setViewGamePieces(viewGamePieces);
       camerasMap.put(camera.name, camera);
     }
     return camerasMap;

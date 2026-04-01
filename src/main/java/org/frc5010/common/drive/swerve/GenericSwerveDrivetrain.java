@@ -15,7 +15,6 @@ import static edu.wpi.first.units.Units.Volts;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.config.PIDConstants;
-import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.util.DriveFeedforwards;
@@ -37,12 +36,12 @@ import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicReference;
@@ -56,12 +55,14 @@ import org.frc5010.common.commands.JoystickToSwerve;
 import org.frc5010.common.constants.GenericDrivetrainConstants;
 import org.frc5010.common.constants.RobotConstantsDef;
 import org.frc5010.common.drive.GenericDrivetrain;
+import org.frc5010.common.drive.swerve.akit.AkitSwerveDrive;
 import org.frc5010.common.drive.swerve_utils.PathConstraints5010;
 import org.frc5010.common.drive.swerve_utils.SwerveSetpointGenerator5010;
 import org.frc5010.common.sensors.Controller;
 import org.json.simple.parser.ParseException;
 import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
 import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /** Add your docs here. */
 public class GenericSwerveDrivetrain extends GenericDrivetrain {
@@ -77,8 +78,10 @@ public class GenericSwerveDrivetrain extends GenericDrivetrain {
     this.swerveDrive = swerveDriveFunctions;
     this.swerveConstants = swerveConstants;
 
+    ppRobotConfigSupplier = swerveDrive.getPPRobotConfigSupplier();
     setDrivetrainPoseEstimator(swerveDrive.initializePoseEstimator());
     initializeSimulation(swerveConstants);
+    driveTrainSimulationSupplier = swerveDrive.getDriveTrainSimulationSupplier();
   }
 
   @Override
@@ -114,7 +117,7 @@ public class GenericSwerveDrivetrain extends GenericDrivetrain {
             new PIDConstants(4, 0, 0), // Translation PID constants
             new PIDConstants(1.0, 0, 0) // Rotation PID constants
             ),
-        config, // The robot configuration
+        ppRobotConfigSupplier.get(), // The robot configuration
         () -> {
           // Boolean supplier that controls when the path will be mirrored for the red
           // alliance
@@ -129,7 +132,12 @@ public class GenericSwerveDrivetrain extends GenericDrivetrain {
 
     // Preload PathPlanner Path finding
     // IF USING CUSTOM PATHFINDER ADD BEFORE THIS LINE
-    PathfindingCommand.warmupCommand().schedule();
+    CommandScheduler.getInstance().schedule(PathfindingCommand.warmupCommand());
+  }
+
+  @Override
+  public void addAutoCommands(LoggedDashboardChooser<Command> selectableCommand) {
+    swerveDrive.addAutoCommands(selectableCommand, this);
   }
 
   @Override
@@ -143,10 +151,10 @@ public class GenericSwerveDrivetrain extends GenericDrivetrain {
       motorDials.get(moduleKey).setAngle(turningDeg + 90);
       motorDials
           .get(moduleKey)
-          .setLength(0.0001 * modules[moduleKey].steerVelocityDegreesPerSecond() + 0.002);
+          .setLength(0.1 * modules[moduleKey].steerVelocityDegreesPerSecond() + 0.02);
       expectDials
           .get(moduleKey)
-          .setLength(0.0001 * modules[moduleKey].driveVelocityMetersPerSecond() + 0.002);
+          .setLength(0.1 * modules[moduleKey].driveVelocityMetersPerSecond() + 0.02);
       expectDials.get(moduleKey).setAngle(modules[moduleKey].expectedSteerDegrees() + 90);
     }
   }
@@ -157,6 +165,11 @@ public class GenericSwerveDrivetrain extends GenericDrivetrain {
 
   public GenericDrivetrainConstants getSwerveConstants() {
     return swerveConstants;
+  }
+
+  @Override
+  protected ChassisSpeeds getChassisSpeeds() {
+    return swerveDrive.getRobotVelocity();
   }
 
   @Override
@@ -218,7 +231,7 @@ public class GenericSwerveDrivetrain extends GenericDrivetrain {
               .get(i)
               .append(
                   new LoggedMechanismLigament2d(
-                      i + "-Abs", 0.10, 90, 6, new Color8Bit(Color.kBlue))));
+                      i + "-Abs", 0.50, 90, 6, new Color8Bit(Color.kBlue))));
       expectDials.put(
           i,
           visualRoots
@@ -254,6 +267,20 @@ public class GenericSwerveDrivetrain extends GenericDrivetrain {
    */
   public ChassisSpeeds getFieldVelocity() {
     return swerveDrive.getFieldVelocity();
+  }
+
+  /**
+   * Gets the current field-relative chassis acceleration derived from drive motor acceleration
+   * signals. Returns zero if the underlying drive implementation does not support acceleration
+   * signals.
+   *
+   * @return A ChassisSpeeds object representing field-relative acceleration (m/s² components)
+   */
+  public ChassisSpeeds getFieldAcceleration() {
+    if (swerveDrive instanceof AkitSwerveDrive) {
+      return ((AkitSwerveDrive) swerveDrive).getFieldAcceleration();
+    }
+    return new ChassisSpeeds();
   }
 
   /**
@@ -350,7 +377,7 @@ public class GenericSwerveDrivetrain extends GenericDrivetrain {
                     new PIDConstants(2.0, 0, 0.0), // Translation PID constants
                     new PIDConstants(1.0, 0, 0.0) // Rotation PID constants
                     ),
-                config,
+                ppRobotConfigSupplier.get(),
                 this)
             .beforeStarting(
                 () -> {
@@ -441,7 +468,7 @@ public class GenericSwerveDrivetrain extends GenericDrivetrain {
                     new PIDConstants(4.0, 0, 0.0), // Translation PID constants
                     new PIDConstants(4.0, 0, 0.0) // Rotation PID constants
                     ),
-                config,
+                ppRobotConfigSupplier.get(),
                 this)
             .beforeStarting(
                 () -> {
@@ -506,7 +533,7 @@ public class GenericSwerveDrivetrain extends GenericDrivetrain {
                     new PIDConstants(4.0, 0, 0.0), // Translation PID constants
                     new PIDConstants(4.0, 0, 0.0) // Rotation PID constants
                     ),
-                config,
+                ppRobotConfigSupplier.get(),
                 this)
             .beforeStarting(
                 () -> {
@@ -611,7 +638,7 @@ public class GenericSwerveDrivetrain extends GenericDrivetrain {
       throws IOException, ParseException {
     SwerveSetpointGenerator5010 setpointGenerator =
         new SwerveSetpointGenerator5010(
-            RobotConfig.fromGUISettings(),
+            ppRobotConfigSupplier.get(),
             swerveDrive.getMaximumModuleAngleVelocity().in(RadiansPerSecond));
 
     AtomicReference<SwerveSetpoint> prevSetpoint =
@@ -713,9 +740,9 @@ public class GenericSwerveDrivetrain extends GenericDrivetrain {
   }
 
   public Command createDefaultCommand(Controller driverXbox) {
-    DoubleSupplier leftX = () -> driverXbox.getAxisValue(XboxController.Axis.kLeftX.value);
-    DoubleSupplier leftY = () -> driverXbox.getAxisValue(XboxController.Axis.kLeftY.value);
-    DoubleSupplier rightX = () -> driverXbox.getAxisValue(XboxController.Axis.kRightX.value);
+    DoubleSupplier leftX = () -> driverXbox.getLeftXAxis();
+    DoubleSupplier leftY = () -> driverXbox.getLeftYAxis();
+    DoubleSupplier rightX = () -> driverXbox.getRightXAxis();
     BooleanSupplier isFieldOriented = () -> isFieldOrientedDrive.getValue();
 
     /**
@@ -736,12 +763,12 @@ public class GenericSwerveDrivetrain extends GenericDrivetrain {
   }
 
   public Command createDefaultTestCommand(Controller driverXbox) {
-    DoubleSupplier leftX = () -> driverXbox.getAxisValue(XboxController.Axis.kLeftX.value);
-    DoubleSupplier leftY = () -> driverXbox.getAxisValue(XboxController.Axis.kLeftY.value);
-    DoubleSupplier rightX = () -> driverXbox.getAxisValue(XboxController.Axis.kRightX.value);
+    DoubleSupplier leftX = () -> driverXbox.getLeftXAxis();
+    DoubleSupplier leftY = () -> driverXbox.getLeftYAxis();
+    DoubleSupplier rightX = () -> driverXbox.getRightXAxis();
     BooleanSupplier isFieldOriented = () -> isFieldOrientedDrive.getValue();
 
-    // driverXbox.createAButton().whileTrue(sysIdDriveMotorCommand());
+    driverXbox.createAButton().whileTrue(sysIdDriveMotorCommand());
     // driverXbox.createBButton().whileTrue(sysIdAngleMotorCommand());
     // return Commands.run(() -> SwerveDriveTest.centerModules(swerveDrive), this);
     return new JoystickToSwerve(

@@ -31,8 +31,8 @@ public class DisplayLength extends DisplayableValue {
   /**
    * Add a length to the dashboard
    *
-   * @param unit - length unit
-   * @param unitLength - length in that unit
+   * @param length - length
+   * @param unit - unit
    * @param name - name of the variable
    * @param table - name of the table
    */
@@ -44,11 +44,11 @@ public class DisplayLength extends DisplayableValue {
   /**
    * Add a length to the dashboard
    *
-   * @param unit - length unit
-   * @param unitLength - length in that unit
+   * @param length - length unit in the unit
+   * @param unit - unit
    * @param name - name of the variable
    * @param table - name of the table
-   * @param debug - debug mode
+   * @param logLevel - the log level
    */
   public DisplayLength(
       final double length,
@@ -70,7 +70,7 @@ public class DisplayLength extends DisplayableValue {
   /**
    * Add a length to the dashboard
    *
-   * @param unit - length with units
+   * @param length - length with units
    * @param name - name of the variable
    * @param table - name of the table
    */
@@ -81,9 +81,10 @@ public class DisplayLength extends DisplayableValue {
   /**
    * Add a length to the dashboard
    *
-   * @param unit - length with units
+   * @param length - length with units
    * @param name - name of the variable
    * @param table - name of the table
+   * @param logLevel - the log level
    */
   public DisplayLength(
       final Distance length, final String name, final String table, LogLevel logLevel) {
@@ -117,22 +118,23 @@ public class DisplayLength extends DisplayableValue {
   }
 
   // Setters
+
   /**
-   * Sets the length
+   * Sets the length using a value and a unit, and publishes the value
    *
-   * @param unit - length unit
-   * @param unitLength - length in that unit
+   * @param length the value of the length to set
+   * @param unit the unit of the length to set
    */
   public void setLength(final double length, final DistanceUnit unit) {
     setLength(length, unit, true);
   }
 
   /**
-   * Sets the length
+   * Sets the length using a value and a unit, and optionally publishes the value
    *
-   * @param unit - length unit
-   * @param unitLength - length in that unit
-   * @param publish - publish the value
+   * @param length the value of the length to set
+   * @param unit the unit of the length to set
+   * @param publish whether or not to publish the value
    */
   public void setLength(final double length, final DistanceUnit unit, final boolean publish) {
     setLength(unit.of(length), publish);

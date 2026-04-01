@@ -1,16 +1,9 @@
 {
   "cameras": [
-    "intake.json",
-    "localization.json",
-    "shooter.json",
+    "left.json",
+    "right.json",
     "quest.json"
   ],
-  "aprilTagLayout": "/org/frc5010/lobbinloco/LobbinLoco.json",
-  "simulatedField": "org.frc5010.lobbinloco.LobbinLoco",
-  "gamePieces": {
-    "FRC5010Ball": [
-      "org.frc5010.lobbinloco.FRC5010BallOnField",
-      "org.frc5010.lobbinloco.FRC5010BallOnTheFly"
-    ]
-  }
+  "viewGamePieces": false,
+  "aprilTagLayout": "2026-rebuilt-andymark.json"
 }

@@ -11,7 +11,7 @@ import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
 
-import com.thethriftybot.ThriftyNova;
+import com.thethriftybot.devices.ThriftyNova;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj2.command.Command;
 import java.util.function.Supplier;

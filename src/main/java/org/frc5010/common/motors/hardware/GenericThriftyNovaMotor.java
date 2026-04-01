@@ -6,8 +6,8 @@ package org.frc5010.common.motors.hardware;
 
 import static edu.wpi.first.units.Units.Amps;
 
-import com.thethriftybot.ThriftyNova;
-import com.thethriftybot.ThriftyNova.CurrentType;
+import com.thethriftybot.devices.ThriftyNova;
+import com.thethriftybot.devices.ThriftyNova.CurrentType;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -45,6 +45,10 @@ public class GenericThriftyNovaMotor implements GenericMotorController {
   protected GenericPIDController controller;
   /** The configuration */
   protected Motor config;
+
+  public GenericThriftyNovaMotor(int canId) {
+    motor = new ThriftyNova(canId);
+  }
 
   private GenericThriftyNovaMotor(int canId, Motor config, Current currentLimit) {
     this(canId, config);

@@ -28,12 +28,16 @@ import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import lombok.Getter;
+import lombok.Setter;
 import org.frc5010.common.arch.GenericRobot;
 import org.frc5010.common.arch.GenericRobot.LogLevel;
 import org.frc5010.common.arch.GenericSubsystem;
@@ -43,24 +47,36 @@ import org.frc5010.common.constants.GenericDrivetrainConstants;
 import org.frc5010.common.drive.pose.DrivePoseEstimator;
 import org.frc5010.common.sensors.Controller;
 import org.frc5010.common.telemetry.DisplayBoolean;
-import org.ironmaple.simulation.SimulatedArena;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
 import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
 import org.littletonrobotics.junction.mechanism.LoggedMechanismRoot2d;
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+import swervelib.simulation.ironmaple.simulation.SimulatedArena;
+import swervelib.simulation.ironmaple.simulation.drivesims.AbstractDriveTrainSimulation;
+import swervelib.simulation.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 
 /** Generic class for defining drivetrain behavior */
 public abstract class GenericDrivetrain extends GenericSubsystem {
   /** The pose estimator */
   protected DrivePoseEstimator poseEstimator;
+  /** The robot velocity */
+  @Getter @Setter private ChassisSpeeds robotVelocity = new ChassisSpeeds();
+
+  /** Returns the measured chassis speeds of the robot. */
+  protected abstract ChassisSpeeds getChassisSpeeds();
   /** Whether or not the robot is field oriented */
   protected DisplayBoolean isFieldOrientedDrive;
   /**
    * Load the RobotConfig from the GUI settings. You should probably store this in your Constants
    * file
    */
-  protected RobotConfig config;
+  protected RobotConfig ppRobotConfig;
 
+  protected Supplier<RobotConfig> ppRobotConfigSupplier = () -> ppRobotConfig;
+
+  protected static Supplier<Optional<AbstractDriveTrainSimulation>> driveTrainSimulationSupplier =
+      () -> null;
   protected DisplayBoolean hasIssues;
   protected DoubleSupplier angleSpeedSupplier = null;
   public Supplier<Double> maxForwardAcceleration,
@@ -90,10 +106,10 @@ public abstract class GenericDrivetrain extends GenericSubsystem {
   public GenericDrivetrain(LoggedMechanism2d mechVisual) {
     super(mechVisual);
     try {
-      config = RobotConfig.fromGUISettings();
+      ppRobotConfig = RobotConfig.fromGUISettings();
     } catch (Exception e) {
       // A default config in case the GUI settings can't be loaded
-      config =
+      ppRobotConfig =
           new RobotConfig(
               Kilogram.of(68).magnitude(),
               SingleJointedArmSim.estimateMOI(0.5, Kilogram.of(68).magnitude()),
@@ -146,6 +162,19 @@ public abstract class GenericDrivetrain extends GenericSubsystem {
     return poseEstimator.getGyroRotation2d();
   }
 
+  public ChassisSpeeds getFieldVelocity() {
+    return ChassisSpeeds.fromRobotRelativeSpeeds(robotVelocity, getHeading());
+  }
+
+  /**
+   * Returns the field-relative chassis acceleration. The base implementation returns zero; swerve
+   * drivetrains with motor acceleration signals override this.
+   *
+   * @return A ChassisSpeeds object with acceleration components in m/s²
+   */
+  public ChassisSpeeds getFieldAcceleration() {
+    return new ChassisSpeeds();
+  }
   /**
    * Drive with ChassisSpeeds
    *
@@ -164,6 +193,7 @@ public abstract class GenericDrivetrain extends GenericSubsystem {
   /** Updates the pose estimator in the periodic function. */
   @Override
   public void periodic() {
+    setRobotVelocity(getChassisSpeeds());
     hasIssues.setValue(hasIssues());
     if (RobotBase.isSimulation() || useGlass) {
       updateGlassWidget();
@@ -256,6 +286,7 @@ public abstract class GenericDrivetrain extends GenericSubsystem {
     int count = 0;
     List<Pose3d> gpas =
         SimulatedArena.getInstance().getGamePiecesByType(Constants.Simulation.gamePieceA).stream()
+            .sorted(Comparator.comparingDouble(it -> it.getPose3d().getX() + it.getPose3d().getY()))
             .map(it -> it.getPose3d())
             .collect(Collectors.toList());
     for (Pose3d gpa : gpas) {
@@ -292,6 +323,8 @@ public abstract class GenericDrivetrain extends GenericSubsystem {
       int count = 0;
       for (Pose3d gpa :
           SimulatedArena.getInstance().getGamePiecesByType(Constants.Simulation.gamePieceA).stream()
+              .sorted(
+                  Comparator.comparingDouble(it -> it.getPose3d().getX() + it.getPose3d().getY()))
               .map(it -> it.getPose3d())
               .collect(Collectors.toList())) {
         getField2d()
@@ -307,6 +340,9 @@ public abstract class GenericDrivetrain extends GenericSubsystem {
           SimulatedArena.getInstance().getGamePiecesByType(Constants.Simulation.gamePieceB).stream()
               .map(it -> it.getPose3d())
               .collect(Collectors.toList())) {
+        getField2d()
+            .getObject("CARPET" + count)
+            .setPose(new Pose2d(gpb.getX(), gpb.getY(), new Rotation2d()));
         getField2d()
             .getObject("GPB" + count)
             .setPose(new Pose2d(gpb.getX(), gpb.getY(), gpb.getRotation().toRotation2d()));
@@ -431,4 +467,17 @@ public abstract class GenericDrivetrain extends GenericSubsystem {
     }
     return false;
   }
+
+  /**
+   * Gets the maple-sim drivetrain simulation instance This is used to add intake simulation /
+   * launch game pieces from the robot
+   *
+   * @return an optional maple-sim {@link SwerveDriveSimulation} object, or {@link Optional#empty()}
+   *     when calling from a real robot
+   */
+  public static Optional<AbstractDriveTrainSimulation> getMapleSimDrive() {
+    return driveTrainSimulationSupplier.get();
+  }
+
+  public void addAutoCommands(LoggedDashboardChooser<Command> selectableCommand) {}
 }

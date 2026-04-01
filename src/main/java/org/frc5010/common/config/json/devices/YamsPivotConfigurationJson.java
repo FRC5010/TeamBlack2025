@@ -6,33 +6,39 @@ package org.frc5010.common.config.json.devices;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import java.util.Optional;
+import org.frc5010.common.config.ConfigConstants.ControlAlgorithm;
 import org.frc5010.common.config.DeviceConfiguration;
 import org.frc5010.common.config.UnitsParser;
 import org.frc5010.common.config.json.UnitValueJson;
-import org.frc5010.common.motors.GenericMotorController;
-import yams.gearing.GearBox;
-import yams.gearing.MechanismGearing;
+import org.frc5010.common.config.units.AngleUnit;
+import org.frc5010.common.config.units.DistanceUnit;
+import org.frc5010.common.config.units.MassUnit;
+import org.frc5010.common.config.units.VoltageUnit;
 import yams.mechanisms.config.PivotConfig;
 import yams.mechanisms.positional.Pivot;
 import yams.motorcontrollers.SmartMotorController;
 import yams.motorcontrollers.SmartMotorControllerConfig;
 import yams.motorcontrollers.SmartMotorControllerConfig.ControlMode;
-import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 
 /** Configuration for a YamsTurret */
 public class YamsPivotConfigurationJson implements DeviceConfiguration {
   public MotorSetupJson motorSetup = new MotorSetupJson();
+  public ControlAlgorithm controlAlgorithm = ControlAlgorithm.SIMPLE;
   public MotorSystemIdJson motorSystemId = new MotorSystemIdJson();
-  public UnitValueJson lowerHardLimit = new UnitValueJson(0, UnitsParser.DEG);
-  public UnitValueJson upperHardLimit = new UnitValueJson(0, UnitsParser.DEG);
-  public UnitValueJson startingAngle = new UnitValueJson(0, UnitsParser.DEG);
-  public UnitValueJson lowerSoftLimit = new UnitValueJson(0, UnitsParser.DEG);
-  public UnitValueJson upperSoftLimit = new UnitValueJson(0, UnitsParser.DEG);
+  public MotorSystemIdJson simSystemId = new MotorSystemIdJson();
+  public UnitValueJson lowerHardLimit = new UnitValueJson(0, AngleUnit.DEGREES.toString());
+  public UnitValueJson upperHardLimit = new UnitValueJson(0, AngleUnit.DEGREES.toString());
+  public UnitValueJson startingAngle = new UnitValueJson(0, AngleUnit.DEGREES.toString());
+  public UnitValueJson lowerSoftLimit = new UnitValueJson(0, AngleUnit.DEGREES.toString());
+  public UnitValueJson upperSoftLimit = new UnitValueJson(0, AngleUnit.DEGREES.toString());
   public double[] gearing;
-  public UnitValueJson voltageCompensation = new UnitValueJson(12, UnitsParser.VOLTS);
-  public UnitValueJson startingPosition = new UnitValueJson(0, UnitsParser.DEG);
-  public double moi;
+  public String gearStages = "";
+  public UnitValueJson voltageCompensation = new UnitValueJson(12, VoltageUnit.VOLTS.toString());
+  public UnitValueJson radius = new UnitValueJson(1, DistanceUnit.INCHES.toString());
+  public UnitValueJson mass = new UnitValueJson(1, MassUnit.POUNDS.toString());
+  public UnitValueJson startingPosition = new UnitValueJson(0, DistanceUnit.METERS.toString());
 
   /**
    * Configure the given GenericSubsystem with a pivot using the given json configuration.
@@ -42,47 +48,48 @@ public class YamsPivotConfigurationJson implements DeviceConfiguration {
    */
   @Override
   public Pivot configure(SubsystemBase deviceHandler) {
-    GenericMotorController motor =
-        DeviceConfigReader.getMotor(
-            motorSetup.controllerType, motorSetup.motorType, motorSetup.canId);
-
     SmartMotorControllerConfig motorConfig =
         new SmartMotorControllerConfig(deviceHandler)
-            .withClosedLoopController(
-                motorSystemId.feedBack.p,
-                motorSystemId.feedBack.i,
-                motorSystemId.feedBack.d,
-                UnitsParser.parseAngularVelocity(motorSystemId.maxVelocity),
-                UnitsParser.parseAngularAcceleration(motorSystemId.maxAcceleration))
             .withSoftLimit(
                 UnitsParser.parseAngle(lowerSoftLimit), UnitsParser.parseAngle(upperSoftLimit))
-            .withGearing(new MechanismGearing(GearBox.fromReductionStages(gearing)))
-            .withIdleMode(MotorMode.valueOf(motorSetup.idleMode))
-            .withTelemetry(
-                motorSetup.name + "Motor", TelemetryVerbosity.valueOf(motorSetup.logLevel))
-            .withStatorCurrentLimit(UnitsParser.parseAmps(motorSetup.currentLimit))
-            .withMotorInverted(motorSetup.inverted)
-            .withClosedLoopRampRate(UnitsParser.parseTime(motorSystemId.closedLoopRamp))
-            .withOpenLoopRampRate(UnitsParser.parseTime(motorSystemId.openLoopRamp))
             .withFeedforward(
                 new ArmFeedforward(
                     motorSystemId.feedForward.s,
-                    motorSystemId.feedForward.g,
+                    0,
                     motorSystemId.feedForward.v,
                     motorSystemId.feedForward.a))
+            .withSimFeedforward(
+                new ArmFeedforward(
+                    simSystemId.feedForward.s,
+                    0,
+                    simSystemId.feedForward.v,
+                    simSystemId.feedForward.a))
             .withControlMode(ControlMode.valueOf(motorSystemId.controlMode));
-    MotorSetupJson.setupFollowers(motorConfig, motorSetup);
-    motor.setMotorSimulationType(
-        motor.getMotorConfig().getMotorSimulationType(motorSetup.numberOfMotors));
 
-    SmartMotorController smartMotor = motor.getSmartMotorController(motorConfig);
+    YamsConfigCommon.PhysicalParameters physicalParams =
+        new YamsConfigCommon.PhysicalParameters(
+            voltageCompensation, mass, radius, gearing, gearStages);
+
+    Optional<SmartMotorController> smartMotor =
+        YamsConfigCommon.configureSmartMotorController(
+            motorSetup, motorConfig, controlAlgorithm, motorSystemId, simSystemId, physicalParams);
+    if (smartMotor.isEmpty()) {
+      throw new RuntimeException(
+          "Smart motor configuration issue. ID: "
+              + motorSetup.canId
+              + " Controller: "
+              + motorSetup.controllerType
+              + " Motor: "
+              + motorSetup.motorType);
+    }
     PivotConfig pivotConfig =
-        new PivotConfig(smartMotor)
+        new PivotConfig(smartMotor.get())
             .withHardLimit(
                 UnitsParser.parseAngle(lowerHardLimit), UnitsParser.parseAngle(upperHardLimit))
             .withTelemetry(motorSetup.name, TelemetryVerbosity.valueOf(motorSetup.logLevel))
-            .withStartingPosition(UnitsParser.parseAngle(startingPosition))
-            .withMOI(moi);
+            .withStartingPosition(UnitsParser.parseAngle(startingAngle))
+            .withMechanismPositionConfig(motorSetup.getMechanismPositionConfig())
+            .withMOI(UnitsParser.parseDistance(radius), UnitsParser.parseMass(mass));
     Pivot pivot = new Pivot(pivotConfig);
     return pivot;
   }

@@ -66,5 +66,6 @@ public class SubsystemParser {
     genericSubsystem.setDisplay(subsystemJson.display);
     genericSubsystem.setLoggingLevel(LogLevel.valueOf(subsystemJson.logLevel));
     subsystemJson.configureSubsystem(genericSubsystem, directory);
+    robot.addSubsystem(genericSubsystem.getClass().getSimpleName(), genericSubsystem);
   }
 }

@@ -83,7 +83,7 @@ public class DisplayAngle extends DisplayableValue {
    * @param angle - angle with units
    * @param name - name of the angle
    * @param table - name of the table
-   * @param debug - whether or not to debug
+   * @param logLevel - log level
    */
   public DisplayAngle(final Angle angle, final String name, final String table, LogLevel logLevel) {
     super(String.format("%s (%s)", name, angle.unit().symbol()), table, logLevel);

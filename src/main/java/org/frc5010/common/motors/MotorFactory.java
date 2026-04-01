@@ -55,17 +55,33 @@ public class MotorFactory {
 
   public static GenericMotorController Spark(int canId, Motor config) {
     switch (config) {
+      case KrakenX44:
       case KrakenX60:
-        throw new IllegalArgumentException("Sparks can not use KrakenX60 config");
+      case NeoVortex:
+        throw new IllegalArgumentException("Sparks can not use " + config + " config");
       default:
     }
-    return new GenericRevBrushlessMotor(canId, config);
+    return new GenericRevBrushlessMotor(canId, config, true);
+  }
+
+  public static GenericMotorController SparkFlex(int canId, Motor config) {
+    switch (config) {
+      case KrakenX44:
+      case KrakenX60:
+      case Neo550:
+      case Neo:
+        throw new IllegalArgumentException("Sparks can not use " + config + " config");
+      default:
+    }
+    return new GenericRevBrushlessMotor(canId, config, false);
   }
 
   public static GenericMotorController Thrifty(int canId, Motor config) {
     switch (config) {
+      case KrakenX44:
       case KrakenX60:
-        throw new IllegalArgumentException("Thrifty Novas can not use KrakenX60 config");
+      case NeoVortex:
+        throw new IllegalArgumentException("Thrifty can not use " + config + " config");
       default:
     }
     return new GenericThriftyNovaMotor(canId, config);
@@ -74,6 +90,10 @@ public class MotorFactory {
   public static GenericMotorController TalonFX(int canId, Motor config) {
     switch (config) {
       case KrakenX60:
+        return new GenericTalonFXMotor(canId, config);
+      case KrakenX44:
+        return new GenericTalonFXMotor(canId, config);
+      case KrakenX60Foc:
         return new GenericTalonFXMotor(canId, config);
       default:
         throw new IllegalArgumentException("TalonFX can not use " + config + " config");

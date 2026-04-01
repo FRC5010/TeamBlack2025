@@ -22,17 +22,33 @@ public class RobotContainer implements WpiHelperInterface {
     robot = robotsParser.getRobot();
 
     initAutoCommands();
-    configureButtonBindings();
     WpiNetworkTableValuesHelper.loadRegisteredToNetworkTables();
   }
 
-  private void configureButtonBindings() {
+  /**
+   * Configures the button bindings for the robot. This should be called from the robot periodic
+   * methods (i.e. robotPeriodic) to update the button bindings.
+   */
+  public void configureButtonBindings() {
     robot.configureButtonBindings();
+  }
+
+  public void disabledInit() {
+    robot.disabledInit();
+  }
+
+  public void configureAltButtonBindings() {
+    robot.configureAltButtonBindings();
   }
 
   // Just sets up defalt commands (setUpDeftCom)
   public void setupDefaults() {
+    robot.determineAlliance();
     robot.setupDefaultCommands();
+  }
+
+  public void setupAltDefaultCommands() {
+    robot.setupAltDefaultCommands();
   }
 
   /**
@@ -48,7 +64,7 @@ public class RobotContainer implements WpiHelperInterface {
     robot.buildAutoCommands();
   }
 
-  public void disabledBehavior() {
-    robot.disabledBehavior();
+  public void disabledPeriodic() {
+    robot.disabledPeriodic();
   }
 }

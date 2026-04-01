@@ -17,36 +17,75 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/** Add your docs here. */
+/**
+ * AprilTag field layout and utilities for vision-based pose estimation.
+ *
+ * <p>This class provides access to AprilTag field layouts (both standard official layouts and
+ * custom layouts) used for vision-based localization on FRC robots. It maintains the mapping
+ * between AprilTag IDs and their poses on the field, which is essential for accurate pose
+ * estimation using vision.
+ *
+ * <p>The class supports:
+ *
+ * <ul>
+ *   <li>Official FIRST game field layouts
+ *   <li>Custom practice field layouts
+ *   <li>Reverse lookup from poses to AprilTag IDs
+ * </ul>
+ *
+ * <p>Usage:
+ *
+ * <pre>
+ *   AprilTagFieldLayout layout = AprilTags.aprilTagFieldLayout;
+ *   Optional&lt;Pose3d&gt; tagPose = layout.getTagPose(5);
+ * </pre>
+ *
+ * @see AprilTagFieldLayout
+ * @see AprilTag
+ */
 public class AprilTags {
-  /** The default field layout */
+  /** The official AprilTag field layout for the current FIRST game */
   public static AprilTagFieldLayout aprilTagFieldLayout;
-  /** The default room layout */
+  /** Alternative AprilTag layout for practice/lab fields */
   public static AprilTagFieldLayout aprilTagRoomLayout;
-  /** A map of poses to April Tag IDs for reverse lookup */
+  /** Reverse lookup map: given a pose, find the corresponding AprilTag ID */
   public static Map<Pose2d, Integer> poseToID = new HashMap<>();
 
-  /** An set of enum constants that define the April Tag positions for a custom field layout. */
+  /**
+   * Enumeration of custom AprilTag positions for FRC5010 practice field.
+   *
+   * <p>This enum defines the ID, position, and orientation of AprilTags on a custom practice field
+   * layout. Each constant represents one AprilTag with its coordinates (x, y, z in meters) and
+   * rotation angles.
+   *
+   * <p>The coordinate system is:
+   *
+   * <ul>
+   *   <li>X-axis: forward direction along the field length
+   *   <li>Y-axis: left/right across the field width
+   *   <li>Z-axis: up from the floor
+   * </ul>
+   */
   public static enum AprilTag5010 {
-    /** ID 0 */
+    /** AprilTag ID 0 at custom position */
     ID0(0, 0, 0, 0, 0),
-    /** ID 1 */
+    /** AprilTag ID 1 at custom position */
     ID1(0, 0, 0, 0, 0),
-    /** ID 2 */
+    /** AprilTag ID 2 at custom position */
     ID2(0, 0, 0, 0, 0),
-    /** ID 3 */
+    /** AprilTag ID 3 at custom position */
     ID3(0, 0, 0, 0, 0),
-    /** ID 4 */
+    /** AprilTag ID 4 at custom position */
     ID4(0, 0, 0, 0, 0),
-    /** ID 5 */
+    /** AprilTag ID 5 at custom position */
     ID5(0, 0, 0, 0, 0),
-    /** ID 6 */
+    /** AprilTag ID 6 at custom position */
     ID6(0, 0, 0, 0, 0),
-    /** ID 7 */
+    /** AprilTag ID 7 at custom position */
     ID7(0, 0, 0, 0, 0),
-    /** ID 8 */
+    /** AprilTag ID 8 at custom position */
     ID8(0, 0, 0, 0, 0),
-    /** ID 9 */
+    /** AprilTag ID 9 at custom position */
     ID9(0, 0, 0, 0, 0),
     /** ID 10 */
     ID10(0, 0, 0, 0, 0),
