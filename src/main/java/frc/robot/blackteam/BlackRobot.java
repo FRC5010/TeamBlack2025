@@ -50,6 +50,10 @@ public class BlackRobot extends GenericRobot {
 
   @Override
   public void configureButtonBindings(Controller driver, Controller operator) {
+    drivetrain.configureButtonBindings(driver, operator);
+    driver
+        .createRightStickButton()
+        .onTrue(Commands.runOnce(() -> drivetrain.toggleFieldOrientedDrive()));
     driver.setRightTrigger(driver.createRightTrigger().cubed().deadzone(0.05).scale(0.35));
     driver.setLeftTrigger(driver.createLeftTrigger().cubed().deadzone(0.05).scale(0.35));
     LEDStrip.setSegmentActive(FEEDER_LED, false);
