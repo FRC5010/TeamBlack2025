@@ -4,13 +4,13 @@
     "black_robot": {
       "id": "00:80:2F:33:04:33",
       "robotClass": "frc.robot.blackteam.BlackRobot",
-      "simulate": true,
+      "simulate": false,
       "competition": false
     },
     "buttercup_swerve": {
       "id": "00:80:2F:34:B2:C5",
       "robotClass": "frc.robot.blackteam.BlackRobot",
-      "simulate": false,
+      "simulate": true,
       "competition": false
     }
   }

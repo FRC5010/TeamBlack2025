@@ -1,5 +1,8 @@
 {
-  "devices": {
-    "yams_shooter": "lowerflywheel/flywheel.json"
-  }
+  "devices": [
+    {
+      "device": "yams_shooter",
+      "file": "lowerflywheel/flywheel.json"
+    }
+  ]
 }

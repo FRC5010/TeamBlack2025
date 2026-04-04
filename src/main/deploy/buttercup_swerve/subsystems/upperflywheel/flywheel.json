@@ -8,17 +8,17 @@
   },
   "motorSystemId": {
     "feedBack": {
-      "p": 0,
+      "p": 3.0352E-05,
       "i": 0.0,
       "d": 0.0
     },
     "feedForward": {
-      "s": 0.0,
-      "v": 0.0,
-      "a": 0.0
+      "s": 0.04234,
+      "v": 0.74358,
+      "a": 0.098446
     }
   },
-  "simMotorSystemId": {
+  "simSystemId": {
     "feedBack": {
       "p": 0,
       "i": 0.0,
@@ -38,13 +38,13 @@
     "val": 10000,
     "uom": "rpm"
   },
-  "stages": "52:24",
+  "gearStages": "52:24",
   "mass": {
     "val": 2,
     "uom": "kg"
   },
-  "diameter": {
-    "val": 4,
+  "radius": {
+    "val": 2,
     "uom": "in"
   }
 }
