@@ -22,10 +22,10 @@ public class BlackRobot extends GenericRobot {
   private LowerFlyWheel lowerFlyWheel;
   private UpperFlyWheel upperFlyWheel;
   private StateMachine flyWheelStateMachine = new StateMachine(logPrefix);
-  private final double SPEED1 = 0.15;
-  private final double SPEED2 = 0.35;
-  private final double SPEED3 = 0.16;
-  private final double SPEED4 = 0.17;
+  private final double SPEED1 = -0.15;
+  private final double SPEED2 = -0.35;
+  private final double SPEED3 = -0.16;
+  private final double SPEED4 = -0.17;
   private final double UPPEROFFSET = 0.01;
   private final AngularVelocity VELOCITY2 = RPM.of(1500);
   private final String FEEDER_LED = "left_half";
@@ -64,7 +64,7 @@ public class BlackRobot extends GenericRobot {
         .whileTrue(
             lowerFlyWheel
                 .set(SPEED1)
-                .alongWith(upperFlyWheel.set(SPEED1 + UPPEROFFSET))
+                .alongWith(upperFlyWheel.set(SPEED1 - UPPEROFFSET))
                 .beforeStarting(
                     () -> {
                       LEDStrip.setSegmentActive(SHOOTER_LED, true);
@@ -77,7 +77,7 @@ public class BlackRobot extends GenericRobot {
         .whileTrue(
             lowerFlyWheel
                 .set(SPEED2)
-                .alongWith(upperFlyWheel.set(SPEED2 + UPPEROFFSET))
+                .alongWith(upperFlyWheel.set(SPEED2 - UPPEROFFSET))
                 .beforeStarting(
                     () -> {
                       LEDStrip.setSegmentActive(SHOOTER_LED, true);
@@ -90,7 +90,7 @@ public class BlackRobot extends GenericRobot {
         .whileTrue(
             lowerFlyWheel
                 .set(SPEED3)
-                .alongWith(upperFlyWheel.set(SPEED3 + UPPEROFFSET))
+                .alongWith(upperFlyWheel.set(SPEED3 - UPPEROFFSET))
                 .beforeStarting(
                     () -> {
                       LEDStrip.setSegmentActive(SHOOTER_LED, true);
@@ -102,7 +102,7 @@ public class BlackRobot extends GenericRobot {
         .whileTrue(
             lowerFlyWheel
                 .set(SPEED4)
-                .alongWith(upperFlyWheel.set(SPEED4 + UPPEROFFSET))
+                .alongWith(upperFlyWheel.set(SPEED4 - UPPEROFFSET))
                 .beforeStarting(
                     () -> {
                       LEDStrip.setSegmentActive(SHOOTER_LED, true);
@@ -129,8 +129,8 @@ public class BlackRobot extends GenericRobot {
                         LEDStrip.changeSegmentPattern(
                             FEEDER_LED, LEDStrip.getSolidPattern(Color.kRed))));
 
-    driver.LEFT_BUMPER.onFalse(
-        (feeder.setSpeed(0)).andThen(lowerFlyWheel.set(0)).andThen(upperFlyWheel.set(0)));
+    // driver.LEFT_BUMPER.onFalse(
+    //   (feeder.setSpeed(0)).andThen(lowerFlyWheel.set(0)).andThen(upperFlyWheel.set(0)));
 
     driver
         .createRightBumper()
@@ -149,8 +149,8 @@ public class BlackRobot extends GenericRobot {
                         LEDStrip.changeSegmentPattern(
                             FEEDER_LED, LEDStrip.getSolidPattern(Color.kRed))));
 
-    driver.RIGHT_BUMPER.onFalse(
-        (feeder.setSpeed(0)).andThen(upperFlyWheel.set(0)).andThen(upperFlyWheel.set(0)));
+    // driver.RIGHT_BUMPER.onFalse(
+    //  (feeder.setSpeed(0)).andThen(upperFlyWheel.set(0)).andThen(upperFlyWheel.set(0)));
 
     State prep =
         flyWheelStateMachine.addState(

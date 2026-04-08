@@ -4,7 +4,7 @@
     "controllerType": "thrifty",
     "motorType": "Neo",
     "canId": 11,
-    "inverted": true
+    "inverted": false
   },
   "motorSystemId": {
     "feedBack": {
