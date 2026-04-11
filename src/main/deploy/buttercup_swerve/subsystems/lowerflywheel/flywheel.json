@@ -1,10 +1,10 @@
 {
   "motorSetup": {
     "name": "lowerflywheel",
-    "controllerType": "thrifty",
+    "controllerType": "Spark",
     "motorType": "Neo",
     "canId": 10,
-    "inverted": false
+    "inverted": true
   },
   "motorSystemId": {
     "feedBack": {

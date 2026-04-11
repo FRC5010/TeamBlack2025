@@ -22,10 +22,10 @@ public class BlackRobot extends GenericRobot {
   private LowerFlyWheel lowerFlyWheel;
   private UpperFlyWheel upperFlyWheel;
   private StateMachine flyWheelStateMachine = new StateMachine(logPrefix);
-  private final double SPEED1 = -0.15;
-  private final double SPEED2 = -0.35;
-  private final double SPEED3 = -0.16;
-  private final double SPEED4 = -0.17;
+  private final double SPEED1 = 0.15;
+  private final double SPEED2 = 0.35;
+  private final double SPEED3 = 0.16;
+  private final double SPEED4 = 0.17;
   private final double UPPEROFFSET = 0.01;
   private final AngularVelocity VELOCITY2 = RPM.of(1500);
   private final String FEEDER_LED = "left_half";
