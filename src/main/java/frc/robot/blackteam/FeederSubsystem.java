@@ -11,7 +11,8 @@ import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
 
-import com.thethriftybot.devices.ThriftyNova;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj2.command.Command;
 import java.util.function.Supplier;
@@ -25,12 +26,11 @@ import yams.motorcontrollers.SmartMotorControllerConfig;
 import yams.motorcontrollers.SmartMotorControllerConfig.ControlMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
-import yams.motorcontrollers.local.NovaWrapper;
+import yams.motorcontrollers.local.SparkWrapper;
 
 /** Add your docs here. */
 public class FeederSubsystem extends GenericSubsystem {
-  private final ThriftyNova motor = new ThriftyNova(12);
-
+  private final SparkMax motor = new SparkMax(12, MotorType.kBrushless);
   private final SmartMotorControllerConfig motorConfig =
       new SmartMotorControllerConfig(this)
           .withClosedLoopController(
@@ -46,7 +46,7 @@ public class FeederSubsystem extends GenericSubsystem {
           .withControlMode(ControlMode.CLOSED_LOOP);
 
   private final SmartMotorController motorController =
-      new NovaWrapper(motor, DCMotor.getNEO(1), motorConfig);
+      new SparkWrapper(motor, DCMotor.getNEO(1), motorConfig);
 
   private final FlyWheelConfig feederConfig =
       new FlyWheelConfig(motorController)
@@ -77,3 +77,4 @@ public class FeederSubsystem extends GenericSubsystem {
     return feeder.set(speedSupplier);
   }
 }
+/** Robot, stop */
