@@ -1,5 +1,5 @@
 {
-  "userConfig": "competition_mode.json",
+  "userConfig": "demo_mode.json",
   "driveType": "YAGSL_SWERVE_DRIVE",
   "trackWidth": 18.5625,
   "trackWidthUom": "in",

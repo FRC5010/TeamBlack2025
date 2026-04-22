@@ -197,7 +197,7 @@ public class BlackRobot extends GenericRobot {
     selectableCommand.addOption("Do Nothing", Commands.none());
   }
 }
-// frontright has CanId 7 and opposite side of RSL and by the battery
-//
-//
-//
+// frontright has CanId 1, 2 and opposite side of RSL and by the battery
+// frontleft has CanId 3, 4  and  next to the RS light
+// backright has CanId 7, 8 and next to the feeder motor with CanId 12
+// backleft has CanId 5, 6  and next to lower flywheel motor with CanId 10
