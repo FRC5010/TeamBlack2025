@@ -1,10 +1,10 @@
 {
   "motorSetup": {
     "name": "upperflywheel",
-    "controllerType": "thrifty",
+    "controllerType": "Spark",
     "motorType": "Neo",
     "canId": 11,
-    "inverted": true
+    "inverted": false
   },
   "motorSystemId": {
     "feedBack": {

@@ -129,8 +129,7 @@ public class BlackRobot extends GenericRobot {
                         LEDStrip.changeSegmentPattern(
                             FEEDER_LED, LEDStrip.getSolidPattern(Color.kRed))));
 
-    driver.LEFT_BUMPER.onFalse(
-        (feeder.setSpeed(0)).andThen(lowerFlyWheel.set(0)).andThen(upperFlyWheel.set(0)));
+    driver.LEFT_BUMPER.onFalse(feeder.setSpeed(0));
 
     driver
         .createRightBumper()
@@ -149,8 +148,7 @@ public class BlackRobot extends GenericRobot {
                         LEDStrip.changeSegmentPattern(
                             FEEDER_LED, LEDStrip.getSolidPattern(Color.kRed))));
 
-    driver.RIGHT_BUMPER.onFalse(
-        (feeder.setSpeed(0)).andThen(upperFlyWheel.set(0)).andThen(upperFlyWheel.set(0)));
+    driver.RIGHT_BUMPER.onFalse(feeder.setSpeed(0));
 
     State prep =
         flyWheelStateMachine.addState(
