@@ -47,4 +47,16 @@ public interface ModuleIO {
 
   /** Run the turn motor to the specified rotation. */
   public default void setTurnPosition(Rotation2d rotation) {}
+
+  /**
+   * Updates the drive motor closed-loop velocity gains at runtime. Used by live PID calibration
+   * commands so gains can be tuned from the dashboard without re-deploying code.
+   *
+   * @param kP proportional gain
+   * @param kI integral gain
+   * @param kD derivative gain
+   * @param kS static feedforward gain (volts)
+   * @param kV velocity feedforward gain (volts per unit velocity)
+   */
+  public default void setDriveGains(double kP, double kI, double kD, double kS, double kV) {}
 }

@@ -25,6 +25,8 @@ public class ModuleIOSim implements ModuleIO {
   private boolean turnClosedLoop = false;
   private PIDController driveController = new PIDController(driveSimP, 0, driveSimD);
   private PIDController turnController = new PIDController(turnSimP, 0, turnSimD);
+  private double driveKsVolts = driveSimKs;
+  private double driveKvVolts = driveSimKv;
   private double driveFFVolts = 0.0;
   private double driveAppliedVolts = 0.0;
   private double turnAppliedVolts = 0.0;
@@ -100,7 +102,7 @@ public class ModuleIOSim implements ModuleIO {
   @Override
   public void setDriveVelocity(double velocityRadPerSec) {
     driveClosedLoop = true;
-    driveFFVolts = driveSimKs * Math.signum(velocityRadPerSec) + driveSimKv * velocityRadPerSec;
+    driveFFVolts = driveKsVolts * Math.signum(velocityRadPerSec) + driveKvVolts * velocityRadPerSec;
     driveController.setSetpoint(velocityRadPerSec);
   }
 
@@ -108,5 +110,12 @@ public class ModuleIOSim implements ModuleIO {
   public void setTurnPosition(Rotation2d rotation) {
     turnClosedLoop = true;
     turnController.setSetpoint(rotation.getRadians());
+  }
+
+  @Override
+  public void setDriveGains(double kP, double kI, double kD, double kS, double kV) {
+    driveController.setPID(kP, kI, kD);
+    driveKsVolts = kS;
+    driveKvVolts = kV;
   }
 }

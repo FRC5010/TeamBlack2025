@@ -88,6 +88,10 @@ public class ModuleIOSpark implements ModuleIO {
   private final Debouncer driveConnectedDebounce = new Debouncer(0.5);
   private final Debouncer turnConnectedDebounce = new Debouncer(0.5);
 
+  // Drive feedforward gains, mutable so they can be re-tuned at runtime
+  private double driveKsVolts = driveKs;
+  private double driveKvVolts = driveKv;
+
   public ModuleIOSpark(int module) {
     zeroRotation =
         switch (module) {
@@ -249,7 +253,8 @@ public class ModuleIOSpark implements ModuleIO {
 
   @Override
   public void setDriveVelocity(double velocityRadPerSec) {
-    double ffVolts = driveKs * Math.signum(velocityRadPerSec) + driveKv * velocityRadPerSec;
+    double ffVolts =
+        driveKsVolts * Math.signum(velocityRadPerSec) + driveKvVolts * velocityRadPerSec;
     driveController.setSetpoint(
         velocityRadPerSec,
         ControlType.kVelocity,
@@ -264,5 +269,20 @@ public class ModuleIOSpark implements ModuleIO {
         MathUtil.inputModulus(
             rotation.plus(zeroRotation).getRadians(), turnPIDMinInput, turnPIDMaxInput);
     turnController.setSetpoint(setpoint, ControlType.kPosition);
+  }
+
+  @Override
+  public void setDriveGains(double kP, double kI, double kD, double kS, double kV) {
+    driveKsVolts = kS;
+    driveKvVolts = kV;
+    SparkFlexConfig config = new SparkFlexConfig();
+    config.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(kP, kI, kD);
+    // Do not persist to flash: these are temporary tuning values applied many times per session.
+    tryUntilOk(
+        driveSpark,
+        5,
+        () ->
+            driveSpark.configure(
+                config, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters));
   }
 }

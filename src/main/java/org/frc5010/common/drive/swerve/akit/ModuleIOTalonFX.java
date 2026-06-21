@@ -5,6 +5,7 @@ import static org.frc5010.common.drive.swerve.akit.util.PhoenixUtil.tryUntilOk;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.PositionVoltage;
@@ -233,5 +234,11 @@ public abstract class ModuleIOTalonFX implements ModuleIO {
           case TorqueCurrentFOC -> positionTorqueCurrentRequest.withPosition(
               rotation.getRotations());
         });
+  }
+
+  @Override
+  public void setDriveGains(double kP, double kI, double kD, double kS, double kV) {
+    Slot0Configs gains = new Slot0Configs().withKP(kP).withKI(kI).withKD(kD).withKS(kS).withKV(kV);
+    tryUntilOk(5, () -> driveTalon.getConfigurator().apply(gains, 0.25));
   }
 }

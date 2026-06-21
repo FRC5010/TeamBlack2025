@@ -46,6 +46,7 @@ import frc.robot.Constants.Mode;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import org.frc5010.common.commands.AkitDriveCommands;
+import org.frc5010.common.commands.calibration.DriveVelocityPIDCalibration;
 import org.frc5010.common.drive.pose.DrivePoseEstimator;
 import org.frc5010.common.drive.pose.SwerveFunctionsPose;
 import org.frc5010.common.drive.swerve.AkitSwerveConfig;
@@ -209,6 +210,22 @@ public class AkitSwerveDrive extends SwerveDriveFunctions {
 
     // Log optimized setpoints (runSetpoint mutates each state)
     Logger.recordOutput("SwerveStates/SetpointsOptimized", setpointStates);
+  }
+
+  /**
+   * Updates the drive motor closed-loop velocity gains on every module at runtime. Used by live PID
+   * calibration so gains can be tuned from the dashboard without re-deploying code.
+   *
+   * @param kP proportional gain
+   * @param kI integral gain
+   * @param kD derivative gain
+   * @param kS static feedforward gain (volts)
+   * @param kV velocity feedforward gain (volts per unit velocity)
+   */
+  public void setDriveGains(double kP, double kI, double kD, double kS, double kV) {
+    for (var module : modules) {
+      module.setDriveGains(kP, kI, kD, kS, kV);
+    }
   }
 
   /** Runs the drive in a straight line with the specified drive output. */
@@ -550,5 +567,8 @@ public class AkitSwerveDrive extends SwerveDriveFunctions {
         "PRO: Swerve Angle PID Tuning", AkitDriveCommands.steerPIDTuning(drivetrain, this));
     selectableCommand.addOption(
         "PRO: Swerve Drive PID Tuning", AkitDriveCommands.drivePIDTuning(drivetrain, this));
+    selectableCommand.addOption(
+        "PRO: Swerve Drive Velocity PID Calibration",
+        new DriveVelocityPIDCalibration(drivetrain, this));
   }
 }

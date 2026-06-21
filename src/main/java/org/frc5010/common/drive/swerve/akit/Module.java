@@ -110,6 +110,11 @@ public class Module {
     io.setTurnOpenLoop(0.0);
   }
 
+  /** Updates the drive motor closed-loop velocity gains at runtime (for live PID calibration). */
+  public void setDriveGains(double kP, double kI, double kD, double kS, double kV) {
+    io.setDriveGains(kP, kI, kD, kS, kV);
+  }
+
   /** Returns the current turn angle of the module. */
   public Rotation2d getAngle() {
     if (Robot.isSimulation()) {
