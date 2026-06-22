@@ -52,6 +52,7 @@ import org.frc5010.common.arch.GenericRobot;
 import org.frc5010.common.auto.pathplanner.PathFinderCommand;
 import org.frc5010.common.commands.DriveToPoseSupplier;
 import org.frc5010.common.commands.JoystickToSwerve;
+import org.frc5010.common.commands.calibration.AzimuthCalibration;
 import org.frc5010.common.constants.GenericDrivetrainConstants;
 import org.frc5010.common.constants.RobotConstantsDef;
 import org.frc5010.common.drive.GenericDrivetrain;
@@ -785,6 +786,68 @@ public class GenericSwerveDrivetrain extends GenericDrivetrain {
 
   public Command sysIdAngleMotorCommand() {
     return swerveDrive.sysIdAngleMotorCommand(this);
+  }
+
+  /**
+   * Sets the drive/azimuth motors to brake or coast mode. Coast mode is useful during azimuth
+   * calibration so the wheels can be turned by hand.
+   *
+   * @param brake true for brake mode, false for coast mode
+   */
+  public void setMotorBrake(boolean brake) {
+    swerveDrive.setMotorBrake(brake);
+  }
+
+  /**
+   * Commands every module's azimuth motor to drive to the given heading.
+   *
+   * @param angleDegrees the azimuth angle to command, in degrees
+   */
+  public void setAzimuthAngle(double angleDegrees) {
+    swerveDrive.setAzimuthAngle(angleDegrees);
+  }
+
+  /**
+   * Gets the current information for each swerve module, including absolute and relative azimuth
+   * positions.
+   *
+   * @return an array of {@link GenericSwerveModuleInfo}, one per module
+   */
+  public GenericSwerveModuleInfo[] getModulesInfo() {
+    return swerveDrive.getModulesInfo();
+  }
+
+  /**
+   * Returns a command that holds every module's azimuth motor at the given angle for as long as it
+   * runs, then re-centers the modules when it ends. This is a calibration/verification helper: while
+   * it runs, every wheel should physically point in the same direction.
+   *
+   * @param angleDegrees the azimuth angle to command, in degrees
+   * @return the verification command
+   */
+  public Command setModuleAngleCommand(double angleDegrees) {
+    return run(() -> setAzimuthAngle(angleDegrees)).finallyDo(() -> setAzimuthAngle(0.0));
+  }
+
+  /**
+   * Returns a command that drives every module's azimuth motor to 0 degrees (straight forward).
+   *
+   * @return the centering command
+   */
+  public Command centerModulesCommand() {
+    return setModuleAngleCommand(0.0);
+  }
+
+  /**
+   * Returns a command that walks the swerve modules through azimuth checkpoints to characterize the
+   * absolute encoder offsets needed to calibrate the azimuth motors.
+   *
+   * <p>See {@link AzimuthCalibration} for usage.
+   *
+   * @return the azimuth calibration command
+   */
+  public Command azimuthCalibrationCommand() {
+    return new AzimuthCalibration(this);
   }
 
   public void resetEncoders() {

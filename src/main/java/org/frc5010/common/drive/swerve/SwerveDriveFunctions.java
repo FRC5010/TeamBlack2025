@@ -75,6 +75,28 @@ public abstract class SwerveDriveFunctions {
 
   public abstract Command sysIdAngleMotorCommand(SubsystemBase swerveSubsystem);
 
+  /**
+   * Sets the drive/azimuth motors to brake or coast mode. The default implementation is a no-op;
+   * drivetrains that support idle-mode control (such as {@link YAGSLSwerveDrivetrain}) override
+   * this. Coast mode is useful during azimuth calibration so the wheels can be turned by hand.
+   *
+   * @param brake true for brake mode, false for coast mode
+   */
+  public void setMotorBrake(boolean brake) {
+    // Default empty - not all drivetrains support idle-mode control.
+  }
+
+  /**
+   * Commands every swerve module's azimuth (angle) motor to drive to the given heading. This is
+   * primarily a calibration/verification helper - all wheels should physically point in the same
+   * direction when called repeatedly with the same angle. The default implementation is a no-op.
+   *
+   * @param angleDegrees the azimuth angle to command, in degrees
+   */
+  public void setAzimuthAngle(double angleDegrees) {
+    // Default empty - not all drivetrains support direct azimuth control.
+  }
+
   public abstract void addVisionMeasurement(
       Pose2d visionRobotPoseMeters,
       double timestampSeconds,

@@ -199,6 +199,18 @@ public class YAGSLSwerveDrivetrain extends SwerveDriveFunctions {
   }
 
   /**
+   * Drives every module's azimuth motor to the given heading. Useful for verifying that the azimuth
+   * motors and absolute encoder offsets are calibrated correctly - all wheels should physically
+   * point the same direction when held at the same angle.
+   *
+   * @param angleDegrees the azimuth angle to command, in degrees
+   */
+  @Override
+  public void setAzimuthAngle(double angleDegrees) {
+    Arrays.asList(swerveDrive.getModules()).forEach(it -> it.setAngle(angleDegrees));
+  }
+
+  /**
    * Returns a Command that drives the swerve drive to a specific distance at a given speed.
    *
    * @param distanceInMeters the distance to drive in meters
@@ -452,6 +464,7 @@ public class YAGSLSwerveDrivetrain extends SwerveDriveFunctions {
    *
    * @param brake True to set motors to brake mode, false for coast.
    */
+  @Override
   public void setMotorBrake(boolean brake) {
     swerveDrive.setMotorIdleMode(brake);
   }
