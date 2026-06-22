@@ -171,8 +171,15 @@ public class AkitSwerveDrive extends SwerveDriveFunctions {
 
       // Update gyro angle
       if (gyroInputs.connected) {
-        // Use the real gyro angle
-        rawGyroRotation = gyroInputs.odometryYawPositions[i];
+        // Use the real gyro angle. When the gyro samples on a different odometry thread than the
+        // modules (e.g. the Spark configuration, where the modules use the Spark thread but the
+        // Pigeon uses the Phoenix thread), its high-frequency queue can be empty even though the
+        // modules produced samples. Fall back to the latest gyro reading for those samples instead
+        // of indexing past the end of the array.
+        rawGyroRotation =
+            i < gyroInputs.odometryYawPositions.length
+                ? gyroInputs.odometryYawPositions[i]
+                : gyroInputs.yawPosition;
       } else {
         // Use the angle delta from the kinematics and module deltas
         Twist2d twist = kinematics.toTwist2d(moduleDeltas);
