@@ -153,7 +153,7 @@ public class AKitSwerveDrivetrainJson implements DrivetrainPropertiesJson {
         // GyroIOPigeon2 registers its signal on the TalonFX (Phoenix) odometry thread, so that
         // thread must exist even though the modules are pure Spark; otherwise
         // TalonFXOdometryThread.getInstance() is null and the gyro constructor throws.
-        
+
         SparkOdometryThread.createInstance();
         driveFunctions =
             new AkitSwerveDrive(
