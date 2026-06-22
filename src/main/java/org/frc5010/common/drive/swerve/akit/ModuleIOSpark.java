@@ -212,7 +212,14 @@ public class ModuleIOSpark implements ModuleIO {
     ifOk(
         turnSpark,
         turnEncoder::getPosition,
-        (value) -> inputs.turnAbsolutePosition = new Rotation2d(value).minus(zeroRotation));
+        (value) -> {
+          inputs.turnAbsolutePosition = new Rotation2d(value).minus(zeroRotation);
+          // The steering closed loop runs on the absolute encoder and there is no separate relative
+          // turn encoder, so turnPosition mirrors the absolute position. Without this, turnPosition
+          // stays at 0, which makes Module.getAngle()/cosineScale think the wheel is always at 0 -
+          // scaling drive speed by cos(targetAngle) and producing no drive for 90 deg (strafe).
+          inputs.turnPosition = inputs.turnAbsolutePosition;
+        });
     ifOk(turnSpark, turnEncoder::getVelocity, (value) -> inputs.turnVelocityRadPerSec = value);
     ifOk(
         turnSpark,
