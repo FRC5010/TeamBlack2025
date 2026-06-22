@@ -1,5 +1,5 @@
 {
-  "type": "SparkTalon",
+  "type": "Spark",
   "constants": {
     "trackWidth": {
       "val": 18.5625,
