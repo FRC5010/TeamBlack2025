@@ -53,6 +53,7 @@ import org.frc5010.common.auto.pathplanner.PathFinderCommand;
 import org.frc5010.common.commands.DriveToPoseSupplier;
 import org.frc5010.common.commands.JoystickToSwerve;
 import org.frc5010.common.commands.calibration.AzimuthCalibration;
+import org.frc5010.common.commands.calibration.AzimuthPidTuning;
 import org.frc5010.common.constants.GenericDrivetrainConstants;
 import org.frc5010.common.constants.RobotConstantsDef;
 import org.frc5010.common.drive.GenericDrivetrain;
@@ -808,6 +809,28 @@ public class GenericSwerveDrivetrain extends GenericDrivetrain {
   }
 
   /**
+   * Applies a new closed-loop gain set to every module's azimuth motor at runtime. Used by the
+   * azimuth PID tuning helper to dial in the proportional gain without redeploying.
+   *
+   * @param p proportional gain
+   * @param i integral gain
+   * @param d derivative gain
+   * @param f feedforward gain
+   */
+  public void setAzimuthPIDF(double p, double i, double d, double f) {
+    swerveDrive.setAzimuthPIDF(p, i, d, f);
+  }
+
+  /**
+   * Gets the current azimuth motor closed-loop gains as {@code [p, i, d, f]}.
+   *
+   * @return an array of {@code [p, i, d, f]} gains
+   */
+  public double[] getAzimuthPIDF() {
+    return swerveDrive.getAzimuthPIDF();
+  }
+
+  /**
    * Gets the current information for each swerve module, including absolute and relative azimuth
    * positions.
    *
@@ -848,6 +871,18 @@ public class GenericSwerveDrivetrain extends GenericDrivetrain {
    */
   public Command azimuthCalibrationCommand() {
     return new AzimuthCalibration(this);
+  }
+
+  /**
+   * Returns a command that steps the azimuth motors between setpoints while the angle PID gains are
+   * tunable live from the dashboard, so the proportional gain can be tightly calibrated.
+   *
+   * <p>See {@link AzimuthPidTuning} for usage.
+   *
+   * @return the azimuth PID tuning command
+   */
+  public Command azimuthPidTuningCommand() {
+    return new AzimuthPidTuning(this);
   }
 
   public void resetEncoders() {

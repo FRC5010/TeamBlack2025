@@ -49,6 +49,7 @@ import swervelib.SwerveDrive;
 import swervelib.SwerveDriveTest;
 import swervelib.SwerveModule;
 import swervelib.math.SwerveMath;
+import swervelib.parser.PIDFConfig;
 import swervelib.parser.SwerveDriveConfiguration;
 import swervelib.parser.SwerveParser;
 import swervelib.simulation.ironmaple.simulation.drivesims.AbstractDriveTrainSimulation;
@@ -208,6 +209,36 @@ public class YAGSLSwerveDrivetrain extends SwerveDriveFunctions {
   @Override
   public void setAzimuthAngle(double angleDegrees) {
     Arrays.asList(swerveDrive.getModules()).forEach(it -> it.setAngle(angleDegrees));
+  }
+
+  /**
+   * Applies a new closed-loop gain set to every module's azimuth motor at runtime, allowing the
+   * proportional gain to be tuned live without redeploying.
+   *
+   * @param p proportional gain
+   * @param i integral gain
+   * @param d derivative gain
+   * @param f feedforward gain
+   */
+  @Override
+  public void setAzimuthPIDF(double p, double i, double d, double f) {
+    PIDFConfig config = new PIDFConfig(p, i, d, f);
+    Arrays.asList(swerveDrive.getModules()).forEach(it -> it.setAnglePIDF(config));
+  }
+
+  /**
+   * Gets the current azimuth motor closed-loop gains from the first module as {@code [p, i, d, f]}.
+   *
+   * @return an array of {@code [p, i, d, f]} gains
+   */
+  @Override
+  public double[] getAzimuthPIDF() {
+    SwerveModule[] modules = swerveDrive.getModules();
+    if (modules.length == 0) {
+      return new double[] {0.0, 0.0, 0.0, 0.0};
+    }
+    PIDFConfig config = modules[0].getAnglePIDF();
+    return new double[] {config.p, config.i, config.d, config.f};
   }
 
   /**

@@ -97,6 +97,30 @@ public abstract class SwerveDriveFunctions {
     // Default empty - not all drivetrains support direct azimuth control.
   }
 
+  /**
+   * Applies a new closed-loop gain set to every module's azimuth (angle) motor at runtime. Used by
+   * the azimuth PID tuning helper to dial in the proportional gain. The default implementation is a
+   * no-op.
+   *
+   * @param p proportional gain
+   * @param i integral gain
+   * @param d derivative gain
+   * @param f feedforward gain
+   */
+  public void setAzimuthPIDF(double p, double i, double d, double f) {
+    // Default empty - not all drivetrains support runtime azimuth PIDF changes.
+  }
+
+  /**
+   * Gets the current azimuth (angle) motor closed-loop gains as {@code [p, i, d, f]}. The default
+   * implementation returns all zeros.
+   *
+   * @return an array of {@code [p, i, d, f]} gains
+   */
+  public double[] getAzimuthPIDF() {
+    return new double[] {0.0, 0.0, 0.0, 0.0};
+  }
+
   public abstract void addVisionMeasurement(
       Pose2d visionRobotPoseMeters,
       double timestampSeconds,
