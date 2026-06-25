@@ -71,12 +71,7 @@ public class BlackRobot extends GenericRobot {
                           LEDStrip.changeSegmentPattern(
                               SHOOTER_LED, LEDStrip.getRainbowPattern(50));
                         }))
-                .finallyDo(
-                    () -> {
-                      LEDStrip.setSegmentActive(SHOOTER_LED, false);
-                      lowerFlyWheel.set(0);
-                      upperFlyWheel.set(0);
-                    }));
+                .finallyDo(() -> LEDStrip.setSegmentActive(SHOOTER_LED, false)));
     driver
         .createXButton()
         .whileTrue(
@@ -88,12 +83,7 @@ public class BlackRobot extends GenericRobot {
                       LEDStrip.setSegmentActive(SHOOTER_LED, true);
                       LEDStrip.changeSegmentPattern(SHOOTER_LED, LEDStrip.getRainbowPattern(100));
                     })
-                .finallyDo(
-                    () -> {
-                      LEDStrip.setSegmentActive(SHOOTER_LED, false);
-                      lowerFlyWheel.set(0);
-                      upperFlyWheel.set(0);
-                    }));
+                .finallyDo(() -> LEDStrip.setSegmentActive(SHOOTER_LED, false)));
 
     driver
         .createYButton()
@@ -106,12 +96,7 @@ public class BlackRobot extends GenericRobot {
                       LEDStrip.setSegmentActive(SHOOTER_LED, true);
                       LEDStrip.changeSegmentPattern(SHOOTER_LED, LEDStrip.getRainbowPattern(100));
                     })
-                .finallyDo(
-                    () -> {
-                      LEDStrip.setSegmentActive(SHOOTER_LED, false);
-                      lowerFlyWheel.set(0);
-                      upperFlyWheel.set(0);
-                    }));
+                .finallyDo(() -> LEDStrip.setSegmentActive(SHOOTER_LED, false)));
     driver
         .createBButton()
         .whileTrue(
@@ -123,41 +108,28 @@ public class BlackRobot extends GenericRobot {
                       LEDStrip.setSegmentActive(SHOOTER_LED, true);
                       LEDStrip.changeSegmentPattern(SHOOTER_LED, LEDStrip.getRainbowPattern(200));
                     })
-                .finallyDo(
-                    () -> {
-                      LEDStrip.setSegmentActive(SHOOTER_LED, false);
-                      lowerFlyWheel.set(0);
-                      upperFlyWheel.set(0);
-                    }));
+                .finallyDo(() -> LEDStrip.setSegmentActive(SHOOTER_LED, false)));
 
     driver.A_BUTTON.onFalse(
-        Commands.runOnce(
-            () -> {
-              LEDStrip.setSegmentActive(SHOOTER_LED, false);
-              lowerFlyWheel.set(0);
-              upperFlyWheel.set(0);
-            }));
+        lowerFlyWheel
+            .set(0)
+            .alongWith(upperFlyWheel.set(0))
+            .beforeStarting(() -> LEDStrip.setSegmentActive(SHOOTER_LED, false)));
     driver.B_BUTTON.onFalse(
-        Commands.runOnce(
-            () -> {
-              LEDStrip.setSegmentActive(SHOOTER_LED, false);
-              lowerFlyWheel.set(0);
-              upperFlyWheel.set(0);
-            }));
+        lowerFlyWheel
+            .set(0)
+            .alongWith(upperFlyWheel.set(0))
+            .beforeStarting(() -> LEDStrip.setSegmentActive(SHOOTER_LED, false)));
     driver.X_BUTTON.onFalse(
-        Commands.runOnce(
-            () -> {
-              LEDStrip.setSegmentActive(SHOOTER_LED, false);
-              lowerFlyWheel.set(0);
-              upperFlyWheel.set(0);
-            }));
+        lowerFlyWheel
+            .set(0)
+            .alongWith(upperFlyWheel.set(0))
+            .beforeStarting(() -> LEDStrip.setSegmentActive(SHOOTER_LED, false)));
     driver.Y_BUTTON.onFalse(
-        Commands.runOnce(
-            () -> {
-              LEDStrip.setSegmentActive(SHOOTER_LED, false);
-              lowerFlyWheel.set(0);
-              upperFlyWheel.set(0);
-            }));
+        lowerFlyWheel
+            .set(0)
+            .alongWith(upperFlyWheel.set(0))
+            .beforeStarting(() -> LEDStrip.setSegmentActive(SHOOTER_LED, false)));
 
     // driver.createBackButton().whileTrue(lowerFlyWheel.systemID());
     // driver.createStartButton().whileTrue(upperFlyWheel.systemID());
