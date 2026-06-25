@@ -742,7 +742,7 @@ public class GenericSwerveDrivetrain extends GenericDrivetrain {
   public Command createDefaultCommand(Controller driverXbox) {
     DoubleSupplier leftX = () -> driverXbox.getLeftXAxis();
     DoubleSupplier leftY = () -> driverXbox.getLeftYAxis();
-    DoubleSupplier rightX = () -> driverXbox.getRightXAxis();
+    DoubleSupplier rightX = () -> driverXbox.getLeftTrigger();
     BooleanSupplier isFieldOriented = () -> isFieldOrientedDrive.getValue();
 
     /**
@@ -765,7 +765,7 @@ public class GenericSwerveDrivetrain extends GenericDrivetrain {
   public Command createDefaultTestCommand(Controller driverXbox) {
     DoubleSupplier leftX = () -> driverXbox.getLeftXAxis();
     DoubleSupplier leftY = () -> driverXbox.getLeftYAxis();
-    DoubleSupplier rightX = () -> driverXbox.getRightXAxis();
+    DoubleSupplier rightX = () -> driverXbox.getLeftTrigger();
     BooleanSupplier isFieldOriented = () -> isFieldOrientedDrive.getValue();
 
     driverXbox.createAButton().whileTrue(sysIdDriveMotorCommand());

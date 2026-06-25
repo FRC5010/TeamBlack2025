@@ -237,7 +237,7 @@ public abstract class GenericDrivetrain extends GenericSubsystem {
         this,
         () -> driver.getLeftYAxis(),
         () -> driver.getLeftXAxis(),
-        () -> driver.getRightXAxis(),
+        () -> driver.getLeftTrigger(),
         () -> isFieldOrientedDrive.getValue());
   }
 
