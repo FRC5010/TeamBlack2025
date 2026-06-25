@@ -7,15 +7,9 @@
 
 package org.frc5010.common.drive.swerve.akit;
 
-import static org.frc5010.common.drive.swerve.akit.DriveConstants.driveKd;
-import static org.frc5010.common.drive.swerve.akit.DriveConstants.driveKp;
-import static org.frc5010.common.drive.swerve.akit.DriveConstants.driveKs;
-import static org.frc5010.common.drive.swerve.akit.DriveConstants.driveKv;
 import static org.frc5010.common.drive.swerve.akit.DriveConstants.odometryFrequency;
 import static org.frc5010.common.drive.swerve.akit.DriveConstants.turnEncoderPositionFactor;
 import static org.frc5010.common.drive.swerve.akit.DriveConstants.turnEncoderVelocityFactor;
-import static org.frc5010.common.drive.swerve.akit.DriveConstants.turnKd;
-import static org.frc5010.common.drive.swerve.akit.DriveConstants.turnKp;
 import static org.frc5010.common.drive.swerve.akit.DriveConstants.turnMotorCurrentLimit;
 import static org.frc5010.common.drive.swerve.akit.DriveConstants.turnPIDMaxInput;
 import static org.frc5010.common.drive.swerve.akit.DriveConstants.turnPIDMinInput;
@@ -51,16 +45,20 @@ import org.frc5010.common.drive.swerve.AkitSwerveConfig;
  * Module IO implementation for a NEO (Spark Max) drive motor, NEO (Spark Max) turn motor, and an
  * absolute encoder (e.g. Canandmag) read through the turn Spark's absolute-encoder port.
  *
- * <p>Hardware identity is read from the deploy JSON (via {@link AkitSwerveConfig} /
+ * <p>Everything per-robot is read from the deploy JSON (via {@link AkitSwerveConfig} /
  * {@link SwerveModuleConstants}): drive/steer CAN IDs, drive gear ratio, drive current limit, the
- * motor/encoder inversions, and the absolute encoder zero offset. The closed-loop gains and the
- * steer feedback wrapping remain in {@link DriveConstants} because they are expressed in
- * AdvantageKit units (wheel rad/s, module radians) that are not interchangeable with the
- * YAGSL-native gains stored elsewhere in the JSON.
+ * motor/encoder inversions, the absolute encoder zero offset, and the drive/steer closed-loop gains
+ * ({@code driveMotorControl}/{@code steerMotorControl} in akit units). Only universal akit constants
+ * (encoder conversion factors, the steer wrap range, steer current limit, odometry frequency) come
+ * from {@link DriveConstants}.
  */
 public class ModuleIOSpark implements ModuleIO {
   /** Absolute encoder zero offset, from the JSON {@code absoluteOffset}. */
   private final Rotation2d zeroRotation;
+
+  // Drive feedforward gains (from the JSON), used in setDriveVelocity.
+  private final double driveKs;
+  private final double driveKv;
 
   // Hardware objects
   private final SparkBase driveSpark;
@@ -86,6 +84,8 @@ public class ModuleIOSpark implements ModuleIO {
       SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>
           constants) {
     zeroRotation = Rotation2d.fromRotations(constants.EncoderOffset);
+    driveKs = constants.DriveMotorGains.kS;
+    driveKv = constants.DriveMotorGains.kV;
 
     // Rotor rotations -> wheel radians, using the JSON drive gear ratio.
     double driveEncoderPositionFactor = 2 * Math.PI / constants.DriveMotorGearRatio;
@@ -111,7 +111,11 @@ public class ModuleIOSpark implements ModuleIO {
         .velocityConversionFactor(driveEncoderVelocityFactor)
         .uvwMeasurementPeriod(10)
         .uvwAverageDepth(2);
-    driveConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).p(driveKp).d(driveKd);
+    driveConfig
+        .closedLoop
+        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+        .p(constants.DriveMotorGains.kP)
+        .d(constants.DriveMotorGains.kD);
     driveConfig
         .signals
         .primaryEncoderPositionAlwaysOn(true)
@@ -147,8 +151,8 @@ public class ModuleIOSpark implements ModuleIO {
         .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
         .positionWrappingEnabled(true)
         .positionWrappingInputRange(turnPIDMinInput, turnPIDMaxInput)
-        .p(turnKp)
-        .d(turnKd);
+        .p(constants.SteerMotorGains.kP)
+        .d(constants.SteerMotorGains.kD);
     turnConfig
         .signals
         .absoluteEncoderPositionAlwaysOn(true)

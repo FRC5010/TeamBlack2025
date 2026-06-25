@@ -1,3 +1,222 @@
 {
-  "type": "SparkTalon"
+  "type": "Spark",
+  "constants": {
+    "trackWidth": {
+      "val": 18.5625,
+      "uom": "inches"
+    },
+    "wheelBase": {
+      "val": 18.5625,
+      "uom": "inches"
+    },
+    "wheelDiameter": {
+      "val": 4,
+      "uom": "inches"
+    },
+    "maxDriveSpeed": {
+      "val": 5.93,
+      "uom": "m/sec"
+    },
+    "bumperFrameLength": {
+      "val": 28,
+      "uom": "inches"
+    },
+    "bumperFrameWidth": {
+      "val": 28,
+      "uom": "inches"
+    },
+    "gyro": {
+      "type": "pigeon2",
+      "id": 9,
+      "inverted": false,
+      "canbus": ""
+    },
+    "driveGearRatio": "1:6.75",
+    "steerGearRatio": "1:25",
+    "driveMotorControl": {
+      "closedLoopRamp": {
+        "val": 0.15,
+        "uom": "seconds"
+      },
+      "feedBack": {
+        "p": 0.0020645,
+        "i": 0.0,
+        "d": 0.0
+      },
+      "feedForward": {
+        "s": 0.0,
+        "v": 0.1,
+        "a": 0.0
+      }
+    },
+    "steerMotorControl": {
+      "closedLoopRamp": {
+        "val": 0.05,
+        "uom": "seconds"
+      },
+      "feedBack": {
+        "p": 2.0,
+        "i": 0.0,
+        "d": 0.0
+      },
+      "feedForward": {
+        "s": 0.0,
+        "v": 0.0,
+        "a": 0.0
+      }
+    },
+    "modules": {
+      "frontLeft": {
+        "driveMotorSetup": {
+          "name": "frontLeftDrive",
+          "controllerType": "spark",
+          "motorType": "NEO",
+          "canId": 1,
+          "currentLimit": {
+            "val": 40,
+            "uom": "amps"
+          }
+        },
+        "steerMotorSetup": {
+          "name": "frontLeftSteer",
+          "controllerType": "spark",
+          "motorType": "NEO",
+          "canId": 2,
+          "inverted": false,
+          "currentLimit": {
+            "val": 20,
+            "uom": "amps"
+          }
+        },
+        "encoderId": 0,
+        "absoluteOffset": {
+          "val": 0,
+          "uom": "degrees"
+        },
+        "encoderInverted": true
+      },
+      "frontRight": {
+        "driveMotorSetup": {
+          "name": "frontRightDrive",
+          "controllerType": "spark",
+          "motorType": "NEO",
+          "canId": 7,
+          "currentLimit": {
+            "val": 40,
+            "uom": "amps"
+          }
+        },
+        "steerMotorSetup": {
+          "name": "frontRightSteer",
+          "controllerType": "spark",
+          "motorType": "NEO",
+          "canId": 8,
+          "inverted": false,
+          "currentLimit": {
+            "val": 20,
+            "uom": "amps"
+          }
+        },
+        "encoderId": 0,
+        "absoluteOffset": {
+          "val": 0,
+          "uom": "degrees"
+        },
+        "encoderInverted": true
+      },
+      "backLeft": {
+        "driveMotorSetup": {
+          "name": "backLeftDrive",
+          "controllerType": "spark",
+          "motorType": "NEO",
+          "canId": 3,
+          "currentLimit": {
+            "val": 40,
+            "uom": "amps"
+          }
+        },
+        "steerMotorSetup": {
+          "name": "backLeftSteer",
+          "controllerType": "spark",
+          "motorType": "NEO",
+          "canId": 4,
+          "inverted": false,
+          "currentLimit": {
+            "val": 20,
+            "uom": "amps"
+          }
+        },
+        "encoderId": 0,
+        "absoluteOffset": {
+          "val": 0,
+          "uom": "degrees"
+        },
+        "encoderInverted": true
+      },
+      "backRight": {
+        "driveMotorSetup": {
+          "name": "backRightDrive",
+          "controllerType": "spark",
+          "motorType": "NEO",
+          "canId": 5,
+          "currentLimit": {
+            "val": 40,
+            "uom": "amps"
+          }
+        },
+        "steerMotorSetup": {
+          "name": "backRightSteer",
+          "controllerType": "spark",
+          "motorType": "NEO",
+          "canId": 6,
+          "inverted": false,
+          "currentLimit": {
+            "val": 20,
+            "uom": "amps"
+          }
+        },
+        "encoderId": 0,
+        "absoluteOffset": {
+          "val": 0,
+          "uom": "degrees"
+        },
+        "encoderInverted": true
+      }
+    },
+    "coupleRatio": 1.0,
+    "invertLeftSide": true,
+    "invertRightSide": true,
+    "steerInertia": {
+      "val": 0.04,
+      "uom": "kg*m^2"
+    },
+    "driveInertia": {
+      "val": 0.025,
+      "uom": "kg*m^2"
+    },
+    "robotMass": {
+      "val": 75,
+      "uom": "kg"
+    },
+    "wheelCOF": 1.19,
+    "slipCurrent": {
+      "val": 40,
+      "uom": "amps"
+    },
+    "canbus": "",
+    "startingPose": {
+      "x": {
+        "val": 1.0,
+        "uom": "m"
+      },
+      "y": {
+        "val": 1.0,
+        "uom": "m"
+      },
+      "rotation": {
+        "val": 0.0,
+        "uom": "deg"
+      }
+    }
+  }
 }
