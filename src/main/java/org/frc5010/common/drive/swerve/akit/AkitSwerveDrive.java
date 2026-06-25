@@ -81,6 +81,17 @@ public class AkitSwerveDrive extends SwerveDriveFunctions {
   private SwerveDrivePoseEstimator poseEstimator;
   private final Consumer<Pose2d> resetSimulationPoseCallBack;
 
+  // Diagnostics: last commanded (optimized) module setpoints and chassis speeds. Logged every loop
+  // so setpoint-vs-measured is visible even while disabled, when SwerveStates/Setpoints is blanked.
+  private SwerveModuleState[] lastSetpointStates =
+      new SwerveModuleState[] {
+        new SwerveModuleState(),
+        new SwerveModuleState(),
+        new SwerveModuleState(),
+        new SwerveModuleState()
+      };
+  private ChassisSpeeds lastSetpointSpeeds = new ChassisSpeeds();
+
   public AkitSwerveDrive(
       AkitSwerveConfig config,
       GyroIO gyroIO,
@@ -192,6 +203,9 @@ public class AkitSwerveDrive extends SwerveDriveFunctions {
 
     // Update gyro alert
     gyroDisconnectedAlert.set(!gyroInputs.connected && Constants.CURRENT_MODE != Mode.SIM);
+
+    // Always-on swerve diagnostics (commanded vs measured per module).
+    logModuleDiagnostics();
   }
 
   /**
@@ -216,6 +230,30 @@ public class AkitSwerveDrive extends SwerveDriveFunctions {
 
     // Log optimized setpoints (runSetpoint mutates each state)
     Logger.recordOutput("SwerveStates/SetpointsOptimized", setpointStates);
+
+    // Retain the commanded setpoints for the always-on diagnostics in periodic().
+    lastSetpointStates = setpointStates;
+    lastSetpointSpeeds = speeds;
+  }
+
+  /**
+   * Logs per-module commanded-vs-measured azimuth and drive diagnostics every loop, independent of
+   * enable state, to make wrong-direction / tracking issues diagnosable from a log.
+   */
+  private void logModuleDiagnostics() {
+    for (int i = 0; i < 4; i++) {
+      SwerveModuleState measured = modules[i].getState();
+      SwerveModuleState setpoint = lastSetpointStates[i];
+      double angleErrorDeg = Math.abs(measured.angle.minus(setpoint.angle).getDegrees());
+      String base = "Drive/Diag/Module" + i + "/";
+      Logger.recordOutput(base + "SetpointAngleDeg", setpoint.angle.getDegrees());
+      Logger.recordOutput(base + "MeasuredAngleDeg", measured.angle.getDegrees());
+      Logger.recordOutput(base + "AngleErrorDeg", angleErrorDeg);
+      Logger.recordOutput(base + "SetpointSpeedMps", setpoint.speedMetersPerSecond);
+      Logger.recordOutput(base + "MeasuredSpeedMps", measured.speedMetersPerSecond);
+    }
+    Logger.recordOutput("Drive/Diag/ChassisSpeedsSetpoint", lastSetpointSpeeds);
+    Logger.recordOutput("Drive/Diag/ChassisSpeedsMeasured", getChassisSpeeds());
   }
 
   /** Runs the drive in a straight line with the specified drive output. */

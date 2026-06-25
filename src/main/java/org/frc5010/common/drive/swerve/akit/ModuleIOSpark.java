@@ -7,30 +7,13 @@
 
 package org.frc5010.common.drive.swerve.akit;
 
-import static org.frc5010.common.drive.swerve.akit.DriveConstants.backLeftDriveCanId;
-import static org.frc5010.common.drive.swerve.akit.DriveConstants.backLeftTurnCanId;
-import static org.frc5010.common.drive.swerve.akit.DriveConstants.backLeftZeroRotation;
-import static org.frc5010.common.drive.swerve.akit.DriveConstants.backRightDriveCanId;
-import static org.frc5010.common.drive.swerve.akit.DriveConstants.backRightTurnCanId;
-import static org.frc5010.common.drive.swerve.akit.DriveConstants.backRightZeroRotation;
-import static org.frc5010.common.drive.swerve.akit.DriveConstants.driveEncoderPositionFactor;
-import static org.frc5010.common.drive.swerve.akit.DriveConstants.driveEncoderVelocityFactor;
 import static org.frc5010.common.drive.swerve.akit.DriveConstants.driveKd;
 import static org.frc5010.common.drive.swerve.akit.DriveConstants.driveKp;
 import static org.frc5010.common.drive.swerve.akit.DriveConstants.driveKs;
 import static org.frc5010.common.drive.swerve.akit.DriveConstants.driveKv;
-import static org.frc5010.common.drive.swerve.akit.DriveConstants.driveMotorCurrentLimit;
-import static org.frc5010.common.drive.swerve.akit.DriveConstants.frontLeftDriveCanId;
-import static org.frc5010.common.drive.swerve.akit.DriveConstants.frontLeftTurnCanId;
-import static org.frc5010.common.drive.swerve.akit.DriveConstants.frontLeftZeroRotation;
-import static org.frc5010.common.drive.swerve.akit.DriveConstants.frontRightDriveCanId;
-import static org.frc5010.common.drive.swerve.akit.DriveConstants.frontRightTurnCanId;
-import static org.frc5010.common.drive.swerve.akit.DriveConstants.frontRightZeroRotation;
 import static org.frc5010.common.drive.swerve.akit.DriveConstants.odometryFrequency;
-import static org.frc5010.common.drive.swerve.akit.DriveConstants.turnEncoderInverted;
 import static org.frc5010.common.drive.swerve.akit.DriveConstants.turnEncoderPositionFactor;
 import static org.frc5010.common.drive.swerve.akit.DriveConstants.turnEncoderVelocityFactor;
-import static org.frc5010.common.drive.swerve.akit.DriveConstants.turnInverted;
 import static org.frc5010.common.drive.swerve.akit.DriveConstants.turnKd;
 import static org.frc5010.common.drive.swerve.akit.DriveConstants.turnKp;
 import static org.frc5010.common.drive.swerve.akit.DriveConstants.turnMotorCurrentLimit;
@@ -40,6 +23,9 @@ import static org.frc5010.common.drive.swerve.akit.util.SparkUtil.ifOk;
 import static org.frc5010.common.drive.swerve.akit.util.SparkUtil.sparkStickyFault;
 import static org.frc5010.common.drive.swerve.akit.util.SparkUtil.tryUntilOk;
 
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
@@ -59,12 +45,21 @@ import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Rotation2d;
 import java.util.Queue;
 import java.util.function.DoubleSupplier;
+import org.frc5010.common.drive.swerve.AkitSwerveConfig;
 
 /**
- * Module IO implementation for Spark Flex drive motor controller, Spark Max turn motor controller,
- * and duty cycle absolute encoder.
+ * Module IO implementation for a NEO (Spark Max) drive motor, NEO (Spark Max) turn motor, and an
+ * absolute encoder (e.g. Canandmag) read through the turn Spark's absolute-encoder port.
+ *
+ * <p>Hardware identity is read from the deploy JSON (via {@link AkitSwerveConfig} /
+ * {@link SwerveModuleConstants}): drive/steer CAN IDs, drive gear ratio, drive current limit, the
+ * motor/encoder inversions, and the absolute encoder zero offset. The closed-loop gains and the
+ * steer feedback wrapping remain in {@link DriveConstants} because they are expressed in
+ * AdvantageKit units (wheel rad/s, module radians) that are not interchangeable with the
+ * YAGSL-native gains stored elsewhere in the JSON.
  */
 public class ModuleIOSpark implements ModuleIO {
+  /** Absolute encoder zero offset, from the JSON {@code absoluteOffset}. */
   private final Rotation2d zeroRotation;
 
   // Hardware objects
@@ -86,35 +81,18 @@ public class ModuleIOSpark implements ModuleIO {
   private final Debouncer driveConnectedDebounce = new Debouncer(0.5);
   private final Debouncer turnConnectedDebounce = new Debouncer(0.5);
 
-  public ModuleIOSpark(int module) {
-    zeroRotation =
-        switch (module) {
-          case 0 -> frontLeftZeroRotation;
-          case 1 -> frontRightZeroRotation;
-          case 2 -> backLeftZeroRotation;
-          case 3 -> backRightZeroRotation;
-          default -> new Rotation2d();
-        };
-    driveSpark =
-        new SparkMax(
-            switch (module) {
-              case 0 -> frontLeftDriveCanId;
-              case 1 -> frontRightDriveCanId;
-              case 2 -> backLeftDriveCanId;
-              case 3 -> backRightDriveCanId;
-              default -> 0;
-            },
-            MotorType.kBrushless);
-    turnSpark =
-        new SparkMax(
-            switch (module) {
-              case 0 -> frontLeftTurnCanId;
-              case 1 -> frontRightTurnCanId;
-              case 2 -> backLeftTurnCanId;
-              case 3 -> backRightTurnCanId;
-              default -> 0;
-            },
-            MotorType.kBrushless);
+  public ModuleIOSpark(
+      AkitSwerveConfig config,
+      SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>
+          constants) {
+    zeroRotation = Rotation2d.fromRotations(constants.EncoderOffset);
+
+    // Rotor rotations -> wheel radians, using the JSON drive gear ratio.
+    double driveEncoderPositionFactor = 2 * Math.PI / constants.DriveMotorGearRatio;
+    double driveEncoderVelocityFactor = (2 * Math.PI) / 60.0 / constants.DriveMotorGearRatio;
+
+    driveSpark = new SparkMax(constants.DriveMotorId, MotorType.kBrushless);
+    turnSpark = new SparkMax(constants.SteerMotorId, MotorType.kBrushless);
     driveEncoder = driveSpark.getEncoder();
     turnEncoder = turnSpark.getAbsoluteEncoder();
     driveController = driveSpark.getClosedLoopController();
@@ -123,8 +101,9 @@ public class ModuleIOSpark implements ModuleIO {
     // Configure drive motor
     var driveConfig = new SparkMaxConfig();
     driveConfig
+        .inverted(constants.DriveMotorInverted)
         .idleMode(IdleMode.kBrake)
-        .smartCurrentLimit(driveMotorCurrentLimit)
+        .smartCurrentLimit((int) constants.SlipCurrent)
         .voltageCompensation(12.0);
     driveConfig
         .encoder
@@ -153,13 +132,13 @@ public class ModuleIOSpark implements ModuleIO {
     // Configure turn motor
     var turnConfig = new SparkMaxConfig();
     turnConfig
-        .inverted(turnInverted)
+        .inverted(constants.SteerMotorInverted)
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(turnMotorCurrentLimit)
         .voltageCompensation(12.0);
     turnConfig
         .absoluteEncoder
-        .inverted(turnEncoderInverted)
+        .inverted(constants.EncoderInverted)
         .positionConversionFactor(turnEncoderPositionFactor)
         .velocityConversionFactor(turnEncoderVelocityFactor)
         .averageDepth(2);
@@ -213,7 +192,11 @@ public class ModuleIOSpark implements ModuleIO {
         turnSpark,
         turnEncoder::getPosition,
         (value) -> {
-          inputs.turnAbsolutePosition = new Rotation2d(value).minus(zeroRotation);
+          Rotation2d raw = new Rotation2d(value);
+          // Raw reading is logged for offset calibration: with the wheel pointed forward, the
+          // reported raw angle (deg) is the value to copy into the module's JSON absoluteOffset.
+          inputs.turnRawAbsolutePosition = raw;
+          inputs.turnAbsolutePosition = raw.minus(zeroRotation);
           // The steering closed loop runs on the absolute encoder and there is no separate relative
           // turn encoder, so turnPosition mirrors the absolute position. Without this, turnPosition
           // stays at 0, which makes Module.getAngle()/cosineScale think the wheel is always at 0 -
