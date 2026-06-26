@@ -5,7 +5,7 @@
     "controllerType": "Spark",
     "motorType": "Neo",
     "canId": 12,
-    "inverted": false,
+    "inverted": true,
     "idleMode": "BRAKE",
     "currentLimit": {
       "val": 40,
