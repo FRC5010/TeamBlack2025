@@ -60,7 +60,7 @@ public class BlackRobot extends GenericRobot {
     new Trigger(DriverStation::isTeleopEnabled)
         .onTrue(Commands.run(() -> LEDStrip.setSegmentActive(FEEDER_LED, true)));
     driver
-        .createAButton()
+        .createLeftBumper()
         .whileTrue(
             (lowerFlyWheel
                     .set(SPEED1)
@@ -98,7 +98,7 @@ public class BlackRobot extends GenericRobot {
                     })
                 .finallyDo(() -> LEDStrip.setSegmentActive(SHOOTER_LED, false)));
     driver
-        .createBButton()
+        .createRightBumper()
         .whileTrue(
             lowerFlyWheel
                 .set(SPEED4)
@@ -110,22 +110,7 @@ public class BlackRobot extends GenericRobot {
                     })
                 .finallyDo(() -> LEDStrip.setSegmentActive(SHOOTER_LED, false)));
 
-    driver.A_BUTTON.onFalse(
-        lowerFlyWheel
-            .set(0)
-            .alongWith(upperFlyWheel.set(0))
-            .beforeStarting(() -> LEDStrip.setSegmentActive(SHOOTER_LED, false)));
-    driver.B_BUTTON.onFalse(
-        lowerFlyWheel
-            .set(0)
-            .alongWith(upperFlyWheel.set(0))
-            .beforeStarting(() -> LEDStrip.setSegmentActive(SHOOTER_LED, false)));
-    driver.X_BUTTON.onFalse(
-        lowerFlyWheel
-            .set(0)
-            .alongWith(upperFlyWheel.set(0))
-            .beforeStarting(() -> LEDStrip.setSegmentActive(SHOOTER_LED, false)));
-    driver.Y_BUTTON.onFalse(
+    driver.createBButton().onFalse(
         lowerFlyWheel
             .set(0)
             .alongWith(upperFlyWheel.set(0))
@@ -134,26 +119,7 @@ public class BlackRobot extends GenericRobot {
     // driver.createBackButton().whileTrue(lowerFlyWheel.systemID());
     // driver.createStartButton().whileTrue(upperFlyWheel.systemID());
     driver
-        .createLeftBumper()
-        .whileTrue(
-            feeder
-                .setSpeed(-0.5)
-                .beforeStarting(
-                    () -> {
-                      LEDStrip.setSegmentActive(FEEDER_LED, true);
-                      LEDStrip.changeSegmentPattern(
-                          FEEDER_LED,
-                          LEDStrip.getSolidPattern(Color.kGreen).blink(Seconds.of(.25)));
-                    })
-                .finallyDo(
-                    () ->
-                        LEDStrip.changeSegmentPattern(
-                            FEEDER_LED, LEDStrip.getSolidPattern(Color.kRed))));
-
-    driver.LEFT_BUMPER.onFalse(feeder.setSpeed(0));
-
-    driver
-        .createRightBumper()
+        .createAButton()
         .whileTrue(
             feeder
                 .setSpeed(0.5)
@@ -169,7 +135,26 @@ public class BlackRobot extends GenericRobot {
                         LEDStrip.changeSegmentPattern(
                             FEEDER_LED, LEDStrip.getSolidPattern(Color.kRed))));
 
-    driver.RIGHT_BUMPER.onFalse(feeder.setSpeed(0));
+    driver.A_BUTTON.onFalse(feeder.setSpeed(0));
+
+    driver
+        .createStartButton()
+        .whileTrue(
+            feeder
+                .setSpeed(-0.5)
+                .beforeStarting(
+                    () -> {
+                      LEDStrip.setSegmentActive(FEEDER_LED, true);
+                      LEDStrip.changeSegmentPattern(
+                          FEEDER_LED,
+                          LEDStrip.getSolidPattern(Color.kGreen).blink(Seconds.of(.25)));
+                    })
+                .finallyDo(
+                    () ->
+                        LEDStrip.changeSegmentPattern(
+                            FEEDER_LED, LEDStrip.getSolidPattern(Color.kRed))));
+
+    driver.START_BUTTON.onFalse(feeder.setSpeed(0));
 
     State prep =
         flyWheelStateMachine.addState(
