@@ -227,55 +227,56 @@ public class LEDStrip extends GenericSubsystem {
   }
 
   /**
-   * Adds a pattern to the LED strip with the given name, starting at the given index and spanning
-   * the given length. The pattern is active by default. If the name already corresponds to a
-   * pattern, this method does nothing.
+   * Adds a pattern to the LED strip with the given name, spanning the LEDs from the given start
+   * index to the given end index (inclusive). The pattern is active by default. If the name already
+   * corresponds to a pattern, this method does nothing.
    *
    * @param name The name of the pattern to add
    * @param pattern The pattern to add
    * @param startIndex The starting index of the pattern
-   * @param length The length of the pattern
+   * @param endIndex The ending index of the pattern (inclusive)
    */
-  public static void addSegment(String name, LEDPattern pattern, int startIndex, int length) {
+  public static void addSegment(String name, LEDPattern pattern, int startIndex, int endIndex) {
     if (null == instance) {
       return;
     }
-    AddressableLEDBufferView view = instance.m_buffer.createView(startIndex, length);
+    AddressableLEDBufferView view = instance.m_buffer.createView(startIndex, endIndex);
     segments.put(name, Segment.create().setView(view).setPattern(pattern).setActive(true));
   }
 
   /**
-   * Adds a pattern to the LED strip with the given name, starting at the given index and spanning
-   * the given length. If the name already corresponds to a pattern, this method does nothing.
+   * Adds a pattern to the LED strip with the given name, spanning the LEDs from the given start
+   * index to the given end index (inclusive). If the name already corresponds to a pattern, this
+   * method does nothing.
    *
    * @param name The name of the pattern to add
    * @param startIndex The starting index of the pattern
-   * @param length The length of the pattern
+   * @param endIndex The ending index of the pattern (inclusive)
    */
-  public static void addSegment(String name, int startIndex, int length) {
+  public static void addSegment(String name, int startIndex, int endIndex) {
     if (null == instance) {
       return;
     }
-    AddressableLEDBufferView view = instance.m_buffer.createView(startIndex, length);
+    AddressableLEDBufferView view = instance.m_buffer.createView(startIndex, endIndex);
     segments.put(name, Segment.create().setView(view).setPattern(LEDPattern.kOff).setActive(false));
   }
 
   /**
-   * Adds a pattern to the LED strip with the given name, starting at the given index and spanning
-   * the given length. The pattern is active by default. If the name already corresponds to a
-   * pattern, this method does nothing.
+   * Adds a pattern to the LED strip with the given name, spanning the LEDs from the given start
+   * index to the given end index (inclusive). The pattern is active by default. If the name already
+   * corresponds to a pattern, this method does nothing.
    *
    * @param name The name of the pattern to add
    * @param startIndex The starting index of the pattern
-   * @param length The length of the pattern
+   * @param endIndex The ending index of the pattern (inclusive)
    * @param order The order in which the pattern will be displayed. Lower order patterns will be
    *     displayed before higher order patterns.
    */
-  public static void addSegment(String name, int startIndex, int length, int order) {
+  public static void addSegment(String name, int startIndex, int endIndex, int order) {
     if (null == instance) {
       return;
     }
-    AddressableLEDBufferView view = instance.m_buffer.createView(startIndex, length);
+    AddressableLEDBufferView view = instance.m_buffer.createView(startIndex, endIndex);
     segments.put(
         name,
         Segment.create()
@@ -414,7 +415,7 @@ public class LEDStrip extends GenericSubsystem {
             Color.kBlack,
             bandCenter - (percentWidth / 2),
             Color.kWhite,
-            bandCenter - (percentWidth / 2),
+            bandCenter + (percentWidth / 2),
             Color.kBlack);
     LEDPattern mask =
         LEDPattern.steps(maskSteps)
