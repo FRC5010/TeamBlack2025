@@ -1,12 +1,12 @@
 {
   "drive": {
     "type": "neo",
-    "id": 7,
+    "id": 17,
     "canbus": null
   },
   "angle": {
     "type": "neo",
-    "id": 8,
+    "id": 6,
     "canbus": null
   },
   "encoder": {

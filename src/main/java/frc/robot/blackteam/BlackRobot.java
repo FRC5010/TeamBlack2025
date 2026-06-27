@@ -104,11 +104,13 @@ public class BlackRobot extends GenericRobot {
                     })
                 .finallyDo(() -> LEDStrip.setSegmentActive(SHOOTER_LED, false)));
 
-    driver.createBButton().onFalse(
-        lowerFlyWheel
-            .set(0)
-            .alongWith(upperFlyWheel.set(0))
-            .beforeStarting(() -> LEDStrip.setSegmentActive(SHOOTER_LED, false)));
+    driver
+        .createBButton()
+        .onFalse(
+            lowerFlyWheel
+                .set(0)
+                .alongWith(upperFlyWheel.set(0))
+                .beforeStarting(() -> LEDStrip.setSegmentActive(SHOOTER_LED, false)));
 
     // driver.createBackButton().whileTrue(lowerFlyWheel.systemID());
     // driver.createStartButton().whileTrue(upperFlyWheel.systemID());
