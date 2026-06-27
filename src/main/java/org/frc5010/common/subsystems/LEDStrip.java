@@ -352,6 +352,25 @@ public class LEDStrip extends GenericSubsystem {
   }
 
   /**
+   * Returns a scrolling "laser" pattern: a narrow bright band of the given color that sweeps along
+   * the segment over an unlit (black) background.
+   *
+   * @param color the color of the laser band
+   * @param percentWidth the width of the laser band, as a fraction (0.0-1.0) of the segment's length
+   * @param percentScrollingSpeed the speed at which the band sweeps, as a percentage of the
+   *     segment's length per second
+   * @return the new scrolling laser pattern
+   */
+  public static LEDPattern getLaserPattern(
+      Color color, double percentWidth, double percentScrollingSpeed) {
+    Map<Double, Color> maskSteps = Map.of(0.0, Color.kWhite, percentWidth, Color.kBlack);
+    LEDPattern mask =
+        LEDPattern.steps(maskSteps)
+            .scrollAtRelativeSpeed(Percent.per(Second).of(percentScrollingSpeed));
+    return LEDPattern.solid(color).mask(mask);
+  }
+
+  /**
    * Returns a new LEDPattern that masks the given base pattern with a band of given visibility and
    * scrolling speed. The mask has a band of white (visible) that is percentVisible of the pattern's
    * length wide, centered at percentVisible of the pattern's length from the start of the pattern.

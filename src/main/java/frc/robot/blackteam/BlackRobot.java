@@ -1,14 +1,11 @@
 package frc.robot.blackteam;
 
 import static edu.wpi.first.units.Units.RPM;
-import static edu.wpi.first.units.Units.Seconds;
 
 import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.frc5010.common.arch.GenericRobot;
 import org.frc5010.common.arch.StateMachine;
 import org.frc5010.common.arch.StateMachine.State;
@@ -56,9 +53,6 @@ public class BlackRobot extends GenericRobot {
         .onTrue(Commands.runOnce(() -> drivetrain.toggleFieldOrientedDrive()));
     // driver.setRightTrigger(driver.createRightTrigger().cubed().deadzone(0.05).scale(0.35));
     // driver.setLeftTrigger(driver.createLeftTrigger().cubed().deadzone(0.05).scale(0.35));
-    LEDStrip.setSegmentActive(FEEDER_LED, false);
-    new Trigger(DriverStation::isTeleopEnabled)
-        .onTrue(Commands.run(() -> LEDStrip.setSegmentActive(FEEDER_LED, true)));
     driver
         .createLeftBumper()
         .whileTrue(
@@ -127,13 +121,9 @@ public class BlackRobot extends GenericRobot {
                     () -> {
                       LEDStrip.setSegmentActive(FEEDER_LED, true);
                       LEDStrip.changeSegmentPattern(
-                          FEEDER_LED,
-                          LEDStrip.getSolidPattern(Color.kGreen).blink(Seconds.of(.25)));
+                          FEEDER_LED, LEDStrip.getLaserPattern(Color.kGreen, 0.2, 150));
                     })
-                .finallyDo(
-                    () ->
-                        LEDStrip.changeSegmentPattern(
-                            FEEDER_LED, LEDStrip.getSolidPattern(Color.kRed))));
+                .finallyDo(() -> LEDStrip.setSegmentActive(FEEDER_LED, false)));
 
     driver.A_BUTTON.onFalse(feeder.setSpeed(0));
 
@@ -146,13 +136,9 @@ public class BlackRobot extends GenericRobot {
                     () -> {
                       LEDStrip.setSegmentActive(FEEDER_LED, true);
                       LEDStrip.changeSegmentPattern(
-                          FEEDER_LED,
-                          LEDStrip.getSolidPattern(Color.kGreen).blink(Seconds.of(.25)));
+                          FEEDER_LED, LEDStrip.getLaserPattern(Color.kGreen, 0.2, 150));
                     })
-                .finallyDo(
-                    () ->
-                        LEDStrip.changeSegmentPattern(
-                            FEEDER_LED, LEDStrip.getSolidPattern(Color.kRed))));
+                .finallyDo(() -> LEDStrip.setSegmentActive(FEEDER_LED, false)));
 
     driver.START_BUTTON.onFalse(feeder.setSpeed(0));
 
