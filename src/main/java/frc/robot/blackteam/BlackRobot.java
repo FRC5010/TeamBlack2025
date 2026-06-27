@@ -19,7 +19,7 @@ public class BlackRobot extends GenericRobot {
   private LowerFlyWheel lowerFlyWheel;
   private UpperFlyWheel upperFlyWheel;
   private StateMachine flyWheelStateMachine = new StateMachine(logPrefix);
-  private final double SPEED1 = 0.15;
+  private final double SPEED1 = 0.20;
   private final double SPEED2 = 0.35;
   private final double SPEED3 = 0.16;
   private final double SPEED4 = 0.17;
@@ -66,43 +66,46 @@ public class BlackRobot extends GenericRobot {
                               SHOOTER_LED, LEDStrip.getRainbowPattern(50));
                         }))
                 .finallyDo(() -> LEDStrip.setSegmentActive(SHOOTER_LED, false)));
-    driver
-        .createXButton()
-        .whileTrue(
-            lowerFlyWheel
-                .set(SPEED2)
-                .alongWith(upperFlyWheel.set(SPEED2 - UPPEROFFSET))
-                .beforeStarting(
-                    () -> {
-                      LEDStrip.setSegmentActive(SHOOTER_LED, true);
-                      LEDStrip.changeSegmentPattern(SHOOTER_LED, LEDStrip.getRainbowPattern(100));
-                    })
-                .finallyDo(() -> LEDStrip.setSegmentActive(SHOOTER_LED, false)));
+    // driver
+    //     .createXButton()
+    //     .whileTrue(
+    //         lowerFlyWheel
+    //             .set(SPEED2)
+    //             .alongWith(upperFlyWheel.set(SPEED2 - UPPEROFFSET))
+    //             .beforeStarting(
+    //                 () -> {
+    //                   LEDStrip.setSegmentActive(SHOOTER_LED, true);
+    //                   LEDStrip.changeSegmentPattern(SHOOTER_LED,
+    // LEDStrip.getRainbowPattern(100));
+    //                 })
+    //             .finallyDo(() -> LEDStrip.setSegmentActive(SHOOTER_LED, false)));
 
-    driver
-        .createYButton()
-        .whileTrue(
-            lowerFlyWheel
-                .set(SPEED3)
-                .alongWith(upperFlyWheel.set(SPEED3 - UPPEROFFSET))
-                .beforeStarting(
-                    () -> {
-                      LEDStrip.setSegmentActive(SHOOTER_LED, true);
-                      LEDStrip.changeSegmentPattern(SHOOTER_LED, LEDStrip.getRainbowPattern(100));
-                    })
-                .finallyDo(() -> LEDStrip.setSegmentActive(SHOOTER_LED, false)));
-    driver
-        .createRightBumper()
-        .whileTrue(
-            lowerFlyWheel
-                .set(SPEED4)
-                .alongWith(upperFlyWheel.set(SPEED4 - UPPEROFFSET))
-                .beforeStarting(
-                    () -> {
-                      LEDStrip.setSegmentActive(SHOOTER_LED, true);
-                      LEDStrip.changeSegmentPattern(SHOOTER_LED, LEDStrip.getRainbowPattern(200));
-                    })
-                .finallyDo(() -> LEDStrip.setSegmentActive(SHOOTER_LED, false)));
+    // driver
+    //     .createYButton()
+    //     .whileTrue(
+    //         lowerFlyWheel
+    //             .set(SPEED3)
+    //             .alongWith(upperFlyWheel.set(SPEED3 - UPPEROFFSET))
+    //             .beforeStarting(
+    //                 () -> {
+    //                   LEDStrip.setSegmentActive(SHOOTER_LED, true);
+    //                   LEDStrip.changeSegmentPattern(SHOOTER_LED,
+    // LEDStrip.getRainbowPattern(100));
+    //                 })
+    //             .finallyDo(() -> LEDStrip.setSegmentActive(SHOOTER_LED, false)));
+    // driver
+    //     .createRightBumper()
+    //     .whileTrue(
+    //         lowerFlyWheel
+    //             .set(SPEED4)
+    //             .alongWith(upperFlyWheel.set(SPEED4 - UPPEROFFSET))
+    //             .beforeStarting(
+    //                 () -> {
+    //                   LEDStrip.setSegmentActive(SHOOTER_LED, true);
+    //                   LEDStrip.changeSegmentPattern(SHOOTER_LED,
+    // LEDStrip.getRainbowPattern(200));
+    //                 })
+    //             .finallyDo(() -> LEDStrip.setSegmentActive(SHOOTER_LED, false)));
 
     driver
         .createBButton()
