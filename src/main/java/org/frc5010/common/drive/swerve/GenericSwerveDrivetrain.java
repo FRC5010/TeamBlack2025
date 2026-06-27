@@ -83,6 +83,10 @@ public class GenericSwerveDrivetrain extends GenericDrivetrain {
     setDrivetrainPoseEstimator(swerveDrive.initializePoseEstimator());
     initializeSimulation(swerveConstants);
     driveTrainSimulationSupplier = swerveDrive.getDriveTrainSimulationSupplier();
+
+    // Expose the deterministic azimuth diagnostic as a dashboard button so it can be run
+    // (while enabled, robot on blocks) without entering Test mode.
+    SmartDashboard.putData("Azimuth Step Test", azimuthStepTestCommand());
   }
 
   @Override
