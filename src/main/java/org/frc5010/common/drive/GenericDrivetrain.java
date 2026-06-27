@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -255,6 +256,17 @@ public abstract class GenericDrivetrain extends GenericSubsystem {
         () -> driver.getLeftXAxis(),
         () -> driver.getRightXAxis(),
         () -> isFieldOrientedDrive.getValue());
+  }
+
+  /**
+   * Deterministic azimuth diagnostic command. Drivetrains that support direct azimuth control
+   * (e.g. swerve) override this to step the modules through a fixed sequence of angles; the default
+   * implementation does nothing.
+   *
+   * @return the azimuth step-test command
+   */
+  public Command azimuthStepTestCommand() {
+    return Commands.none();
   }
 
   /** Resets the encoders */

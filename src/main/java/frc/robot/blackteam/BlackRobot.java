@@ -164,6 +164,12 @@ public class BlackRobot extends GenericRobot {
   }
 
   @Override
+  public void configureAltButtonBindings(Controller driver, Controller operator) {
+    // Test-mode diagnostics: run the deterministic azimuth step test (robot on blocks).
+    driver.createAButton().onTrue(drivetrain.azimuthStepTestCommand());
+  }
+
+  @Override
   public void setupDefaultCommands(Controller driver, Controller operator) {
     // lowerFlyWheel.setDefaultCommand(lowerFlyWheel.joyStickControl(() ->
     // driver.getRightTrigger()));

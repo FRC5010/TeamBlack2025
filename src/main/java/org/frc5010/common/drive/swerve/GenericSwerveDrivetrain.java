@@ -803,6 +803,7 @@ public class GenericSwerveDrivetrain extends GenericDrivetrain {
    *
    * @return the step-test command (requires this drivetrain, interrupting the default drive command)
    */
+  @Override
   public Command azimuthStepTestCommand() {
     Command sequence = Commands.none();
     for (double angle : AZIMUTH_TEST_ANGLES) {
