@@ -1,14 +1,11 @@
 package frc.robot.blackteam;
 
 import static edu.wpi.first.units.Units.RPM;
-import static edu.wpi.first.units.Units.Seconds;
 
 import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.frc5010.common.arch.GenericRobot;
 import org.frc5010.common.arch.StateMachine;
 import org.frc5010.common.arch.StateMachine.State;
@@ -54,24 +51,21 @@ public class BlackRobot extends GenericRobot {
     driver
         .createRightStickButton()
         .onTrue(Commands.runOnce(() -> drivetrain.toggleFieldOrientedDrive()));
-    driver.setRightTrigger(driver.createRightTrigger().cubed().deadzone(0.05).scale(0.35));
-    driver.setLeftTrigger(driver.createLeftTrigger().cubed().deadzone(0.05).scale(0.35));
-    LEDStrip.setSegmentActive(FEEDER_LED, false);
-    new Trigger(DriverStation::isTeleopEnabled)
-        .onTrue(Commands.run(() -> LEDStrip.setSegmentActive(FEEDER_LED, true)));
+    // driver.setRightTrigger(driver.createRightTrigger().cubed().deadzone(0.05).scale(0.35));
+    // driver.setLeftTrigger(driver.createLeftTrigger().cubed().deadzone(0.05).scale(0.35));
     driver
-        .createAButton()
+        .createLeftBumper()
         .whileTrue(
-            lowerFlyWheel
-                .set(SPEED1)
-                .alongWith(upperFlyWheel.set(SPEED1 - UPPEROFFSET))
-                .beforeStarting(
-                    () -> {
-                      LEDStrip.setSegmentActive(SHOOTER_LED, true);
-                      LEDStrip.changeSegmentPattern(SHOOTER_LED, LEDStrip.getRainbowPattern(50));
-                    })
+            (lowerFlyWheel
+                    .set(SPEED1)
+                    .alongWith(upperFlyWheel.set(SPEED1 - UPPEROFFSET))
+                    .beforeStarting(
+                        () -> {
+                          LEDStrip.setSegmentActive(SHOOTER_LED, true);
+                          LEDStrip.changeSegmentPattern(
+                              SHOOTER_LED, LEDStrip.getRainbowPattern(50));
+                        }))
                 .finallyDo(() -> LEDStrip.setSegmentActive(SHOOTER_LED, false)));
-
     driver
         .createXButton()
         .whileTrue(
@@ -98,7 +92,7 @@ public class BlackRobot extends GenericRobot {
                     })
                 .finallyDo(() -> LEDStrip.setSegmentActive(SHOOTER_LED, false)));
     driver
-        .createBButton()
+        .createRightBumper()
         .whileTrue(
             lowerFlyWheel
                 .set(SPEED4)
@@ -110,29 +104,16 @@ public class BlackRobot extends GenericRobot {
                     })
                 .finallyDo(() -> LEDStrip.setSegmentActive(SHOOTER_LED, false)));
 
-    driver.createBackButton().whileTrue(lowerFlyWheel.systemID());
-    driver.createStartButton().whileTrue(upperFlyWheel.systemID());
-    driver
-        .createLeftBumper()
-        .whileTrue(
-            feeder
-                .setSpeed(-0.5)
-                .beforeStarting(
-                    () -> {
-                      LEDStrip.setSegmentActive(FEEDER_LED, true);
-                      LEDStrip.changeSegmentPattern(
-                          FEEDER_LED,
-                          LEDStrip.getSolidPattern(Color.kGreen).blink(Seconds.of(.25)));
-                    })
-                .finallyDo(
-                    () ->
-                        LEDStrip.changeSegmentPattern(
-                            FEEDER_LED, LEDStrip.getSolidPattern(Color.kRed))));
+    driver.createBButton().onFalse(
+        lowerFlyWheel
+            .set(0)
+            .alongWith(upperFlyWheel.set(0))
+            .beforeStarting(() -> LEDStrip.setSegmentActive(SHOOTER_LED, false)));
 
-    driver.LEFT_BUMPER.onFalse(feeder.setSpeed(0));
-
+    // driver.createBackButton().whileTrue(lowerFlyWheel.systemID());
+    // driver.createStartButton().whileTrue(upperFlyWheel.systemID());
     driver
-        .createRightBumper()
+        .createAButton()
         .whileTrue(
             feeder
                 .setSpeed(0.5)
@@ -140,15 +121,26 @@ public class BlackRobot extends GenericRobot {
                     () -> {
                       LEDStrip.setSegmentActive(FEEDER_LED, true);
                       LEDStrip.changeSegmentPattern(
-                          FEEDER_LED,
-                          LEDStrip.getSolidPattern(Color.kGreen).blink(Seconds.of(.25)));
+                          FEEDER_LED, LEDStrip.getLaserPattern(Color.kGreen, 0.2, 150));
                     })
-                .finallyDo(
-                    () ->
-                        LEDStrip.changeSegmentPattern(
-                            FEEDER_LED, LEDStrip.getSolidPattern(Color.kRed))));
+                .finallyDo(() -> LEDStrip.setSegmentActive(FEEDER_LED, false)));
 
-    driver.RIGHT_BUMPER.onFalse(feeder.setSpeed(0));
+    driver.A_BUTTON.onFalse(feeder.setSpeed(0));
+
+    driver
+        .createStartButton()
+        .whileTrue(
+            feeder
+                .setSpeed(-0.5)
+                .beforeStarting(
+                    () -> {
+                      LEDStrip.setSegmentActive(FEEDER_LED, true);
+                      LEDStrip.changeSegmentPattern(
+                          FEEDER_LED, LEDStrip.getLaserPattern(Color.kGreen, 0.2, 150));
+                    })
+                .finallyDo(() -> LEDStrip.setSegmentActive(FEEDER_LED, false)));
+
+    driver.START_BUTTON.onFalse(feeder.setSpeed(0));
 
     State prep =
         flyWheelStateMachine.addState(
@@ -172,9 +164,17 @@ public class BlackRobot extends GenericRobot {
   }
 
   @Override
+  public void configureAltButtonBindings(Controller driver, Controller operator) {
+    // Test-mode diagnostics: run the deterministic azimuth step test (robot on blocks).
+    driver.createAButton().onTrue(drivetrain.azimuthStepTestCommand());
+  }
+
+  @Override
   public void setupDefaultCommands(Controller driver, Controller operator) {
-    lowerFlyWheel.setDefaultCommand(lowerFlyWheel.joyStickControl(() -> driver.getRightTrigger()));
-    upperFlyWheel.setDefaultCommand(upperFlyWheel.joyStickControl(() -> driver.getLeftTrigger()));
+    // lowerFlyWheel.setDefaultCommand(lowerFlyWheel.joyStickControl(() ->
+    // driver.getRightTrigger()));
+    // upperFlyWheel.setDefaultCommand(upperFlyWheel.joyStickControl(() ->
+    // driver.getLeftTrigger()));
 
     drivetrain.setDefaultCommand(drivetrain.createDefaultCommand(driver));
   }

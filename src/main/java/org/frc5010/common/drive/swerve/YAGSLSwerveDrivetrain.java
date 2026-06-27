@@ -13,6 +13,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.DriveFeedforwards;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -44,6 +45,7 @@ import java.util.function.Supplier;
 import org.frc5010.common.constants.GenericDrivetrainConstants;
 import org.frc5010.common.drive.pose.DrivePoseEstimator;
 import org.frc5010.common.drive.pose.SwerveFunctionsPose;
+import org.littletonrobotics.junction.Logger;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
 import swervelib.SwerveDriveTest;
@@ -610,6 +612,90 @@ public class YAGSLSwerveDrivetrain extends SwerveDriveFunctions {
       moduleInfos[i] = new GenericSwerveModuleInfo(modules[i]);
     }
     return moduleInfos;
+  }
+
+  /** Azimuth error (deg) above which a settled module is flagged as misaligned. */
+  private static final double AZIMUTH_ERROR_TOLERANCE_DEG = 5.0;
+
+  /** Steer velocity (deg/s) below which a module is considered settled (not slewing). */
+  private static final double AZIMUTH_SETTLED_VELOCITY_DPS = 10.0;
+
+  @Override
+  public void periodic() {
+    logModuleDiagnostics();
+  }
+
+  /**
+   * Commands every module's azimuth to the same absolute angle. Intended for deterministic
+   * diagnostics (see {@code azimuthStepTestCommand}); the drive motors are left untouched.
+   *
+   * @param degrees the absolute steer angle to command, in degrees
+   */
+  @Override
+  public void pointModulesAt(double degrees) {
+    for (SwerveModule module : swerveDrive.getModules()) {
+      module.setAngle(degrees);
+    }
+  }
+
+  /**
+   * Logs per-module azimuth diagnostics under {@code Swerve/Diag/*} so desired-vs-actual rotation
+   * can be reviewed live in AdvantageScope and replayed from the log. Only runs when the YAGSL
+   * telemetry verbosity is HIGH or above, matching the rest of the swerve high-verbosity logging.
+   */
+  private void logModuleDiagnostics() {
+    if (SwerveDriveTelemetry.verbosity.ordinal() < TelemetryVerbosity.HIGH.ordinal()) {
+      return;
+    }
+    SwerveModule[] modules = swerveDrive.getModules();
+    SwerveModuleState[] desiredStates = SwerveDriveTelemetry.desiredStatesObj;
+    int count = modules.length;
+    double[] desiredDeg = new double[count];
+    double[] measuredDeg = new double[count];
+    double[] errorDeg = new double[count];
+    double[] absMinusRelDeg = new double[count];
+    double[] steerAppliedOutput = new double[count];
+    double[] steerVoltage = new double[count];
+    double[] steerVelocityDps = new double[count];
+    boolean[] absoluteEncoderReadIssue = new boolean[count];
+    boolean[] misaligned = new boolean[count];
+    double maxAbsErrorDeg = 0.0;
+    for (int i = 0; i < count; i++) {
+      SwerveModule module = modules[i];
+      double measured = module.getAbsolutePosition();
+      double relative = module.getRelativePosition();
+      // Use YAGSL's post-optimization commanded state as the true target; fall back to the
+      // measured state on the first loops before any command has been issued.
+      double desired =
+          (desiredStates != null && i < desiredStates.length && desiredStates[i] != null)
+              ? desiredStates[i].angle.getDegrees()
+              : module.getState().angle.getDegrees();
+      double error = MathUtil.inputModulus(desired - measured, -180.0, 180.0);
+      double steerVel = module.getAngleMotor().getVelocity();
+
+      desiredDeg[i] = desired;
+      measuredDeg[i] = measured;
+      errorDeg[i] = error;
+      absMinusRelDeg[i] = MathUtil.inputModulus(measured - relative, -180.0, 180.0);
+      steerAppliedOutput[i] = module.getAngleMotor().getAppliedOutput();
+      steerVoltage[i] = module.getAngleMotor().getVoltage();
+      steerVelocityDps[i] = steerVel;
+      absoluteEncoderReadIssue[i] = module.getAbsoluteEncoderReadIssue();
+      misaligned[i] =
+          Math.abs(error) > AZIMUTH_ERROR_TOLERANCE_DEG
+              && Math.abs(steerVel) < AZIMUTH_SETTLED_VELOCITY_DPS;
+      maxAbsErrorDeg = Math.max(maxAbsErrorDeg, Math.abs(error));
+    }
+    Logger.recordOutput("Swerve/Diag/desiredAngleDeg", desiredDeg);
+    Logger.recordOutput("Swerve/Diag/measuredAngleDeg", measuredDeg);
+    Logger.recordOutput("Swerve/Diag/errorDeg", errorDeg);
+    Logger.recordOutput("Swerve/Diag/absMinusRelDeg", absMinusRelDeg);
+    Logger.recordOutput("Swerve/Diag/steerAppliedOutput", steerAppliedOutput);
+    Logger.recordOutput("Swerve/Diag/steerVoltage", steerVoltage);
+    Logger.recordOutput("Swerve/Diag/steerVelocityDps", steerVelocityDps);
+    Logger.recordOutput("Swerve/Diag/absoluteEncoderReadIssue", absoluteEncoderReadIssue);
+    Logger.recordOutput("Swerve/Diag/misaligned", misaligned);
+    Logger.recordOutput("Swerve/Diag/maxAbsErrorDeg", maxAbsErrorDeg);
   }
 
   @Override

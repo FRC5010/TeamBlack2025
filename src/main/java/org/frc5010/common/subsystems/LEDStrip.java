@@ -227,55 +227,56 @@ public class LEDStrip extends GenericSubsystem {
   }
 
   /**
-   * Adds a pattern to the LED strip with the given name, starting at the given index and spanning
-   * the given length. The pattern is active by default. If the name already corresponds to a
-   * pattern, this method does nothing.
+   * Adds a pattern to the LED strip with the given name, spanning the LEDs from the given start
+   * index to the given end index (inclusive). The pattern is active by default. If the name already
+   * corresponds to a pattern, this method does nothing.
    *
    * @param name The name of the pattern to add
    * @param pattern The pattern to add
    * @param startIndex The starting index of the pattern
-   * @param length The length of the pattern
+   * @param endIndex The ending index of the pattern (inclusive)
    */
-  public static void addSegment(String name, LEDPattern pattern, int startIndex, int length) {
+  public static void addSegment(String name, LEDPattern pattern, int startIndex, int endIndex) {
     if (null == instance) {
       return;
     }
-    AddressableLEDBufferView view = instance.m_buffer.createView(startIndex, length);
+    AddressableLEDBufferView view = instance.m_buffer.createView(startIndex, endIndex);
     segments.put(name, Segment.create().setView(view).setPattern(pattern).setActive(true));
   }
 
   /**
-   * Adds a pattern to the LED strip with the given name, starting at the given index and spanning
-   * the given length. If the name already corresponds to a pattern, this method does nothing.
+   * Adds a pattern to the LED strip with the given name, spanning the LEDs from the given start
+   * index to the given end index (inclusive). If the name already corresponds to a pattern, this
+   * method does nothing.
    *
    * @param name The name of the pattern to add
    * @param startIndex The starting index of the pattern
-   * @param length The length of the pattern
+   * @param endIndex The ending index of the pattern (inclusive)
    */
-  public static void addSegment(String name, int startIndex, int length) {
+  public static void addSegment(String name, int startIndex, int endIndex) {
     if (null == instance) {
       return;
     }
-    AddressableLEDBufferView view = instance.m_buffer.createView(startIndex, length);
+    AddressableLEDBufferView view = instance.m_buffer.createView(startIndex, endIndex);
     segments.put(name, Segment.create().setView(view).setPattern(LEDPattern.kOff).setActive(false));
   }
 
   /**
-   * Adds a pattern to the LED strip with the given name, starting at the given index and spanning
-   * the given length. The pattern is active by default. If the name already corresponds to a
-   * pattern, this method does nothing.
+   * Adds a pattern to the LED strip with the given name, spanning the LEDs from the given start
+   * index to the given end index (inclusive). The pattern is active by default. If the name already
+   * corresponds to a pattern, this method does nothing.
    *
    * @param name The name of the pattern to add
    * @param startIndex The starting index of the pattern
-   * @param length The length of the pattern
+   * @param endIndex The ending index of the pattern (inclusive)
    * @param order The order in which the pattern will be displayed. Lower order patterns will be
    *     displayed before higher order patterns.
    */
-  public static void addSegment(String name, int startIndex, int length, int order) {
+  public static void addSegment(String name, int startIndex, int endIndex, int order) {
     if (null == instance) {
       return;
     }
-    AddressableLEDBufferView view = instance.m_buffer.createView(startIndex, length);
+    AddressableLEDBufferView view = instance.m_buffer.createView(startIndex, endIndex);
     segments.put(
         name,
         Segment.create()
@@ -352,6 +353,25 @@ public class LEDStrip extends GenericSubsystem {
   }
 
   /**
+   * Returns a scrolling "laser" pattern: a narrow bright band of the given color that sweeps along
+   * the segment over an unlit (black) background.
+   *
+   * @param color the color of the laser band
+   * @param percentWidth the width of the laser band, as a fraction (0.0-1.0) of the segment's length
+   * @param percentScrollingSpeed the speed at which the band sweeps, as a percentage of the
+   *     segment's length per second
+   * @return the new scrolling laser pattern
+   */
+  public static LEDPattern getLaserPattern(
+      Color color, double percentWidth, double percentScrollingSpeed) {
+    Map<Double, Color> maskSteps = Map.of(0.0, Color.kWhite, percentWidth, Color.kBlack);
+    LEDPattern mask =
+        LEDPattern.steps(maskSteps)
+            .scrollAtRelativeSpeed(Percent.per(Second).of(percentScrollingSpeed));
+    return LEDPattern.solid(color).mask(mask);
+  }
+
+  /**
    * Returns a new LEDPattern that masks the given base pattern with a band of given visibility and
    * scrolling speed. The mask has a band of white (visible) that is percentVisible of the pattern's
    * length wide, centered at percentVisible of the pattern's length from the start of the pattern.
@@ -395,7 +415,7 @@ public class LEDStrip extends GenericSubsystem {
             Color.kBlack,
             bandCenter - (percentWidth / 2),
             Color.kWhite,
-            bandCenter - (percentWidth / 2),
+            bandCenter + (percentWidth / 2),
             Color.kBlack);
     LEDPattern mask =
         LEDPattern.steps(maskSteps)

@@ -122,6 +122,16 @@ public abstract class SwerveDriveFunctions {
     // Default empty
   }
 
+  /**
+   * Commands every module's azimuth to the same absolute angle, in degrees. Default implementation
+   * does nothing; drivetrains that support direct azimuth control should override it.
+   *
+   * @param degrees the absolute steer angle to command, in degrees
+   */
+  public void pointModulesAt(double degrees) {
+    // Default empty
+  }
+
   public void updateSimulation() {
     // Default empty
   }
