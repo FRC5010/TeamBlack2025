@@ -281,6 +281,22 @@ public class AkitSwerveDrive extends SwerveDriveFunctions {
   }
 
   /**
+   * Points every module's azimuth at the same absolute angle with the drive motors stopped. Backs
+   * the azimuth step test; also records the commanded angle as the module setpoint so the always-on
+   * Drive/Diag diagnostics report target-vs-measured error during the test.
+   *
+   * @param degrees the absolute steer angle to command, in degrees
+   */
+  @Override
+  public void pointModulesAt(double degrees) {
+    Rotation2d target = Rotation2d.fromDegrees(degrees);
+    for (int i = 0; i < modules.length; i++) {
+      modules[i].pointAt(target);
+      lastSetpointStates[i] = new SwerveModuleState(0.0, target);
+    }
+  }
+
+  /**
    * Stops the drive and turns the modules to an X arrangement to resist movement. The modules will
    * return to their normal orientations the next time a nonzero velocity is requested.
    */

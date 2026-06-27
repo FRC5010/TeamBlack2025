@@ -104,6 +104,18 @@ public class Module {
     io.setTurnOpenLoop(output);
   }
 
+  /**
+   * Points the module's azimuth at the given absolute angle with the drive motor stopped, without
+   * the nearest-equivalent optimization used by {@link #runSetpoint}. Used by the azimuth step test
+   * so the module physically rotates to the commanded angle (not an equivalent 180 deg flip).
+   *
+   * @param angle the absolute steer angle to hold
+   */
+  public void pointAt(Rotation2d angle) {
+    io.setDriveOpenLoop(0.0);
+    io.setTurnPosition(angle);
+  }
+
   /** Disables all outputs to motors. */
   public void stop() {
     io.setDriveOpenLoop(0.0);
