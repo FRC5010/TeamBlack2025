@@ -158,7 +158,7 @@
           "name": "backRightDrive",
           "controllerType": "spark",
           "motorType": "NEO",
-          "canId": 4,
+          "canId": 15,
           "currentLimit": {
             "val": 40,
             "uom": "amps"
@@ -168,7 +168,7 @@
           "name": "backRightSteer",
           "controllerType": "spark",
           "motorType": "NEO",
-          "canId": 15,
+          "canId": 4,
           "inverted": false,
           "currentLimit": {
             "val": 20,
