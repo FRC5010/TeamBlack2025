@@ -71,7 +71,7 @@
           "name": "frontLeftDrive",
           "controllerType": "spark",
           "motorType": "NEO",
-          "canId": 1,
+          "canId": 18,
           "currentLimit": {
             "val": 40,
             "uom": "amps"
@@ -100,7 +100,7 @@
           "name": "frontRightDrive",
           "controllerType": "spark",
           "motorType": "NEO",
-          "canId": 7,
+          "canId": 17,
           "currentLimit": {
             "val": 40,
             "uom": "amps"
@@ -110,7 +110,7 @@
           "name": "frontRightSteer",
           "controllerType": "spark",
           "motorType": "NEO",
-          "canId": 8,
+          "canId": 6,
           "inverted": false,
           "currentLimit": {
             "val": 20,
@@ -129,7 +129,7 @@
           "name": "backLeftDrive",
           "controllerType": "spark",
           "motorType": "NEO",
-          "canId": 3,
+          "canId": 16,
           "currentLimit": {
             "val": 40,
             "uom": "amps"
@@ -139,7 +139,7 @@
           "name": "backLeftSteer",
           "controllerType": "spark",
           "motorType": "NEO",
-          "canId": 4,
+          "canId": 3,
           "inverted": false,
           "currentLimit": {
             "val": 20,
@@ -158,7 +158,7 @@
           "name": "backRightDrive",
           "controllerType": "spark",
           "motorType": "NEO",
-          "canId": 5,
+          "canId": 4,
           "currentLimit": {
             "val": 40,
             "uom": "amps"
@@ -168,7 +168,7 @@
           "name": "backRightSteer",
           "controllerType": "spark",
           "motorType": "NEO",
-          "canId": 6,
+          "canId": 15,
           "inverted": false,
           "currentLimit": {
             "val": 20,

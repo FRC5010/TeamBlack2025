@@ -800,12 +800,13 @@ public class GenericSwerveDrivetrain extends GenericDrivetrain {
 
   /**
    * Deterministic azimuth diagnostic: points every module at a fixed sequence of angles, holding
-   * each for a fixed dwell, while the drive motors stay stopped. Run it with the robot on blocks and
-   * review {@code Swerve/Diag/*} (measured/error/steer effort) against {@code
+   * each for a fixed dwell, while the drive motors stay stopped. Run it with the robot on blocks
+   * and review {@code Swerve/Diag/*} (measured/error/steer effort) against {@code
    * Swerve/Diag/StepTest/targetDeg} to see which module fails to reach its commanded rotation. The
    * per-module diagnostics require the YAGSL telemetry verbosity to be HIGH.
    *
-   * @return the step-test command (requires this drivetrain, interrupting the default drive command)
+   * @return the step-test command (requires this drivetrain, interrupting the default drive
+   *     command)
    */
   @Override
   public Command azimuthStepTestCommand() {

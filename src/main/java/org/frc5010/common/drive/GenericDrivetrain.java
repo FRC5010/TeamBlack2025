@@ -259,8 +259,8 @@ public abstract class GenericDrivetrain extends GenericSubsystem {
   }
 
   /**
-   * Deterministic azimuth diagnostic command. Drivetrains that support direct azimuth control
-   * (e.g. swerve) override this to step the modules through a fixed sequence of angles; the default
+   * Deterministic azimuth diagnostic command. Drivetrains that support direct azimuth control (e.g.
+   * swerve) override this to step the modules through a fixed sequence of angles; the default
    * implementation does nothing.
    *
    * @return the azimuth step-test command

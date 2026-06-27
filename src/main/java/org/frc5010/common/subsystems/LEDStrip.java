@@ -357,7 +357,8 @@ public class LEDStrip extends GenericSubsystem {
    * the segment over an unlit (black) background.
    *
    * @param color the color of the laser band
-   * @param percentWidth the width of the laser band, as a fraction (0.0-1.0) of the segment's length
+   * @param percentWidth the width of the laser band, as a fraction (0.0-1.0) of the segment's
+   *     length
    * @param percentScrollingSpeed the speed at which the band sweeps, as a percentage of the
    *     segment's length per second
    * @return the new scrolling laser pattern

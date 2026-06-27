@@ -56,7 +56,10 @@
     "val": 500,
     "uom": "rpm"
   },
-  "gearing": [3, 4],
+  "gearing": [
+    3,
+    4
+  ],
   "mass": {
     "val": 1,
     "uom": "lbs"
