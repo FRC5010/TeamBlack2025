@@ -625,16 +625,42 @@ public class YAGSLSwerveDrivetrain extends SwerveDriveFunctions {
     logModuleDiagnostics();
   }
 
+  /** Last azimuth commanded by {@link #pointModulesAt(double)}; NaN until the first command. */
+  private double lastPointModulesTarget = Double.NaN;
+
   /**
    * Commands every module's azimuth to the same absolute angle. Intended for deterministic
-   * diagnostics (see {@code azimuthStepTestCommand}); the drive motors are left untouched.
+   * diagnostics (see {@code azimuthStepTestCommand}); the drive motors are left stopped.
+   *
+   * <p>At the start of each <em>new</em> target this queues {@link
+   * SwerveDrive#synchronizeModuleEncoders()} and commands through {@link
+   * SwerveModule#setDesiredState(SwerveModuleState, boolean, double)}, which consumes the queued
+   * sync and re-seeds the internal (motor) encoder from the absolute encoder before commanding —
+   * mirroring how YAGSL corrects internal-encoder drift "in small doses" while stopped. The
+   * drive-feedforward overload is used so no azimuth optimization or anti-jitter is applied (the
+   * commanded angle stays exact) and the drive motor is held at zero. While dwelling on the same
+   * target it holds with {@link SwerveModule#setAngle(double)} (internal encoder only, no further
+   * sync), so the logged {@code Swerve/Diag/errorDeg} reflects the drift accrued during a single
+   * move from a freshly-synced start. That isolates per-move steering error from the cumulative
+   * drift seen when sync is bypassed entirely (a healthy gear train tracks within ~1 deg; a module
+   * with slip/backlash/wrong ratio shows the per-move error directly).
    *
    * @param degrees the absolute steer angle to command, in degrees
    */
   @Override
   public void pointModulesAt(double degrees) {
-    for (SwerveModule module : swerveDrive.getModules()) {
-      module.setAngle(degrees);
+    boolean newStep = degrees != lastPointModulesTarget;
+    lastPointModulesTarget = degrees;
+    if (newStep) {
+      swerveDrive.synchronizeModuleEncoders();
+      SwerveModuleState target = new SwerveModuleState(0.0, Rotation2d.fromDegrees(degrees));
+      for (SwerveModule module : swerveDrive.getModules()) {
+        module.setDesiredState(target, true, 0.0);
+      }
+    } else {
+      for (SwerveModule module : swerveDrive.getModules()) {
+        module.setAngle(degrees);
+      }
     }
   }
 

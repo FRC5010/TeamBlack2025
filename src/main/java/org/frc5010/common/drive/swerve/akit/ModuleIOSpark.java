@@ -45,12 +45,12 @@ import org.frc5010.common.drive.swerve.AkitSwerveConfig;
  * Module IO implementation for a NEO (Spark Max) drive motor, NEO (Spark Max) turn motor, and an
  * absolute encoder (e.g. Canandmag) read through the turn Spark's absolute-encoder port.
  *
- * <p>Everything per-robot is read from the deploy JSON (via {@link AkitSwerveConfig} /
- * {@link SwerveModuleConstants}): drive/steer CAN IDs, drive gear ratio, drive current limit, the
+ * <p>Everything per-robot is read from the deploy JSON (via {@link AkitSwerveConfig} / {@link
+ * SwerveModuleConstants}): drive/steer CAN IDs, drive gear ratio, drive current limit, the
  * motor/encoder inversions, the absolute encoder zero offset, and the drive/steer closed-loop gains
- * ({@code driveMotorControl}/{@code steerMotorControl} in akit units). Only universal akit constants
- * (encoder conversion factors, the steer wrap range, steer current limit, odometry frequency) come
- * from {@link DriveConstants}.
+ * ({@code driveMotorControl}/{@code steerMotorControl} in akit units). Only universal akit
+ * constants (encoder conversion factors, the steer wrap range, steer current limit, odometry
+ * frequency) come from {@link DriveConstants}.
  */
 public class ModuleIOSpark implements ModuleIO {
   /** Absolute encoder zero offset, from the JSON {@code absoluteOffset}. */

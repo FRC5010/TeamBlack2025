@@ -1,6 +1,6 @@
 {
   "userConfig": "demo_mode.json",
-  "driveType": "AKIT_SWERVE_DRIVE",
+  "driveType": "YAGSL_SWERVE_DRIVE",
   "trackWidth": 18.5625,
   "trackWidthUom": "in",
   "wheelBase": 18.5625,
