@@ -24,6 +24,9 @@ public interface ModuleIO {
     public boolean turnEncoderConnected = false;
     public Rotation2d turnPosition = Rotation2d.kZero;
     public Rotation2d turnAbsolutePosition = Rotation2d.kZero;
+    /** Absolute encoder reading before the configured zero offset is applied (diagnostics). */
+    public Rotation2d turnRawAbsolutePosition = Rotation2d.kZero;
+
     public double turnVelocityRadPerSec = 0.0;
     public double turnAppliedVolts = 0.0;
     public double turnCurrentAmps = 0.0;

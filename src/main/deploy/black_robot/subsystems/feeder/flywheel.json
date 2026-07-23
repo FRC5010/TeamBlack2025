@@ -1,0 +1,71 @@
+{
+  "motorSetup": {
+    "name": "feeder",
+    "logLevel": "HIGH",
+    "controllerType": "Spark",
+    "motorType": "Neo",
+    "canId": 12,
+    "inverted": true,
+    "idleMode": "BRAKE",
+    "currentLimit": {
+      "val": 40,
+      "uom": "amps"
+    }
+  },
+  "controlAlgorithm": "PROFILED",
+  "motorSystemId": {
+    "feedBack": {
+      "p": 0.00016541,
+      "i": 0.0,
+      "d": 0.0
+    },
+    "maxVelocity": {
+      "val": 5000,
+      "uom": "rpm"
+    },
+    "maxAcceleration": {
+      "val": 2500,
+      "uom": "rps^2"
+    },
+    "closedLoopRamp": {
+      "val": 0.25,
+      "uom": "s"
+    },
+    "controlMode": "CLOSED_LOOP"
+  },
+  "simSystemId": {
+    "feedBack": {
+      "p": 0.00016541,
+      "i": 0.0,
+      "d": 0.0
+    },
+    "maxVelocity": {
+      "val": 5000,
+      "uom": "rpm"
+    },
+    "maxAcceleration": {
+      "val": 2500,
+      "uom": "rps^2"
+    }
+  },
+  "lowerSoftLimit": {
+    "val": -500,
+    "uom": "rpm"
+  },
+  "upperSoftLimit": {
+    "val": 500,
+    "uom": "rpm"
+  },
+  "gearing": [
+    3,
+    4
+  ],
+  "mass": {
+    "val": 1,
+    "uom": "lbs"
+  },
+  "radius": {
+    "val": 1.5,
+    "uom": "in"
+  }
+}

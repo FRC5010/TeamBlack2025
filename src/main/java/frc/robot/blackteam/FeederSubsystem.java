@@ -4,64 +4,28 @@
 
 package frc.robot.blackteam;
 
-import static edu.wpi.first.units.Units.Amps;
-import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.Pounds;
-import static edu.wpi.first.units.Units.RPM;
-import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
-import static edu.wpi.first.units.Units.Seconds;
-
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.SparkMax;
-import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj2.command.Command;
 import java.util.function.Supplier;
 import org.frc5010.common.arch.GenericSubsystem;
-import yams.gearing.GearBox;
-import yams.gearing.MechanismGearing;
-import yams.mechanisms.config.FlyWheelConfig;
 import yams.mechanisms.velocity.FlyWheel;
-import yams.motorcontrollers.SmartMotorController;
-import yams.motorcontrollers.SmartMotorControllerConfig;
-import yams.motorcontrollers.SmartMotorControllerConfig.ControlMode;
-import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
-import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
-import yams.motorcontrollers.local.SparkWrapper;
 
 /** Add your docs here. */
 public class FeederSubsystem extends GenericSubsystem {
-  private final SparkMax motor = new SparkMax(12, MotorType.kBrushless);
-  private final SmartMotorControllerConfig motorConfig =
-      new SmartMotorControllerConfig(this)
-          .withClosedLoopController(
-              0.00016541, 0, 0, RPM.of(5000), RotationsPerSecondPerSecond.of(2500))
-          .withSimClosedLoopController(
-              0.00016541, 0, 0, RPM.of(5000), RotationsPerSecondPerSecond.of(2500))
-          .withGearing(new MechanismGearing(GearBox.fromReductionStages(3, 4)))
-          .withIdleMode(MotorMode.BRAKE)
-          .withTelemetry("FeederMotor", TelemetryVerbosity.HIGH)
-          .withStatorCurrentLimit(Amps.of(40))
-          .withMotorInverted(false)
-          .withClosedLoopRampRate(Seconds.of(0.25))
-          .withControlMode(ControlMode.CLOSED_LOOP);
+  private FlyWheel feeder;
 
-  private final SmartMotorController motorController =
-      new SparkWrapper(motor, DCMotor.getNEO(1), motorConfig);
-
-  private final FlyWheelConfig feederConfig =
-      new FlyWheelConfig(motorController)
-          .withDiameter(Inches.of(3))
-          .withMass(Pounds.of(1))
-          .withTelemetry("FeederMech", TelemetryVerbosity.HIGH)
-          .withUpperSoftLimit(RPM.of(500))
-          .withSpeedometerSimulation();
-  private final FlyWheel feeder = new FlyWheel(feederConfig);
+  /** Creates a new Feeder configured from JSON. */
+  public FeederSubsystem() {
+    super("feeder.json");
+    feeder = (FlyWheel) devices.get("feeder");
+  }
 
   public Command setSpeed(double speed) {
     return feeder.set(speed);
   }
 
-  public FeederSubsystem() {}
+  public Command joyStickControl(Supplier<Double> speedSupplier) {
+    return feeder.set(speedSupplier);
+  }
 
   @Override
   public void periodic() {
@@ -72,9 +36,4 @@ public class FeederSubsystem extends GenericSubsystem {
   public void simulationPeriodic() {
     feeder.simIterate();
   }
-
-  public Command joyStickControl(Supplier<Double> speedSupplier) {
-    return feeder.set(speedSupplier);
-  }
 }
-/** Robot, stop */

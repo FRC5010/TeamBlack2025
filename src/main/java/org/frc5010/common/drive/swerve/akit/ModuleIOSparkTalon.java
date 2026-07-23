@@ -8,12 +8,8 @@
 package org.frc5010.common.drive.swerve.akit;
 
 import static org.frc5010.common.drive.swerve.akit.DriveConstants.odometryFrequency;
-import static org.frc5010.common.drive.swerve.akit.DriveConstants.turnEncoderInverted;
 import static org.frc5010.common.drive.swerve.akit.DriveConstants.turnEncoderPositionFactor;
 import static org.frc5010.common.drive.swerve.akit.DriveConstants.turnEncoderVelocityFactor;
-import static org.frc5010.common.drive.swerve.akit.DriveConstants.turnInverted;
-import static org.frc5010.common.drive.swerve.akit.DriveConstants.turnKd;
-import static org.frc5010.common.drive.swerve.akit.DriveConstants.turnKp;
 import static org.frc5010.common.drive.swerve.akit.DriveConstants.turnMotorCurrentLimit;
 import static org.frc5010.common.drive.swerve.akit.DriveConstants.turnPIDMaxInput;
 import static org.frc5010.common.drive.swerve.akit.DriveConstants.turnPIDMinInput;
@@ -106,7 +102,7 @@ public class ModuleIOSparkTalon implements ModuleIO {
           constants) {
 
     this.constants = constants;
-    zeroRotation = new Rotation2d();
+    zeroRotation = Rotation2d.fromRotations(constants.EncoderOffset);
     driveTalon = new TalonFX(constants.DriveMotorId, config.getCANBus());
     turnSpark = new SparkMax(constants.SteerMotorId, MotorType.kBrushless);
 
@@ -134,13 +130,13 @@ public class ModuleIOSparkTalon implements ModuleIO {
     // Configure turn motor
     var turnConfig = new SparkMaxConfig();
     turnConfig
-        .inverted(turnInverted)
+        .inverted(constants.SteerMotorInverted)
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(turnMotorCurrentLimit)
         .voltageCompensation(12.0);
     turnConfig
         .absoluteEncoder
-        .inverted(turnEncoderInverted)
+        .inverted(constants.EncoderInverted)
         .positionConversionFactor(turnEncoderPositionFactor)
         .velocityConversionFactor(turnEncoderVelocityFactor)
         .averageDepth(2);
@@ -149,8 +145,8 @@ public class ModuleIOSparkTalon implements ModuleIO {
         .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
         .positionWrappingEnabled(true)
         .positionWrappingInputRange(turnPIDMinInput, turnPIDMaxInput)
-        .p(turnKp)
-        .d(turnKd);
+        .p(constants.SteerMotorGains.kP)
+        .d(constants.SteerMotorGains.kD);
     turnConfig
         .signals
         .absoluteEncoderPositionAlwaysOn(true)
@@ -193,7 +189,15 @@ public class ModuleIOSparkTalon implements ModuleIO {
     ifOk(
         turnSpark,
         turnEncoder::getPosition,
-        (value) -> inputs.turnAbsolutePosition = new Rotation2d(value).minus(zeroRotation));
+        (value) -> {
+          Rotation2d raw = new Rotation2d(value);
+          inputs.turnRawAbsolutePosition = raw;
+          inputs.turnAbsolutePosition = raw.minus(zeroRotation);
+          // Steering closes the loop on the absolute encoder with no separate relative turn
+          // encoder, so turnPosition mirrors the absolute position. Without this, turnPosition
+          // stays at 0, breaking Module.getAngle()/cosineScale (no drive at 90 deg) and odometry.
+          inputs.turnPosition = inputs.turnAbsolutePosition;
+        });
     ifOk(turnSpark, turnEncoder::getVelocity, (value) -> inputs.turnVelocityRadPerSec = value);
     ifOk(
         turnSpark,

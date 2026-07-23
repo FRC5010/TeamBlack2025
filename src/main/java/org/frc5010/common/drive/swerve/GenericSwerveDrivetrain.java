@@ -61,6 +61,7 @@ import org.frc5010.common.drive.swerve_utils.PathConstraints5010;
 import org.frc5010.common.drive.swerve_utils.SwerveSetpointGenerator5010;
 import org.frc5010.common.sensors.Controller;
 import org.json.simple.parser.ParseException;
+import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
 import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -83,6 +84,10 @@ public class GenericSwerveDrivetrain extends GenericDrivetrain {
     setDrivetrainPoseEstimator(swerveDrive.initializePoseEstimator());
     initializeSimulation(swerveConstants);
     driveTrainSimulationSupplier = swerveDrive.getDriveTrainSimulationSupplier();
+
+    // Expose the deterministic azimuth diagnostic as a dashboard button so it can be run
+    // (while enabled, robot on blocks) without entering Test mode.
+    SmartDashboard.putData("Azimuth Step Test", azimuthStepTestCommand());
   }
 
   @Override
@@ -753,7 +758,7 @@ public class GenericSwerveDrivetrain extends GenericDrivetrain {
   public Command createDefaultCommand(Controller driverXbox) {
     DoubleSupplier leftX = () -> driverXbox.getLeftXAxis();
     DoubleSupplier leftY = () -> driverXbox.getLeftYAxis();
-    DoubleSupplier rightX = () -> driverXbox.getRightXAxis();
+    DoubleSupplier rightX = () -> driverXbox.getLeftTrigger();
     BooleanSupplier isFieldOriented = () -> isFieldOrientedDrive.getValue();
 
     /**
@@ -776,7 +781,7 @@ public class GenericSwerveDrivetrain extends GenericDrivetrain {
   public Command createDefaultTestCommand(Controller driverXbox) {
     DoubleSupplier leftX = () -> driverXbox.getLeftXAxis();
     DoubleSupplier leftY = () -> driverXbox.getLeftYAxis();
-    DoubleSupplier rightX = () -> driverXbox.getRightXAxis();
+    DoubleSupplier rightX = () -> driverXbox.getLeftTrigger();
     BooleanSupplier isFieldOriented = () -> isFieldOrientedDrive.getValue();
 
     driverXbox.createAButton().whileTrue(sysIdDriveMotorCommand());
@@ -811,6 +816,38 @@ public class GenericSwerveDrivetrain extends GenericDrivetrain {
    */
   public Command steeringRatioCharacterizationCommand() {
     return new SteeringRatioCharacterization(this);
+  }
+
+  /** Azimuth angles (deg) the step test drives every module through, in order. */
+  private static final double[] AZIMUTH_TEST_ANGLES = {0.0, 90.0, 180.0, -90.0, 45.0, 0.0};
+
+  /** How long (seconds) to hold each step so the modules can settle. */
+  private static final double AZIMUTH_TEST_DWELL_SECONDS = 1.0;
+
+  /**
+   * Deterministic azimuth diagnostic: points every module at a fixed sequence of angles, holding
+   * each for a fixed dwell, while the drive motors stay stopped. Run it with the robot on blocks
+   * and review {@code Swerve/Diag/*} (measured/error/steer effort) against {@code
+   * Swerve/Diag/StepTest/targetDeg} to see which module fails to reach its commanded rotation. The
+   * per-module diagnostics require the YAGSL telemetry verbosity to be HIGH.
+   *
+   * @return the step-test command (requires this drivetrain, interrupting the default drive
+   *     command)
+   */
+  @Override
+  public Command azimuthStepTestCommand() {
+    Command sequence = Commands.none();
+    for (double angle : AZIMUTH_TEST_ANGLES) {
+      final double target = angle;
+      sequence =
+          sequence.andThen(
+              run(() -> {
+                    Logger.recordOutput("Swerve/Diag/StepTest/targetDeg", target);
+                    swerveDrive.pointModulesAt(target);
+                  })
+                  .withTimeout(AZIMUTH_TEST_DWELL_SECONDS));
+    }
+    return sequence.withName("AzimuthStepTest");
   }
 
   public void resetEncoders() {

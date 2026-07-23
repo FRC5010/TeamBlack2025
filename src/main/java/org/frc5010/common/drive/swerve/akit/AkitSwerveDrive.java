@@ -81,6 +81,17 @@ public class AkitSwerveDrive extends SwerveDriveFunctions {
   private SwerveDrivePoseEstimator poseEstimator;
   private final Consumer<Pose2d> resetSimulationPoseCallBack;
 
+  // Diagnostics: last commanded (optimized) module setpoints and chassis speeds. Logged every loop
+  // so setpoint-vs-measured is visible even while disabled, when SwerveStates/Setpoints is blanked.
+  private SwerveModuleState[] lastSetpointStates =
+      new SwerveModuleState[] {
+        new SwerveModuleState(),
+        new SwerveModuleState(),
+        new SwerveModuleState(),
+        new SwerveModuleState()
+      };
+  private ChassisSpeeds lastSetpointSpeeds = new ChassisSpeeds();
+
   public AkitSwerveDrive(
       AkitSwerveConfig config,
       GyroIO gyroIO,
@@ -171,8 +182,15 @@ public class AkitSwerveDrive extends SwerveDriveFunctions {
 
       // Update gyro angle
       if (gyroInputs.connected) {
-        // Use the real gyro angle
-        rawGyroRotation = gyroInputs.odometryYawPositions[i];
+        // Use the real gyro angle. When the gyro samples on a different odometry thread than the
+        // modules (e.g. the Spark configuration, where the modules use the Spark thread but the
+        // Pigeon uses the Phoenix thread), its high-frequency queue can be empty even though the
+        // modules produced samples. Fall back to the latest gyro reading for those samples instead
+        // of indexing past the end of the array.
+        rawGyroRotation =
+            i < gyroInputs.odometryYawPositions.length
+                ? gyroInputs.odometryYawPositions[i]
+                : gyroInputs.yawPosition;
       } else {
         // Use the angle delta from the kinematics and module deltas
         Twist2d twist = kinematics.toTwist2d(moduleDeltas);
@@ -185,6 +203,9 @@ public class AkitSwerveDrive extends SwerveDriveFunctions {
 
     // Update gyro alert
     gyroDisconnectedAlert.set(!gyroInputs.connected && Constants.CURRENT_MODE != Mode.SIM);
+
+    // Always-on swerve diagnostics (commanded vs measured per module).
+    logModuleDiagnostics();
   }
 
   /**
@@ -209,6 +230,30 @@ public class AkitSwerveDrive extends SwerveDriveFunctions {
 
     // Log optimized setpoints (runSetpoint mutates each state)
     Logger.recordOutput("SwerveStates/SetpointsOptimized", setpointStates);
+
+    // Retain the commanded setpoints for the always-on diagnostics in periodic().
+    lastSetpointStates = setpointStates;
+    lastSetpointSpeeds = speeds;
+  }
+
+  /**
+   * Logs per-module commanded-vs-measured azimuth and drive diagnostics every loop, independent of
+   * enable state, to make wrong-direction / tracking issues diagnosable from a log.
+   */
+  private void logModuleDiagnostics() {
+    for (int i = 0; i < 4; i++) {
+      SwerveModuleState measured = modules[i].getState();
+      SwerveModuleState setpoint = lastSetpointStates[i];
+      double angleErrorDeg = Math.abs(measured.angle.minus(setpoint.angle).getDegrees());
+      String base = "Drive/Diag/Module" + i + "/";
+      Logger.recordOutput(base + "SetpointAngleDeg", setpoint.angle.getDegrees());
+      Logger.recordOutput(base + "MeasuredAngleDeg", measured.angle.getDegrees());
+      Logger.recordOutput(base + "AngleErrorDeg", angleErrorDeg);
+      Logger.recordOutput(base + "SetpointSpeedMps", setpoint.speedMetersPerSecond);
+      Logger.recordOutput(base + "MeasuredSpeedMps", measured.speedMetersPerSecond);
+    }
+    Logger.recordOutput("Drive/Diag/ChassisSpeedsSetpoint", lastSetpointSpeeds);
+    Logger.recordOutput("Drive/Diag/ChassisSpeedsMeasured", getChassisSpeeds());
   }
 
   /** Runs the drive in a straight line with the specified drive output. */
@@ -233,6 +278,22 @@ public class AkitSwerveDrive extends SwerveDriveFunctions {
   /** Stops the drive. */
   public void stop() {
     runVelocity(new ChassisSpeeds());
+  }
+
+  /**
+   * Points every module's azimuth at the same absolute angle with the drive motors stopped. Backs
+   * the azimuth step test; also records the commanded angle as the module setpoint so the always-on
+   * Drive/Diag diagnostics report target-vs-measured error during the test.
+   *
+   * @param degrees the absolute steer angle to command, in degrees
+   */
+  @Override
+  public void pointModulesAt(double degrees) {
+    Rotation2d target = Rotation2d.fromDegrees(degrees);
+    for (int i = 0; i < modules.length; i++) {
+      modules[i].pointAt(target);
+      lastSetpointStates[i] = new SwerveModuleState(0.0, target);
+    }
   }
 
   /**
