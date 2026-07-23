@@ -52,6 +52,7 @@ import org.frc5010.common.arch.GenericRobot;
 import org.frc5010.common.auto.pathplanner.PathFinderCommand;
 import org.frc5010.common.commands.DriveToPoseSupplier;
 import org.frc5010.common.commands.JoystickToSwerve;
+import org.frc5010.common.commands.calibration.SteeringRatioCharacterization;
 import org.frc5010.common.constants.GenericDrivetrainConstants;
 import org.frc5010.common.constants.RobotConstantsDef;
 import org.frc5010.common.drive.GenericDrivetrain;
@@ -165,6 +166,16 @@ public class GenericSwerveDrivetrain extends GenericDrivetrain {
 
   public GenericDrivetrainConstants getSwerveConstants() {
     return swerveConstants;
+  }
+
+  /**
+   * Gets per-module steering and drive readings, including both the absolute and the relative
+   * (motor internal) azimuth angles.
+   *
+   * @return one {@link GenericSwerveModuleInfo} per module
+   */
+  public GenericSwerveModuleInfo[] getModulesInfo() {
+    return swerveDrive.getModulesInfo();
   }
 
   @Override
@@ -769,6 +780,8 @@ public class GenericSwerveDrivetrain extends GenericDrivetrain {
     BooleanSupplier isFieldOriented = () -> isFieldOrientedDrive.getValue();
 
     driverXbox.createAButton().whileTrue(sysIdDriveMotorCommand());
+    driverXbox.createBButton().whileTrue(steeringRatioCharacterizationCommand());
+    SmartDashboard.putData("Steering Ratio Test", steeringRatioCharacterizationCommand());
     // driverXbox.createBButton().whileTrue(sysIdAngleMotorCommand());
     // return Commands.run(() -> SwerveDriveTest.centerModules(swerveDrive), this);
     return new JoystickToSwerve(
@@ -785,6 +798,19 @@ public class GenericSwerveDrivetrain extends GenericDrivetrain {
 
   public Command sysIdAngleMotorCommand() {
     return swerveDrive.sysIdAngleMotorCommand(this);
+  }
+
+  /**
+   * Sweeps the module azimuths in equal steps and reports, per module, how much they actually
+   * rotated versus how much they were told to. Catches a module whose steering gearing is slipping
+   * or whose configured angle conversion factor does not match the hardware.
+   *
+   * <p>Run with the robot up on blocks; the wheels spin during the test.
+   *
+   * @return the characterization {@link Command}
+   */
+  public Command steeringRatioCharacterizationCommand() {
+    return new SteeringRatioCharacterization(this);
   }
 
   public void resetEncoders() {
